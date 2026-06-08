@@ -771,6 +771,6 @@ export const en = {
     title: "Terms of Service",
     lastUpdated: "Last updated: June 2025",
   },
-} as const;
+};
 
 export type Translations = typeof en;
