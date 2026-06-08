@@ -7,6 +7,9 @@ import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { stripe } from "@/lib/stripe";
 import { getAppUrl } from "@/lib/url";
+import { Resend } from "resend";
+
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 const EMAIL_CHANGE_LINK_TTL_MS = 60 * 60 * 1000; // 1 hour
 
@@ -38,8 +41,12 @@ export async function changeEmail(newEmail: string): Promise<{ error: "invalid" 
 
   const appUrl = await getAppUrl();
   const confirmUrl = `${appUrl}/api/account/confirm-email-change?token=${token}`;
-  // Configure an email provider (Resend, Nodemailer…) to send this in production.
-  console.log(`[Evvy] Confirm email change for ${user.email} -> ${email}:\n${confirmUrl}`);
+  await resend.emails.send({
+    from: "Evvy <noreply@evvycal.app>",
+    to: user.email,
+    subject: "Confirm your email change",
+    html: `<p>You requested to change your Evvy email address to <strong>${email}</strong>.</p><p>Click the link below to confirm. It expires in 1 hour.</p><p><a href="${confirmUrl}">${confirmUrl}</a></p><p>If you didn't request this, you can ignore this email.</p>`,
+  });
 
   return { ok: true };
 }
