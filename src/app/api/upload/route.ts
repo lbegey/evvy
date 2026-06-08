@@ -21,7 +21,11 @@ export async function POST(req: NextRequest) {
   const ext = file.name.split(".").pop()?.toLowerCase() ?? "jpg";
   const filename = `uploads/${randomUUID()}.${ext}`;
 
-  const blob = await put(filename, file, { access: "public" });
-
-  return Response.json({ url: blob.url });
+  try {
+    const blob = await put(filename, file, { access: "public" });
+    return Response.json({ url: blob.url });
+  } catch (e) {
+    console.error("[Evvy] Upload error:", e);
+    return Response.json({ error: "Upload failed" }, { status: 500 });
+  }
 }
