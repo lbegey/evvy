@@ -612,7 +612,7 @@ export const fr: Translations = {
     backgroundImage: "Image de fond",
     backgroundImageHint: "Affichée en couverture sur vos pages publiques. JPG ou PNG, 5 Mo max.",
     preview: "Aperçu",
-    save: "Enregistrer",
+    saving: "Enregistrement…",
     saved: "Personnalisation enregistrée",
     reset: "Réinitialiser",
     resetConfirm: "Supprimer votre logo et votre couleur de marque et revenir à l'apparence par défaut ?",

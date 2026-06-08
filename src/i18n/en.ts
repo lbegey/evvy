@@ -610,7 +610,7 @@ export const en = {
     backgroundImage: "Background image",
     backgroundImageHint: "Displayed as a cover background on your public pages. JPG or PNG, max 5 MB.",
     preview: "Preview",
-    save: "Save branding",
+    saving: "Saving…",
     saved: "Branding saved",
     reset: "Reset to default",
     resetConfirm: "Remove your logo and brand color and go back to the default look?",

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useTransition, type CSSProperties } from "react";
+import { useState, useTransition, useEffect, useRef, type CSSProperties } from "react";
 import { Loader2, Check, RotateCcw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -13,6 +13,7 @@ import { cn } from "@/lib/utils";
 const MIN_LOGO_SIZE = 16;
 const MAX_LOGO_SIZE = 300;
 const DEFAULT_LOGO_SIZE = 32;
+const AUTOSAVE_DELAY_MS = 700;
 
 interface BrandingSettingsProps {
   brandLogoUrl: string | null;
@@ -33,25 +34,46 @@ export function BrandingSettings({ brandLogoUrl, brandLogoSize, brandLogoTranspa
   const [color, setColor] = useState(brandColor ?? "");
   const [backgroundColor, setBackgroundColor] = useState(brandBackgroundColor ?? "");
   const [backgroundImageUrl, setBackgroundImageUrl] = useState(brandBackgroundImageUrl ?? "");
-  const [saved, setSaved] = useState<"saved" | "reset" | null>(null);
+  const [saved, setSaved] = useState(false);
   const [isPending, startTransition] = useTransition();
   const [isResetting, startReset] = useTransition();
+  const isFirstRender = useRef(true);
+  const savedTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const skipNextSave = useRef(false);
 
   const previewColor = /^#[0-9a-fA-F]{3,8}$/.test(color) ? color : undefined;
   const previewBackgroundColor = /^#[0-9a-fA-F]{3,8}$/.test(backgroundColor) ? backgroundColor : undefined;
-  const hasCustomBranding = Boolean(brandLogoUrl || brandColor || brandBackgroundColor || brandBackgroundImageUrl);
+  const hasCustomBranding = Boolean(logoUrl || color || backgroundColor || backgroundImageUrl);
 
-  const onSave = () => {
-    setSaved(null);
-    startTransition(async () => {
-      await updateBranding({ brandLogoUrl: logoUrl, brandLogoSize: logoSize, brandLogoTransparentBg: logoTransparentBg, brandLogoRounded: logoRounded, brandColor: color, brandBackgroundColor: backgroundColor, brandBackgroundImageUrl: backgroundImageUrl });
-      setSaved("saved");
-    });
-  };
+  useEffect(() => {
+    if (isFirstRender.current) {
+      isFirstRender.current = false;
+      return;
+    }
+    if (skipNextSave.current) {
+      skipNextSave.current = false;
+      return;
+    }
+    setSaved(false);
+    const timer = setTimeout(() => {
+      startTransition(async () => {
+        await updateBranding({ brandLogoUrl: logoUrl, brandLogoSize: logoSize, brandLogoTransparentBg: logoTransparentBg, brandLogoRounded: logoRounded, brandColor: color, brandBackgroundColor: backgroundColor, brandBackgroundImageUrl: backgroundImageUrl });
+        setSaved(true);
+        if (savedTimerRef.current) clearTimeout(savedTimerRef.current);
+        savedTimerRef.current = setTimeout(() => setSaved(false), 2000);
+      });
+    }, AUTOSAVE_DELAY_MS);
+    return () => clearTimeout(timer);
+  }, [logoUrl, logoSize, logoTransparentBg, logoRounded, color, backgroundColor, backgroundImageUrl]);
+
+  useEffect(() => {
+    return () => { if (savedTimerRef.current) clearTimeout(savedTimerRef.current); };
+  }, []);
 
   const onReset = () => {
     if (!confirm(T.branding.resetConfirm)) return;
-    setSaved(null);
+    setSaved(false);
+    skipNextSave.current = true;
     startReset(async () => {
       await resetBranding();
       setLogoUrl("");
@@ -61,7 +83,6 @@ export function BrandingSettings({ brandLogoUrl, brandLogoSize, brandLogoTranspa
       setColor("");
       setBackgroundColor("");
       setBackgroundImageUrl("");
-      setSaved("reset");
     });
   };
 
@@ -230,10 +251,6 @@ export function BrandingSettings({ brandLogoUrl, brandLogoSize, brandLogoTranspa
       )}
 
       <div className="flex flex-wrap items-center gap-3">
-        <Button onClick={onSave} disabled={isPending || isResetting} className="gap-1.5">
-          {isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Check className="h-4 w-4" />}
-          {isPending ? T.billing.loading : T.branding.save}
-        </Button>
         <Button
           type="button"
           variant="outline"
@@ -244,10 +261,20 @@ export function BrandingSettings({ brandLogoUrl, brandLogoSize, brandLogoTranspa
           {isResetting ? <Loader2 className="h-4 w-4 animate-spin" /> : <RotateCcw className="h-4 w-4" />}
           {T.branding.reset}
         </Button>
-        {saved && !isPending && !isResetting && (
-          <p className="text-xs text-green-600">
-            {saved === "saved" ? T.branding.saved : T.branding.resetDone}
+        {isPending && (
+          <p className="flex items-center gap-1.5 text-xs text-muted-foreground">
+            <Loader2 className="h-3 w-3 animate-spin" />
+            {T.branding.saving}
           </p>
+        )}
+        {saved && !isPending && (
+          <p className="flex items-center gap-1.5 text-xs text-green-600">
+            <Check className="h-3 w-3" />
+            {T.branding.saved}
+          </p>
+        )}
+        {isResetting && (
+          <p className="text-xs text-muted-foreground">{T.branding.resetDone}</p>
         )}
       </div>
     </div>

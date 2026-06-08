@@ -41,12 +41,16 @@ export async function changeEmail(newEmail: string): Promise<{ error: "invalid" 
 
   const appUrl = await getAppUrl();
   const confirmUrl = `${appUrl}/api/account/confirm-email-change?token=${token}`;
-  await resend.emails.send({
+  const { error: emailError } = await resend.emails.send({
     from: "Evvy <noreply@evvycal.app>",
     to: user.email,
     subject: "Confirm your email change",
     html: `<p>You requested to change your Evvy email address to <strong>${email}</strong>.</p><p>Click the link below to confirm. It expires in 1 hour.</p><p><a href="${confirmUrl}">${confirmUrl}</a></p><p>If you didn't request this, you can ignore this email.</p>`,
   });
+  if (emailError) {
+    console.error("[Evvy] Resend error (email change):", emailError);
+    throw new Error("Failed to send confirmation email");
+  }
 
   return { ok: true };
 }
