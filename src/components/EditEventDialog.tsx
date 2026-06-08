@@ -77,6 +77,15 @@ function isoToLocal(iso: string, tz: string): { date: string; time: string } {
   return { date: `${p("year")}-${p("month")}-${p("day")}`, time: `${h}:${p("minute")}` };
 }
 
+function addHourToDatetime(date: string, time: string): { date: string; time: string } {
+  const [h, m] = time.split(":").map(Number);
+  if (h < 23) return { date, time: `${String(h + 1).padStart(2, "0")}:${String(m).padStart(2, "0")}` };
+  const d = new Date(`${date}T00:00:00`);
+  d.setDate(d.getDate() + 1);
+  const pad = (n: number) => String(n).padStart(2, "0");
+  return { date: `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`, time: `00:${String(m).padStart(2, "0")}` };
+}
+
 function naiveToUTC(date: string, time: string, tz: string): string {
   const dummy = new Date(`${date}T${time}:00Z`);
   const parts = new Intl.DateTimeFormat("en-US", {
@@ -113,6 +122,7 @@ export function EditEventDialog({ open, onOpenChange, plan, event }: EditEventDi
   const allDay = form.watch("allDay");
   const isOnline = form.watch("isOnline");
   const startDate = form.watch("startDate");
+  const startTime = form.watch("startTime");
 
   useEffect(() => {
     if (open) {
@@ -130,10 +140,14 @@ export function EditEventDialog({ open, onOpenChange, plan, event }: EditEventDi
   }, [open]); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
-    if (form.getValues("endDate") < startDate) {
-      form.setValue("endDate", startDate);
+    const endDate = form.getValues("endDate");
+    const endTime = form.getValues("endTime");
+    if (`${endDate}T${endTime}` <= `${startDate}T${startTime}`) {
+      const next = addHourToDatetime(startDate, startTime);
+      form.setValue("endDate", next.date);
+      form.setValue("endTime", next.time);
     }
-  }, [startDate]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [startDate, startTime]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleSubmit = (values: FormValues) => {
     startTransition(async () => {

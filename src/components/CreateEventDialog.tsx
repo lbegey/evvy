@@ -83,6 +83,14 @@ function addHour(time: string) {
   return `${String((h + 1) % 24).padStart(2, "0")}:${String(m).padStart(2, "0")}`;
 }
 
+function addHourToDatetime(date: string, time: string): { date: string; time: string } {
+  const [h, m] = time.split(":").map(Number);
+  if (h < 23) return { date, time: `${String(h + 1).padStart(2, "0")}:${String(m).padStart(2, "0")}` };
+  const d = new Date(`${date}T00:00:00`);
+  d.setDate(d.getDate() + 1);
+  return { date: toDateInput(d), time: `00:${String(m).padStart(2, "0")}` };
+}
+
 function naiveToUTC(date: string, time: string, tz: string): string {
   const dummy = new Date(`${date}T${time}:00Z`);
   const parts = new Intl.DateTimeFormat("en-US", {
@@ -116,6 +124,7 @@ export function CreateEventDialog({
   const allDay = form.watch("allDay");
   const isOnline = form.watch("isOnline");
   const startDate = form.watch("startDate");
+  const startTime = form.watch("startTime");
 
   useEffect(() => {
     form.setValue("startDate", toDateInput(defaultDate));
@@ -123,10 +132,14 @@ export function CreateEventDialog({
   }, [defaultDate, form]);
 
   useEffect(() => {
-    if (form.getValues("endDate") < startDate) {
-      form.setValue("endDate", startDate);
+    const endDate = form.getValues("endDate");
+    const endTime = form.getValues("endTime");
+    if (`${endDate}T${endTime}` <= `${startDate}T${startTime}`) {
+      const next = addHourToDatetime(startDate, startTime);
+      form.setValue("endDate", next.date);
+      form.setValue("endTime", next.time);
     }
-  }, [startDate]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [startDate, startTime]); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     if (!open) {
