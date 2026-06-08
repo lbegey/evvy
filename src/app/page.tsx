@@ -15,7 +15,7 @@ export default async function Home() {
         select: { id: true, slug: true, title: true, startAt: true, location: true, isOnline: true },
       },
     },
-  });
+  }).catch(() => null);
 
   const demoCalendar = calendar
     ? {
