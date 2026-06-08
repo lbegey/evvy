@@ -1,6 +1,9 @@
 import { betterAuth, APIError } from "better-auth";
 import { prismaAdapter } from "better-auth/adapters/prisma";
+import { Resend } from "resend";
 import { db } from "@/lib/db";
+
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 export const auth = betterAuth({
   baseURL: process.env.BETTER_AUTH_URL ?? "http://localhost:3000",
@@ -8,12 +11,16 @@ export const auth = betterAuth({
     "http://localhost:3000",
     "https://*.trycloudflare.com",
   ],
-  database: prismaAdapter(db, { provider: "sqlite" }),
+  database: prismaAdapter(db, { provider: "postgresql" }),
   emailAndPassword: {
     enabled: true,
     sendResetPassword: async ({ user, url }) => {
-      // Configure an email provider (Resend, Nodemailer…) to send this in production.
-      console.log(`[Evvy] Password reset for ${user.email}:\n${url}`);
+      await resend.emails.send({
+        from: "Evvy <noreply@evvycal.app>",
+        to: user.email,
+        subject: "Reset your Evvy password",
+        html: `<p>Click the link below to reset your password. It expires in 1 hour.</p><p><a href="${url}">${url}</a></p>`,
+      });
     },
   },
   socialProviders: {
