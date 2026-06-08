@@ -21,7 +21,7 @@ export async function GET(
   const alreadyTracked = req.cookies.has(cookieName);
 
   if (!alreadyTracked) {
-    db.eventClick.create({ data: { eventId: id, service } }).catch(() => {});
+    await db.eventClick.create({ data: { eventId: id, service } }).catch(() => {});
   }
 
   const eventData = {

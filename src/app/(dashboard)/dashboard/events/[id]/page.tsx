@@ -1,6 +1,8 @@
 import { notFound } from "next/navigation";
 import { headers } from "next/headers";
 import { auth } from "@/lib/auth";
+
+export const dynamic = "force-dynamic";
 import { db } from "@/lib/db";
 import { getAppUrl } from "@/lib/url";
 import { EventDetail } from "@/components/EventDetail";
