@@ -20,7 +20,7 @@ import { useLanguage } from "@/contexts/LanguageContext";
 import { cn } from "@/lib/utils";
 
 const USERS_PER_PAGE = 20;
-const PREMIUM_MONTHLY_PRICE_EUR = 4;
+const PREMIUM_MONTHLY_PRICE_EUR = 6;
 
 export interface AdminUserRecord {
   id: string;
