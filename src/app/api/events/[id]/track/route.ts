@@ -14,7 +14,7 @@ export async function GET(
   const service = searchParams.get("service") ?? "unknown";
   const APP_URL = await getAppUrl();
 
-  const event = await db.event.findUnique({ where: { id } });
+  const event = await db.event.findFirst({ where: { OR: [{ id }, { slug: id }] } });
   if (!event) return new Response("Not found", { status: 404 });
 
   const cookieName = `mc_${id}_${service}`;

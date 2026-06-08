@@ -146,8 +146,8 @@ export default async function PublicEventPage({
 
   return (
     <div className="flex min-h-screen flex-col justify-center bg-muted/20 py-6 px-4 sm:py-8" style={brandStyle}>
-      <PageViewTracker id={id} />
-      <EventLiveRefresh id={id} updatedAt={event.updatedAt.toISOString()} />
+      <PageViewTracker id={event.id} />
+      <EventLiveRefresh id={event.id} updatedAt={event.updatedAt.toISOString()} />
 
       <div className="mx-auto w-full max-w-xl space-y-3">
         {brandLogoUrl ? (

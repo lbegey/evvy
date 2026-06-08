@@ -7,8 +7,8 @@ export async function GET(
 ) {
   const { id } = await params;
 
-  const event = await db.event.findUnique({
-    where: { id },
+  const event = await db.event.findFirst({
+    where: { OR: [{ id }, { slug: id }] },
     select: { updatedAt: true },
   });
   if (!event) return new Response("Not found", { status: 404 });
