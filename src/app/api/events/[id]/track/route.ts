@@ -1,0 +1,54 @@
+import { type NextRequest, NextResponse } from "next/server";
+import { db } from "@/lib/db";
+import { buildGoogleUrl, buildOutlookUrl, buildOffice365Url, buildYahooUrl } from "@/lib/calendar-urls";
+import { getAppUrl } from "@/lib/url";
+
+const COOKIE_MAX_AGE = 30 * 24 * 60 * 60; // 30 days
+
+export async function GET(
+  req: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  const { id } = await params;
+  const { searchParams } = new URL(req.url);
+  const service = searchParams.get("service") ?? "unknown";
+  const APP_URL = await getAppUrl();
+
+  const event = await db.event.findUnique({ where: { id } });
+  if (!event) return new Response("Not found", { status: 404 });
+
+  const cookieName = `mc_${id}_${service}`;
+  const alreadyTracked = req.cookies.has(cookieName);
+
+  if (!alreadyTracked) {
+    db.eventClick.create({ data: { eventId: id, service } }).catch(() => {});
+  }
+
+  const eventData = {
+    title: event.title,
+    description: event.description,
+    location: event.location,
+    startAt: event.startAt.toISOString(),
+    endAt: event.endAt.toISOString(),
+  };
+
+  let targetUrl: string;
+  switch (service) {
+    case "google":    targetUrl = buildGoogleUrl(eventData); break;
+    case "apple":     targetUrl = `${APP_URL}/api/events/${id}/ics`; break;
+    case "outlook":   targetUrl = buildOutlookUrl(eventData); break;
+    case "office365": targetUrl = buildOffice365Url(eventData); break;
+    case "yahoo":     targetUrl = buildYahooUrl(eventData); break;
+    default:          targetUrl = `${APP_URL}/e/${id}`;
+  }
+
+  const response = NextResponse.redirect(targetUrl, 302);
+  if (!alreadyTracked) {
+    response.cookies.set(cookieName, "1", {
+      maxAge: COOKIE_MAX_AGE,
+      path: "/",
+      sameSite: "lax",
+    });
+  }
+  return response;
+}

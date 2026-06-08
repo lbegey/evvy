@@ -1,0 +1,208 @@
+"use client";
+
+import { useMemo, useState, useTransition } from "react";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
+import { Plus, Trash2, ExternalLink, CalendarRange, Search, ChevronLeft, ChevronRight } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { CalendarDialog, type CalendarDialogValues } from "@/components/CalendarDialog";
+import { createCalendar, deleteCalendar } from "@/app/actions/calendars";
+import { useLanguage } from "@/contexts/LanguageContext";
+import { cn } from "@/lib/utils";
+
+const CALENDARS_PER_PAGE = 10;
+
+export interface CalendarRecord {
+  id: string;
+  name: string;
+  description: string | null;
+  color: string | null;
+  eventCount: number;
+}
+
+interface CalendarsManagerProps {
+  calendars: CalendarRecord[];
+  appUrl: string;
+}
+
+export function CalendarsManager({ calendars, appUrl }: CalendarsManagerProps) {
+  const router = useRouter();
+  const { T } = useLanguage();
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [formError, setFormError] = useState<string | null>(null);
+  const [deleteError, setDeleteError] = useState<string | null>(null);
+  const [isPending, startTransition] = useTransition();
+  const [isDeleting, startDelete] = useTransition();
+  const [search, setSearch] = useState("");
+  const [page, setPage] = useState(1);
+
+  const filteredCalendars = useMemo(() => {
+    const query = search.trim().toLowerCase();
+    if (!query) return calendars;
+    return calendars.filter((c) => c.name.toLowerCase().includes(query));
+  }, [calendars, search]);
+
+  const pageCount = Math.max(1, Math.ceil(filteredCalendars.length / CALENDARS_PER_PAGE));
+  const currentPage = Math.min(page, pageCount);
+  const pagedCalendars = filteredCalendars.slice(
+    (currentPage - 1) * CALENDARS_PER_PAGE,
+    currentPage * CALENDARS_PER_PAGE
+  );
+
+  const handleSearchChange = (value: string) => {
+    setSearch(value);
+    setPage(1);
+  };
+
+  const openCreate = () => {
+    setFormError(null);
+    setDialogOpen(true);
+  };
+
+  const handleSubmit = async (data: CalendarDialogValues) => {
+    setFormError(null);
+    startTransition(async () => {
+      const result = await createCalendar(data);
+      if (result && "error" in result && result.error === "forbidden") {
+        setFormError(T.calendars.locked);
+        return;
+      }
+      setDialogOpen(false);
+      router.refresh();
+    });
+  };
+
+  const handleDelete = (id: string) => {
+    if (!confirm(T.calendars.confirmDelete)) return;
+    setDeleteError(null);
+    startDelete(async () => {
+      const result = await deleteCalendar(id);
+      if (result?.error === "forbidden") setDeleteError(T.calendars.locked);
+      else router.refresh();
+    });
+  };
+
+  return (
+    <div className="space-y-4">
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        {calendars.length > 0 && (
+          <div className="relative min-w-0 flex-1 sm:max-w-xs">
+            <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+            <Input
+              value={search}
+              onChange={(e) => handleSearchChange(e.target.value)}
+              placeholder={T.calendars.searchPlaceholder}
+              className="pl-9"
+            />
+          </div>
+        )}
+        <Button onClick={openCreate} className="shrink-0 gap-1.5">
+          <Plus className="h-4 w-4" />
+          {T.calendars.create}
+        </Button>
+      </div>
+
+      {deleteError && <p className="text-xs text-destructive">{deleteError}</p>}
+
+      {calendars.length === 0 ? (
+        <div className="flex flex-col items-center gap-2 rounded-xl border border-dashed border-border/60 p-10 text-center">
+          <CalendarRange className="h-8 w-8 text-muted-foreground/60" />
+          <p className="text-sm text-muted-foreground">{T.calendars.noCalendars}</p>
+        </div>
+      ) : filteredCalendars.length === 0 ? (
+        <div className="flex flex-col items-center gap-2 rounded-xl border border-dashed border-border/60 p-10 text-center">
+          <Search className="h-8 w-8 text-muted-foreground/60" />
+          <p className="text-sm text-muted-foreground">{T.calendars.noResults}</p>
+        </div>
+      ) : (
+        <ul className="space-y-2.5">
+          {pagedCalendars.map((calendar) => (
+            <li
+              key={calendar.id}
+              className="group relative flex flex-wrap items-center justify-between gap-3 rounded-xl border border-border/60 p-4 transition-colors hover:bg-muted/40"
+            >
+              <Link
+                href={`/dashboard/calendars/${calendar.id}`}
+                className="absolute inset-0 z-10 rounded-xl"
+                aria-label={calendar.name}
+              />
+              <div className="relative flex min-w-0 items-center gap-3">
+                <span
+                  className="h-3 w-3 shrink-0 rounded-full border border-border/60"
+                  style={{ backgroundColor: /^#[0-9a-fA-F]{3,8}$/.test(calendar.color ?? "") ? calendar.color! : undefined }}
+                />
+                <div className="min-w-0">
+                  <p className="truncate text-sm font-medium text-foreground transition-colors group-hover:text-primary">{calendar.name}</p>
+                  <p className="text-xs text-muted-foreground">
+                    {calendar.eventCount} {calendar.eventCount === 1 ? T.calendars.event : T.calendars.events}
+                  </p>
+                </div>
+              </div>
+
+              <div className="relative z-20 ml-auto flex shrink-0 items-center gap-1.5">
+                <Link
+                  href={`/c/${calendar.id}`}
+                  target="_blank"
+                  className={cn(
+                    "inline-flex items-center gap-1.5 rounded-lg border border-border/60 px-2.5 py-1.5 text-xs text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+                  )}
+                  title={`${appUrl}/c/${calendar.id}`}
+                >
+                  <ExternalLink className="h-3.5 w-3.5" />
+                  {T.calendars.open}
+                </Link>
+                <button
+                  type="button"
+                  onClick={() => handleDelete(calendar.id)}
+                  disabled={isDeleting}
+                  className="inline-flex items-center justify-center rounded-lg border border-border/60 p-2 text-muted-foreground transition-colors hover:bg-destructive/10 hover:text-destructive disabled:pointer-events-none disabled:opacity-50"
+                  aria-label={T.calendars.delete}
+                >
+                  <Trash2 className="h-3.5 w-3.5" />
+                </button>
+              </div>
+            </li>
+          ))}
+        </ul>
+      )}
+
+      {pageCount > 1 && (
+        <div className="flex items-center justify-between gap-3">
+          <Button
+            variant="outline"
+            size="sm"
+            className="gap-1.5"
+            disabled={currentPage <= 1}
+            onClick={() => setPage((p) => Math.max(1, p - 1))}
+          >
+            <ChevronLeft className="h-3.5 w-3.5" />
+            {T.calendars.pagination.previous}
+          </Button>
+          <p className="text-xs text-muted-foreground">
+            {T.calendars.pagination.pageInfo(currentPage, pageCount)}
+          </p>
+          <Button
+            variant="outline"
+            size="sm"
+            className="gap-1.5"
+            disabled={currentPage >= pageCount}
+            onClick={() => setPage((p) => Math.min(pageCount, p + 1))}
+          >
+            {T.calendars.pagination.next}
+            <ChevronRight className="h-3.5 w-3.5" />
+          </Button>
+        </div>
+      )}
+
+      <CalendarDialog
+        open={dialogOpen}
+        onOpenChange={setDialogOpen}
+        editing={null}
+        onSubmit={handleSubmit}
+        isPending={isPending}
+        error={formError}
+      />
+    </div>
+  );
+}

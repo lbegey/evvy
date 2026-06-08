@@ -1,0 +1,274 @@
+"use server";
+
+import { db } from "@/lib/db";
+import { auth } from "@/lib/auth";
+import { headers, cookies } from "next/headers";
+import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
+import { isValidSlug, isSlugTaken } from "@/lib/slug";
+
+type EventData = {
+  title: string;
+  description: string;
+  location: string;
+  organizerEmail: string;
+  startAt: string;
+  endAt: string;
+  allDay: boolean;
+  isOnline: boolean;
+  timezone: string;
+  language: string;
+  imageUrl?: string;
+  rsvpEnabled: boolean;
+};
+
+type EventBrandingData = {
+  brandingEnabled: boolean;
+  brandLogoUrl: string | null;
+  brandLogoSize: number | null;
+  brandLogoTransparentBg: boolean;
+  brandLogoRounded: boolean;
+  brandColor: string | null;
+  brandBackgroundColor: string | null;
+  brandBackgroundImageUrl: string | null;
+};
+
+const FREE_EVENT_LIMIT = 3;
+const FREE_RSVP_LIMIT = 50;
+
+export async function createEvent(data: EventData): Promise<{ id: string } | { error: "limit" }> {
+  const session = await auth.api.getSession({ headers: await headers() });
+  if (!session) throw new Error("Unauthorized");
+
+  if (new Date(data.endAt) < new Date(data.startAt)) throw new Error("End date cannot be before start date");
+
+  const user = await db.user.findUnique({ where: { id: session.user.id } });
+  const isPremium = user?.plan === "premium";
+  if (!isPremium) {
+    const count = await db.event.count({ where: { userId: session.user.id } });
+    if (count >= FREE_EVENT_LIMIT) return { error: "limit" };
+  }
+
+  const event = await db.event.create({
+    data: {
+      title: data.title,
+      description: data.description || null,
+      location: data.location || null,
+      organizerEmail: data.organizerEmail || null,
+      imageUrl: data.imageUrl || null,
+      startAt: new Date(data.startAt),
+      endAt: new Date(data.endAt),
+      allDay: data.allDay,
+      isOnline: data.isOnline,
+      timezone: data.timezone,
+      language: data.language,
+      rsvpEnabled: data.rsvpEnabled,
+      brandingEnabled: false,
+      userId: session.user.id,
+    },
+  });
+
+  revalidatePath("/dashboard");
+  return { id: event.id };
+}
+
+export async function updateEvent(id: string, data: EventData) {
+  const session = await auth.api.getSession({ headers: await headers() });
+  if (!session) throw new Error("Unauthorized");
+
+  const event = await db.event.findUnique({ where: { id } });
+  if (!event || event.userId !== session.user.id) throw new Error("Forbidden");
+
+  const user = await db.user.findUnique({ where: { id: session.user.id } });
+  const canEditDate = user?.plan === "premium";
+
+  if (canEditDate && new Date(data.endAt) < new Date(data.startAt)) {
+    throw new Error("End date cannot be before start date");
+  }
+
+  await db.event.update({
+    where: { id },
+    data: {
+      title: data.title,
+      description: data.description || null,
+      location: data.location || null,
+      organizerEmail: data.organizerEmail || null,
+      imageUrl: data.imageUrl !== undefined ? (data.imageUrl || null) : undefined,
+      startAt: canEditDate ? new Date(data.startAt) : undefined,
+      endAt: canEditDate ? new Date(data.endAt) : undefined,
+      allDay: canEditDate ? data.allDay : undefined,
+      isOnline: data.isOnline,
+      timezone: canEditDate ? data.timezone : undefined,
+      language: data.language,
+      rsvpEnabled: data.rsvpEnabled,
+    },
+  });
+
+  revalidatePath("/dashboard");
+  revalidatePath(`/dashboard/events/${id}`);
+  revalidatePath(`/e/${id}`);
+}
+
+export async function updateEventSlug(id: string, slug: string | null): Promise<{ error: "forbidden" | "invalid" | "taken" } | undefined> {
+  const session = await auth.api.getSession({ headers: await headers() });
+  if (!session) throw new Error("Unauthorized");
+
+  const event = await db.event.findUnique({ where: { id } });
+  if (!event || event.userId !== session.user.id) throw new Error("Forbidden");
+
+  const user = await db.user.findUnique({ where: { id: session.user.id } });
+  if (user?.plan !== "premium") return { error: "forbidden" };
+
+  if (slug !== null) {
+    if (!isValidSlug(slug)) return { error: "invalid" };
+    if (await isSlugTaken(slug, { eventId: id })) return { error: "taken" };
+  }
+
+  await db.event.update({ where: { id }, data: { slug } });
+
+  revalidatePath("/dashboard");
+  revalidatePath(`/dashboard/events/${id}`);
+  revalidatePath(`/e/${id}`);
+  if (event.slug) revalidatePath(`/e/${event.slug}`);
+  if (slug) revalidatePath(`/e/${slug}`);
+}
+
+export async function updateEventBranding(id: string, data: EventBrandingData): Promise<{ error: "forbidden" } | undefined> {
+  const session = await auth.api.getSession({ headers: await headers() });
+  if (!session) throw new Error("Unauthorized");
+
+  const event = await db.event.findUnique({ where: { id } });
+  if (!event || event.userId !== session.user.id) throw new Error("Forbidden");
+
+  const user = await db.user.findUnique({ where: { id: session.user.id } });
+  if (user?.plan !== "premium") return { error: "forbidden" };
+
+  await db.event.update({
+    where: { id },
+    data: {
+      brandingEnabled: data.brandingEnabled,
+      brandLogoUrl: data.brandLogoUrl,
+      brandLogoSize: data.brandLogoSize,
+      brandLogoTransparentBg: data.brandLogoTransparentBg,
+      brandLogoRounded: data.brandLogoRounded,
+      brandColor: data.brandColor,
+      brandBackgroundColor: data.brandBackgroundColor,
+      brandBackgroundImageUrl: data.brandBackgroundImageUrl,
+    },
+  });
+
+  revalidatePath("/dashboard");
+  revalidatePath(`/dashboard/events/${id}`);
+  revalidatePath(`/e/${id}`);
+}
+
+export async function deleteEvent(id: string): Promise<{ error: "forbidden" } | undefined> {
+  const session = await auth.api.getSession({ headers: await headers() });
+  if (!session) throw new Error("Unauthorized");
+
+  const event = await db.event.findUnique({ where: { id } });
+  if (!event || event.userId !== session.user.id) throw new Error("Forbidden");
+
+  const user = await db.user.findUnique({ where: { id: session.user.id } });
+  if (user?.plan !== "premium") return { error: "forbidden" };
+
+  await db.event.delete({ where: { id } });
+  revalidatePath("/dashboard");
+  redirect("/dashboard");
+}
+
+export async function removeEvent(id: string): Promise<{ error: "forbidden" } | { ok: true }> {
+  const session = await auth.api.getSession({ headers: await headers() });
+  if (!session) throw new Error("Unauthorized");
+
+  const event = await db.event.findUnique({ where: { id } });
+  if (!event || event.userId !== session.user.id) throw new Error("Forbidden");
+
+  const user = await db.user.findUnique({ where: { id: session.user.id } });
+  if (user?.plan !== "premium") return { error: "forbidden" };
+
+  await db.event.delete({ where: { id } });
+  revalidatePath("/dashboard");
+  if (event.calendarId) {
+    revalidatePath(`/dashboard/calendars/${event.calendarId}`);
+    revalidatePath(`/c/${event.calendarId}`);
+  }
+  return { ok: true };
+}
+
+export async function toggleRsvp(id: string, enabled: boolean) {
+  const session = await auth.api.getSession({ headers: await headers() });
+  if (!session) throw new Error("Unauthorized");
+
+  const event = await db.event.findUnique({ where: { id } });
+  if (!event || event.userId !== session.user.id) throw new Error("Forbidden");
+
+  await db.event.update({ where: { id }, data: { rsvpEnabled: enabled } });
+  revalidatePath(`/dashboard/events/${id}`);
+  revalidatePath(`/e/${id}`);
+}
+
+export async function deleteRsvp(id: string): Promise<{ error: "forbidden" } | undefined> {
+  const session = await auth.api.getSession({ headers: await headers() });
+  if (!session) throw new Error("Unauthorized");
+
+  const rsvp = await db.rsvp.findUnique({ where: { id }, include: { event: true } });
+  if (!rsvp || rsvp.event.userId !== session.user.id) return { error: "forbidden" };
+
+  await db.rsvp.delete({ where: { id } });
+
+  revalidatePath(`/dashboard/events/${rsvp.eventId}`);
+  revalidatePath(`/e/${rsvp.eventId}`);
+  if (rsvp.event.slug) revalidatePath(`/e/${rsvp.event.slug}`);
+}
+
+export async function submitRsvp(data: {
+  eventId: string;
+  name: string;
+  email: string;
+  status: string;
+  message: string;
+}): Promise<{ error: "full" | "closed" | "already" } | undefined> {
+  const event = await db.event.findFirst({ where: { OR: [{ id: data.eventId }, { slug: data.eventId }] }, include: { user: { select: { plan: true } } } });
+  if (!event || !event.rsvpEnabled || event.endAt < new Date()) return { error: "closed" };
+
+  const email = data.email.trim().toLowerCase();
+  if (!email) return { error: "closed" };
+
+  const cookieStore = await cookies();
+  const cookieName = `minical_rsvp_${event.id}`;
+  if (cookieStore.get(cookieName)?.value) return { error: "already" };
+
+  const existing = await db.rsvp.findFirst({ where: { eventId: event.id, email } });
+
+  if (!existing && event.user.plan !== "premium") {
+    const count = await db.rsvp.count({ where: { eventId: event.id } });
+    if (count >= FREE_RSVP_LIMIT) return { error: "full" };
+  }
+
+  if (existing) {
+    await db.rsvp.update({
+      where: { id: existing.id },
+      data: {
+        name: data.name,
+        status: data.status,
+        message: data.message || null,
+      },
+    });
+  } else {
+    await db.rsvp.create({
+      data: {
+        eventId: event.id,
+        name: data.name,
+        email,
+        status: data.status,
+        message: data.message || null,
+      },
+    });
+  }
+
+  cookieStore.set(cookieName, "1", { maxAge: 60 * 60 * 24 * 365, path: "/", sameSite: "lax" });
+
+  revalidatePath(`/e/${data.eventId}`);
+  if (event.slug) revalidatePath(`/e/${event.slug}`);
+}

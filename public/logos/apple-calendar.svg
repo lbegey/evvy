@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 40 40">
+  <rect width="40" height="40" rx="6" fill="white" stroke="#e5e5e5" stroke-width="1"/>
+  <rect x="0" y="0" width="40" height="13" rx="6" fill="#fc3d39"/>
+  <rect x="0" y="7" width="40" height="6" fill="#fc3d39"/>
+  <rect x="13" y="3" width="3" height="9" rx="1.5" fill="white"/>
+  <rect x="24" y="3" width="3" height="9" rx="1.5" fill="white"/>
+  <text x="20" y="30" text-anchor="middle" font-family="Arial,sans-serif" font-size="13" font-weight="700" fill="#1d1d1f">ICS</text>
+</svg>

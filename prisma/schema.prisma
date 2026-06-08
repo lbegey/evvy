@@ -1,0 +1,178 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                     String    @id
+  name                   String
+  email                  String    @unique
+  emailVerified          Boolean
+  image                  String?
+  language               String    @default("en")
+  dashboardView          String    @default("calendar")
+  plan                   String    @default("free")
+  role                   String    @default("user")
+  brandLogoUrl           String?
+  brandLogoSize          Int?
+  brandLogoTransparentBg Boolean   @default(true)
+  brandLogoRounded       Boolean   @default(false)
+  brandColor             String?
+  brandBackgroundColor   String?
+  brandBackgroundImageUrl String?
+  stripeCustomerId       String?   @unique
+  stripeSubscriptionId   String?   @unique
+  stripeCurrentPeriodEnd DateTime?
+  cancelAtPeriodEnd      Boolean   @default(false)
+  createdAt              DateTime
+  updatedAt              DateTime
+  sessions               Session[]
+  accounts               Account[]
+  events                 Event[]
+  calendars              Calendar[]
+  emailChangeRequests    EmailChangeRequest[]
+}
+
+model Event {
+  id             String       @id @default(cuid())
+  title          String
+  description    String?
+  location       String?
+  imageUrl       String?
+  organizerEmail String?
+  startAt        DateTime
+  endAt          DateTime
+  allDay         Boolean      @default(false)
+  isOnline       Boolean      @default(false)
+  timezone       String       @default("UTC")
+  language       String?
+  rsvpEnabled    Boolean      @default(false)
+  slug           String?      @unique
+  brandingEnabled      Boolean  @default(true)
+  brandLogoUrl         String?
+  brandLogoSize        Int?
+  brandLogoTransparentBg Boolean @default(true)
+  brandLogoRounded     Boolean  @default(false)
+  brandColor           String?
+  brandBackgroundColor String?
+  brandBackgroundImageUrl String?
+  userId         String
+  user        User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  calendarId  String?
+  calendar    Calendar?    @relation(fields: [calendarId], references: [id], onDelete: SetNull)
+  clicks      EventClick[]
+  rsvps       Rsvp[]
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+}
+
+model Calendar {
+  id                   String   @id @default(cuid())
+  name                 String
+  description          String?
+  color                String?
+  slug                 String?  @unique
+  brandingEnabled      Boolean  @default(false)
+  brandLogoUrl         String?
+  brandLogoSize        Int?
+  brandLogoTransparentBg Boolean @default(true)
+  brandLogoRounded     Boolean  @default(false)
+  brandColor           String?
+  brandBackgroundColor String?
+  brandBackgroundImageUrl String?
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  events      Event[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model EventClick {
+  id        String   @id @default(cuid())
+  eventId   String
+  service   String
+  createdAt DateTime @default(now())
+  event     Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
+}
+
+model Rsvp {
+  id        String   @id @default(cuid())
+  eventId   String
+  name      String
+  email     String?
+  status    String
+  message   String?
+  createdAt DateTime @default(now())
+  event     Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
+}
+
+model Session {
+  id        String   @id
+  expiresAt DateTime
+  token     String   @unique
+  createdAt DateTime
+  updatedAt DateTime
+  ipAddress String?
+  userAgent String?
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Account {
+  id                    String    @id
+  accountId             String
+  providerId            String
+  userId                String
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  accessToken           String?
+  refreshToken          String?
+  idToken               String?
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope                 String?
+  password              String?
+  createdAt             DateTime
+  updatedAt             DateTime
+}
+
+model Verification {
+  id         String    @id
+  identifier String
+  value      String
+  expiresAt  DateTime
+  createdAt  DateTime?
+  updatedAt  DateTime?
+}
+
+model EmailChangeRequest {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  oldEmail  String
+  newEmail  String
+  token     String   @unique
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+}
+
+model DeletedAccount {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  name      String?
+  plan      String   @default("free")
+  createdAt DateTime @default(now())
+}
+
+model Contact {
+  id        String   @id @default(cuid())
+  name      String
+  email     String
+  subject   String?
+  message   String
+  archived  Boolean  @default(false)
+  createdAt DateTime @default(now())
+}
