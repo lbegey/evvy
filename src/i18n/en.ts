@@ -771,6 +771,11 @@ export const en = {
     title: "Terms of Service",
     lastUpdated: "Last updated: June 2025",
   },
-};
+} as const;
 
-export type Translations = typeof en;
+type Stringify<T> =
+  T extends string ? string :
+  T extends (...args: infer A) => infer R ? (...args: A) => R :
+  { [K in keyof T]: Stringify<T[K]> };
+
+export type Translations = Stringify<typeof en>;
