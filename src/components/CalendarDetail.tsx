@@ -445,14 +445,20 @@ export function CalendarDetail({ calendar, events, calendars, appUrl, plan }: Ca
                       key={ev.id}
                       className="flex items-center gap-3 rounded-xl border border-border/60 bg-background p-3 transition-colors hover:bg-muted/20"
                     >
-                      <Link href={`/dashboard/events/${ev.id}?calendar=${calendar.id}`} className="flex min-w-0 flex-1 items-center gap-3">
-                        <div className="flex w-12 shrink-0 flex-col items-center justify-center rounded-lg bg-muted/50 py-1.5">
-                          <span className="text-[10px] font-medium uppercase text-muted-foreground">{month}</span>
-                          <span className="text-base font-bold leading-none text-foreground">{day}</span>
+                      <Link href={`/dashboard/events/${ev.id}?calendar=${calendar.id}`} className="grid min-w-0 flex-1 grid-cols-2 items-center gap-2 sm:flex sm:gap-3">
+                        <div className="flex min-w-0 items-center gap-3">
+                          <div className="flex w-12 shrink-0 flex-col items-center justify-center rounded-lg bg-muted/50 py-1.5">
+                            <span className="text-[10px] font-medium uppercase text-muted-foreground">{month}</span>
+                            <span className="text-base font-bold leading-none text-foreground">{day}</span>
+                          </div>
+                          <div className="min-w-0 flex-1">
+                            <p className="truncate text-sm font-medium text-foreground">{ev.title}</p>
+                            <p className="hidden truncate text-xs text-muted-foreground sm:block">{dateLabel}</p>
+                          </div>
                         </div>
-                        <div className="min-w-0 flex-1">
-                          <p className="truncate text-sm font-medium text-foreground">{ev.title}</p>
+                        <div className="min-w-0 sm:hidden">
                           <p className="truncate text-xs text-muted-foreground">{dateLabel}</p>
+                          <p className="truncate text-xs text-muted-foreground">{ev.timezone}</p>
                         </div>
                       </Link>
                       {plan === "premium" && (
