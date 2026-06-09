@@ -507,7 +507,6 @@ export function EventDetail({ event, appUrl, plan, calendars, stats, rsvps, ques
           <Palette className="h-4 w-4 text-muted-foreground" />
           <h2 className="text-sm font-semibold text-foreground">{T.eventDetail.branding.title}</h2>
         </div>
-        <p className="text-xs text-muted-foreground">{T.eventDetail.branding.subtitle}</p>
         <EventBrandingSection
           eventId={event.id}
           plan={plan}

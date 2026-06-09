@@ -120,10 +120,7 @@ export function EventBrandingSection({
     <div className="space-y-4">
       {/* Enable toggle */}
       <div className="flex items-center justify-between gap-3">
-        <div>
-          <Label htmlFor="evb-enabled" className="cursor-pointer">{T.eventDetail.branding.enable}</Label>
-          <p className="text-xs text-muted-foreground">{T.eventDetail.branding.enableHint}</p>
-        </div>
+        <Label htmlFor="evb-enabled" className="cursor-pointer">{T.eventDetail.branding.enable}</Label>
         <div className="flex items-center gap-2">
           <span className={cn("text-xs font-medium", enabled ? "text-primary" : "text-muted-foreground")}>
             {enabled ? T.rsvpSection.enabled : T.rsvpSection.disabled}
@@ -151,8 +148,6 @@ export function EventBrandingSection({
 
       {enabled && (
         <div className="space-y-4 border-t border-border/60 pt-4">
-          <p className="text-xs text-muted-foreground">{T.eventDetail.branding.overrideHint}</p>
-
           {/* Logo */}
           <div className="space-y-1.5">
             <Label>{T.eventDetail.branding.logo}</Label>
@@ -179,14 +174,11 @@ export function EventBrandingSection({
               </div>
               <div className="grid gap-2 sm:grid-cols-2">
                 {[
-                  { id: "evb-logo-transparent", label: T.eventDetail.branding.logoTransparentBg, hint: T.eventDetail.branding.logoTransparentBgHint, checked: logoTransparentBg, toggle: () => { const next = !logoTransparentBg; setLogoTransparentBg(next); persist({ logoTransparentBg: next }); } },
-                  { id: "evb-logo-rounded", label: T.eventDetail.branding.logoRounded, hint: T.eventDetail.branding.logoRoundedHint, checked: logoRounded, toggle: () => { const next = !logoRounded; setLogoRounded(next); persist({ logoRounded: next }); } },
-                ].map(({ id, label, hint, checked, toggle }) => (
+                  { id: "evb-logo-transparent", label: T.eventDetail.branding.logoTransparentBg, checked: logoTransparentBg, toggle: () => { const next = !logoTransparentBg; setLogoTransparentBg(next); persist({ logoTransparentBg: next }); } },
+                  { id: "evb-logo-rounded", label: T.eventDetail.branding.logoRounded, checked: logoRounded, toggle: () => { const next = !logoRounded; setLogoRounded(next); persist({ logoRounded: next }); } },
+                ].map(({ id, label, checked, toggle }) => (
                   <div key={id} className="flex items-center justify-between gap-2 rounded-lg border border-border/60 px-2.5 py-2">
-                    <div>
-                      <Label htmlFor={id} className="cursor-pointer text-xs">{label}</Label>
-                      <p className="text-[11px] text-muted-foreground">{hint}</p>
-                    </div>
+                    <Label htmlFor={id} className="cursor-pointer text-xs">{label}</Label>
                     <button type="button" id={id} role="switch" aria-checked={checked} onClick={toggle} disabled={isPending}
                       className={cn("relative inline-flex h-5 w-9 shrink-0 cursor-pointer items-center rounded-full transition-colors focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-ring/50 disabled:pointer-events-none disabled:opacity-50", checked ? "bg-primary" : "bg-muted-foreground/30")}
                     >
@@ -212,7 +204,6 @@ export function EventBrandingSection({
             <ImageDropzone
               value={backgroundImageUrl}
               onChange={(v) => { setBackgroundImageUrl(v); persist({ backgroundImageUrl: v }); }}
-              hint={T.eventDetail.branding.backgroundImageHint}
               previewClassName="h-24 w-full rounded-lg object-cover border border-border/60 bg-muted/20"
             />
           </div>

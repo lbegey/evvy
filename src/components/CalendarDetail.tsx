@@ -239,6 +239,16 @@ export function CalendarDetail({ calendar, events, calendars, appUrl, plan }: Ca
               <Plus className="h-3.5 w-3.5" />
               <span className="hidden sm:inline">{T.calendar.newEvent}</span>
             </Button>
+            <Button
+              size="sm"
+              variant="outline"
+              className="gap-1.5"
+              nativeButton={false}
+              render={<a href={publicUrl} target="_blank" rel="noopener noreferrer" />}
+            >
+              <ExternalLink className="h-3.5 w-3.5" />
+              <span className="hidden sm:inline">{T.common.open}</span>
+            </Button>
             <Button size="sm" variant="outline" className="gap-1.5" onClick={() => setEditOpen(true)}>
               <Pencil className="h-3.5 w-3.5" />
               <span className="hidden sm:inline">{T.calendars.edit}</span>
@@ -284,18 +294,7 @@ export function CalendarDetail({ calendar, events, calendars, appUrl, plan }: Ca
 
         {/* Info */}
         <div id="info" className="scroll-mt-24">
-          <div className="flex items-center gap-2">
-            <span
-              className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full"
-              style={{ backgroundColor: /^#[0-9a-fA-F]{3,8}$/.test(calendar.color ?? "") ? `${calendar.color}26` : undefined }}
-            >
-              <CalendarRange
-                className="h-4 w-4"
-                style={{ color: /^#[0-9a-fA-F]{3,8}$/.test(calendar.color ?? "") ? calendar.color! : undefined }}
-              />
-            </span>
-            <h1 className="text-2xl font-bold tracking-tight text-foreground sm:text-3xl">{calendar.name}</h1>
-          </div>
+          <h1 className="text-2xl font-bold tracking-tight text-foreground sm:text-3xl">{calendar.name}</h1>
           {calendar.description && (
             <p className="mt-3 text-sm leading-relaxed text-foreground/70">{calendar.description}</p>
           )}
@@ -370,7 +369,6 @@ export function CalendarDetail({ calendar, events, calendars, appUrl, plan }: Ca
             <Palette className="h-4 w-4 text-muted-foreground" />
             <h2 className="text-sm font-semibold text-foreground">{T.eventDetail.branding.title}</h2>
           </div>
-          <p className="text-xs text-muted-foreground">{T.calendarDetail.branding.subtitle}</p>
           <CalendarBrandingSection
             calendarId={calendar.id}
             plan={plan}
