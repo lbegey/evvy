@@ -61,7 +61,7 @@ export const en = {
         bullets: [
           "Customizable response forms",
           "One-click CSV export",
-          "A dedicated link just for RSVPs",
+          "Automatic email reminders sent the day before each event",
         ],
         cta: "See it in action →",
       },
@@ -73,7 +73,6 @@ export const en = {
         bullets: [
           "Custom colors and icon per calendar",
           "One universal subscription link",
-          "Real-time sync across every provider",
           "Create as many calendars as you need",
         ],
         cta: "Create my calendar →",

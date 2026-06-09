@@ -63,7 +63,7 @@ export const fr: Translations = {
         bullets: [
           "Formulaires de réponse personnalisables",
           "Export CSV en un clic",
-          "Une URL dédiée rien que pour les RSVPs",
+          "Rappels automatiques par email la veille de chaque événement",
         ],
         cta: "Voir la démo →",
       },
@@ -75,7 +75,6 @@ export const fr: Translations = {
         bullets: [
           "Couleurs et icône personnalisées par calendrier",
           "Un lien d'abonnement universel",
-          "Synchronisation en temps réel avec tous les fournisseurs",
           "Créez autant de calendriers que nécessaire",
         ],
         cta: "Créer mon calendrier →",
