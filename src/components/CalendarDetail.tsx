@@ -322,13 +322,6 @@ export function CalendarDetail({ calendar, events, calendars, appUrl, plan }: Ca
           {calendar.description && (
             <p className="mt-3 text-sm leading-relaxed text-foreground/70">{calendar.description}</p>
           )}
-          <Link
-            href={`/dashboard?calendar=${calendar.id}`}
-            className="mt-4 inline-flex items-center gap-1.5 text-sm text-muted-foreground transition-colors hover:text-foreground"
-          >
-            <CalendarRange className="h-4 w-4" />
-            {calendar.eventCount} {calendar.eventCount === 1 ? T.calendars.event : T.calendars.events}
-          </Link>
         </div>
 
         {/* Public link */}
