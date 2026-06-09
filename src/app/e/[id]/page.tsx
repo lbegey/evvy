@@ -116,7 +116,7 @@ export default async function PublicEventPage({
           </p>
           <Link
             href="/"
-            className="mt-6 inline-flex items-center gap-1.5 rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/80 cursor-pointer"
+            className="mt-6 inline-flex items-center gap-1.5 rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground cursor-pointer"
           >
             {T.publicEvent.notFound.backHome}
           </Link>
@@ -278,7 +278,7 @@ export default async function PublicEventPage({
               {isCreator && (
                 <Link
                   href={`/dashboard/events/${event.id}`}
-                  className="inline-flex shrink-0 cursor-pointer items-center gap-1.5 rounded-lg border border-border/60 px-2.5 py-1.5 text-xs font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+                  className="inline-flex shrink-0 cursor-pointer items-center gap-1.5 rounded-lg border border-border/60 px-2.5 py-1.5 text-xs font-medium text-muted-foreground"
                 >
                   <Pencil className="h-3 w-3" />
                   {T.publicEvent.edit}
@@ -328,7 +328,7 @@ export default async function PublicEventPage({
                       href={event.location}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="cursor-pointer underline underline-offset-4 decoration-muted-foreground/50 hover:text-foreground hover:decoration-foreground transition-colors truncate"
+                      className="cursor-pointer underline underline-offset-4 decoration-muted-foreground/50 truncate"
                     >
                       {event.location}
                     </a>
@@ -337,7 +337,7 @@ export default async function PublicEventPage({
                       href={mapsUrl}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="cursor-pointer underline underline-offset-4 decoration-muted-foreground/50 hover:text-foreground hover:decoration-foreground transition-colors"
+                      className="cursor-pointer underline underline-offset-4 decoration-muted-foreground/50"
                     >
                       {event.location}
                     </a>
@@ -365,7 +365,7 @@ export default async function PublicEventPage({
                 className={cn(
                   "mt-3 text-sm leading-relaxed text-foreground/70",
                   "[&_p]:mb-1.5 last:[&_p]:mb-0 [&_a]:underline [&_a]:underline-offset-4",
-                  "[&_a]:decoration-foreground/30 hover:[&_a]:decoration-foreground [&_ul]:list-disc [&_ul]:pl-5 [&_ul]:mb-1.5"
+                  "[&_a]:decoration-foreground/30 [&_ul]:list-disc [&_ul]:pl-5 [&_ul]:mb-1.5"
                 )}
                 dangerouslySetInnerHTML={{ __html: markdownToHtml(event.description) }}
               />
@@ -392,7 +392,7 @@ export default async function PublicEventPage({
                     target={s.key !== "apple" ? "_blank" : undefined}
                     rel="noopener noreferrer"
                     title={s.name}
-                    className="cursor-pointer rounded-lg p-1 transition-colors hover:bg-muted/50"
+                    className="cursor-pointer rounded-lg p-1"
                   >
                     <img src={s.logo} alt={s.name} width={36} height={36} className="rounded" />
                   </a>

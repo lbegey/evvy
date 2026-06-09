@@ -96,7 +96,7 @@ export default async function PublicCalendarPage({
           </p>
           <Link
             href="/"
-            className="mt-6 inline-flex items-center gap-1.5 rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/80 cursor-pointer"
+            className="mt-6 inline-flex items-center gap-1.5 rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground cursor-pointer"
           >
             {T.publicCalendar.notFound.backHome}
           </Link>
@@ -182,7 +182,7 @@ export default async function PublicCalendarPage({
       <Link
         key={event.id}
         href={`/e/${event.id}`}
-        className="flex items-center gap-3 rounded-xl border border-border/60 bg-background p-4 shadow-sm transition-colors hover:border-primary/40"
+        className="flex items-center gap-3 rounded-xl border border-border/60 bg-background p-4 shadow-sm"
       >
         <div className="flex w-12 shrink-0 flex-col items-center justify-center rounded-lg bg-muted/50 py-1.5">
           <span className="text-[10px] font-medium uppercase text-muted-foreground">{month}</span>
@@ -283,7 +283,7 @@ export default async function PublicCalendarPage({
                       target={s.key !== "apple" ? "_blank" : undefined}
                       rel="noopener noreferrer"
                       title={s.name}
-                      className="cursor-pointer rounded-lg p-1 transition-colors hover:bg-muted/50"
+                      className="cursor-pointer rounded-lg p-1"
                     >
                       <img src={s.logo} alt={s.name} width={36} height={36} className="rounded" />
                     </a>

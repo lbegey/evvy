@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useState, useTransition, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Settings2 } from "lucide-react";
@@ -14,6 +14,7 @@ import { cn } from "@/lib/utils";
 const MIN_LOGO_SIZE = 16;
 const MAX_LOGO_SIZE = 300;
 const DEFAULT_LOGO_SIZE = 32;
+const COLOR_SAVE_DELAY_MS = 700;
 
 interface CalendarBrandingSectionProps {
   calendarId: string;
@@ -47,7 +48,34 @@ export function CalendarBrandingSection({
   const [cardColor, setCardColor] = useState(brandCardColor ?? "");
   const [backgroundColor, setBackgroundColor] = useState(brandBackgroundColor ?? "");
   const [backgroundImageUrl, setBackgroundImageUrl] = useState(brandBackgroundImageUrl ?? "");
+
   const [isPending, startTransition] = useTransition();
+  const [, startColorSave] = useTransition();
+  const isFirstRender = useRef(true);
+
+  useEffect(() => {
+    if (isFirstRender.current) { isFirstRender.current = false; return; }
+    if (!enabled) return;
+    const timer = setTimeout(() => {
+      startColorSave(async () => {
+        await updateCalendarBranding(calendarId, {
+          brandingEnabled: enabled,
+          brandLogoUrl: logoUrl || null,
+          brandLogoSize: logoSize,
+          brandLogoTransparentBg: logoTransparentBg,
+          brandLogoRounded: logoRounded,
+          brandColor: color || null,
+          brandTextColor: textColor || null,
+          brandCardColor: cardColor || null,
+          brandBackgroundColor: backgroundColor || null,
+          brandBackgroundImageUrl: backgroundImageUrl || null,
+        });
+        router.refresh();
+      });
+    }, COLOR_SAVE_DELAY_MS);
+    return () => clearTimeout(timer);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [color, textColor, cardColor, backgroundColor]);
 
   const persist = (overrides: Partial<{
     enabled: boolean; logoUrl: string; logoSize: number;
