@@ -81,23 +81,20 @@ const EVENTS_PER_PAGE = 10;
 function CopyButton({ value, label, copiedLabel }: { value: string; label: string; copiedLabel: string }) {
   const [copied, setCopied] = useState(false);
   return (
-    <button
+    <Button
+      variant="outline"
+      size="sm"
+      className={cn("gap-1.5", copied && "border-green-500/40 bg-green-50 text-green-700 hover:bg-green-50 hover:text-green-700")}
       onClick={() =>
         navigator.clipboard.writeText(value).then(() => {
           setCopied(true);
           setTimeout(() => setCopied(false), 2000);
         })
       }
-      className={cn(
-        "flex items-center gap-1.5 rounded-md px-3 py-1.5 text-sm font-medium transition-colors",
-        copied
-          ? "bg-green-100 text-green-700"
-          : "bg-muted text-muted-foreground hover:bg-muted/80 hover:text-foreground"
-      )}
     >
       {copied ? <Check className="h-3.5 w-3.5" /> : <Copy className="h-3.5 w-3.5" />}
       {copied ? copiedLabel : label}
-    </button>
+    </Button>
   );
 }
 
@@ -421,8 +418,11 @@ export function CalendarDetail({ calendar, events, calendars, appUrl, plan }: Ca
         </section>
 
         {/* Events */}
-        <section id="events" className="scroll-mt-24 space-y-3">
-          <h2 className="text-sm font-semibold text-foreground">{T.eventDetail.sidebar.events}</h2>
+        <section id="events" className="scroll-mt-24 space-y-3 rounded-xl border border-border/60 p-4 sm:p-5">
+          <div className="flex items-center gap-2">
+            <CalendarRange className="h-4 w-4 text-muted-foreground" />
+            <h2 className="text-sm font-semibold text-foreground">{T.eventDetail.sidebar.events}</h2>
+          </div>
           {deleteEventError && <p className="text-sm text-destructive">{deleteEventError}</p>}
           {events.length === 0 ? (
             <div className="flex flex-col items-center justify-center gap-2 rounded-xl border border-dashed border-border/60 py-12 text-center">
@@ -456,15 +456,16 @@ export function CalendarDetail({ calendar, events, calendars, appUrl, plan }: Ca
                         </div>
                       </Link>
                       {plan === "premium" && (
-                        <button
-                          type="button"
+                        <Button
+                          variant="ghost"
+                          size="icon-sm"
                           onClick={() => handleDeleteEvent(ev.id)}
                           disabled={isDeletingEvent && deletingEventId === ev.id}
-                          className="inline-flex shrink-0 items-center justify-center rounded-lg border border-border/60 p-2 text-muted-foreground transition-colors hover:bg-destructive/10 hover:text-destructive disabled:pointer-events-none disabled:opacity-50"
                           aria-label={T.calendars.delete}
+                          className="shrink-0 text-muted-foreground hover:bg-destructive/10 hover:text-destructive"
                         >
                           <Trash2 className="h-3.5 w-3.5" />
-                        </button>
+                        </Button>
                       )}
                     </div>
                   );

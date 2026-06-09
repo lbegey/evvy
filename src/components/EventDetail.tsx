@@ -91,23 +91,20 @@ interface EventDetailProps {
 function CopyButton({ value, label, copiedLabel }: { value: string; label: string; copiedLabel: string }) {
   const [copied, setCopied] = useState(false);
   return (
-    <button
+    <Button
+      variant="outline"
+      size="sm"
+      className={cn("gap-1.5", copied && "border-green-500/40 bg-green-50 text-green-700 hover:bg-green-50 hover:text-green-700")}
       onClick={() =>
         navigator.clipboard.writeText(value).then(() => {
           setCopied(true);
           setTimeout(() => setCopied(false), 2000);
         })
       }
-      className={cn(
-        "flex items-center gap-1.5 rounded-md px-3 py-1.5 text-sm font-medium transition-colors",
-        copied
-          ? "bg-green-100 text-green-700"
-          : "bg-muted text-muted-foreground hover:bg-muted/80 hover:text-foreground"
-      )}
     >
       {copied ? <Check className="h-3.5 w-3.5" /> : <Copy className="h-3.5 w-3.5" />}
       {copied ? copiedLabel : label}
-    </button>
+    </Button>
   );
 }
 
