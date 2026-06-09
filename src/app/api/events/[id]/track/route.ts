@@ -14,14 +14,14 @@ export async function GET(
   const service = searchParams.get("service") ?? "unknown";
   const APP_URL = await getAppUrl();
 
-  const event = await db.event.findFirst({ where: { OR: [{ id }, { slug: id }] } });
+  const event = await db.event.findFirst({ where: { OR: [{ id }, { slug: id }] }, select: { id: true, slug: true, title: true, description: true, location: true, startAt: true, endAt: true } });
   if (!event) return new Response("Not found", { status: 404 });
 
-  const cookieName = `mc_${id}_${service}`;
+  const cookieName = `mc_${event.id}_${service}`;
   const alreadyTracked = req.cookies.has(cookieName);
 
   if (!alreadyTracked) {
-    await db.eventClick.create({ data: { eventId: id, service } }).catch(() => {});
+    await db.eventClick.create({ data: { eventId: event.id, service } }).catch(() => {});
   }
 
   const eventData = {
@@ -32,14 +32,15 @@ export async function GET(
     endAt: event.endAt.toISOString(),
   };
 
+  const canonicalSlug = event.slug || event.id;
   let targetUrl: string;
   switch (service) {
     case "google":    targetUrl = buildGoogleUrl(eventData); break;
-    case "apple":     targetUrl = `${APP_URL}/api/events/${id}/ics`; break;
+    case "apple":     targetUrl = `${APP_URL}/api/events/${event.id}/ics`; break;
     case "outlook":   targetUrl = buildOutlookUrl(eventData); break;
     case "office365": targetUrl = buildOffice365Url(eventData); break;
     case "yahoo":     targetUrl = buildYahooUrl(eventData); break;
-    default:          targetUrl = `${APP_URL}/e/${id}`;
+    default:          targetUrl = `${APP_URL}/e/${canonicalSlug}`;
   }
 
   const response = NextResponse.redirect(targetUrl, 302);

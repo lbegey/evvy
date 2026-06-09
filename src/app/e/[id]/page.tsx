@@ -1,6 +1,7 @@
 import Link from "next/link";
 import type { CSSProperties } from "react";
 import { headers, cookies } from "next/headers";
+import { redirect } from "next/navigation";
 import { CalendarDays, CalendarOff, Clock, Globe, MapPin, Mail, Pencil } from "lucide-react";
 import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
@@ -53,6 +54,8 @@ export default async function PublicEventPage({
     }),
     auth.api.getSession({ headers: await headers() }),
   ]);
+
+  if (event?.slug && id !== event.slug) redirect(`/e/${event.slug}`);
 
   if (!event) {
     return (

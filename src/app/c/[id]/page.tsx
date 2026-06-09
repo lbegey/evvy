@@ -1,6 +1,7 @@
 import Link from "next/link";
 import type { CSSProperties } from "react";
 import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
 import { CalendarRange, CalendarOff, Clock, MapPin } from "lucide-react";
 import { db } from "@/lib/db";
 import { Logo } from "@/components/Logo";
@@ -48,6 +49,8 @@ export default async function PublicCalendarPage({
       },
     },
   });
+
+  if (calendar?.slug && id !== calendar.slug) redirect(`/c/${calendar.slug}`);
 
   if (!calendar) {
     return (
