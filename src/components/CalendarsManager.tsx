@@ -3,7 +3,7 @@
 import { useMemo, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { Plus, Trash2, ExternalLink, CalendarRange, Search, ChevronLeft, ChevronRight, Copy, Check } from "lucide-react";
+import { Plus, Trash2, CalendarRange, Search, ChevronLeft, ChevronRight, Copy, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { CalendarDialog, type CalendarDialogValues } from "@/components/CalendarDialog";
@@ -173,16 +173,7 @@ export function CalendarsManager({ calendars, appUrl, plan }: CalendarsManagerPr
                 >
                   {copiedId === calendar.id ? <Check className="h-3.5 w-3.5" /> : <Copy className="h-3.5 w-3.5" />}
                 </Button>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="gap-1.5"
-                  nativeButton={false}
-                  render={<Link href={`/c/${calendar.id}`} target="_blank" title={`${appUrl}/c/${calendar.id}`} />}
-                >
-                  <ExternalLink className="h-3.5 w-3.5" />
-                  {T.calendars.open}
-                </Button>
+
                 <Button
                   variant="ghost"
                   size="icon-sm"
