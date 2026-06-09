@@ -449,6 +449,7 @@ export function CalendarView({ events, calendars, plan, initialYear, initialMont
               ? T.calendar.noEventsUpcoming
               : T.calendar.noEventsPast
           }
+          plan={plan}
         />
       )}
 

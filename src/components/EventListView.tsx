@@ -1,27 +1,43 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useTransition } from "react";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { CalendarX2, Copy, Check } from "lucide-react";
+import { CalendarX2, Copy, Check, Trash2 } from "lucide-react";
 import type { CalendarEvent } from "@/components/CalendarView";
+import { deleteEvent } from "@/app/actions/events";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { cn } from "@/lib/utils";
 
 interface EventListViewProps {
   events: CalendarEvent[];
   emptyMessage: string;
+  plan: string;
 }
 
-export function EventListView({ events, emptyMessage }: EventListViewProps) {
+export function EventListView({ events, emptyMessage, plan }: EventListViewProps) {
+  const router = useRouter();
   const { lang, T } = useLanguage();
   const locale = lang === "fr" ? "fr-FR" : "en-US";
   const [copiedId, setCopiedId] = useState<string | null>(null);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [, startDelete] = useTransition();
 
   const handleCopy = (ev: CalendarEvent) => {
     const url = `${window.location.origin}/e/${ev.slug ?? ev.id}`;
     navigator.clipboard.writeText(url).then(() => {
       setCopiedId(ev.id);
       setTimeout(() => setCopiedId(null), 2000);
+    });
+  };
+
+  const handleDelete = (ev: CalendarEvent) => {
+    if (!confirm(T.eventDetail.confirmDelete)) return;
+    setDeletingId(ev.id);
+    startDelete(async () => {
+      await deleteEvent(ev.id);
+      setDeletingId(null);
+      router.refresh();
     });
   };
 
@@ -55,6 +71,7 @@ export function EventListView({ events, emptyMessage }: EventListViewProps) {
         const rangeLabel = isMultiDay
           ? `${fullDateTimeFmt.format(start)} → ${fullDateTimeFmt.format(end)}`
           : `${dateLabel} · ${time}`;
+        const isDeleting = deletingId === ev.id;
 
         return (
           <div
@@ -77,7 +94,7 @@ export function EventListView({ events, emptyMessage }: EventListViewProps) {
                 {ev.location ? ` · ${ev.location}` : ""}
               </p>
             </div>
-            <div className="relative z-20 shrink-0">
+            <div className="relative z-20 flex shrink-0 items-center gap-1.5">
               <button
                 type="button"
                 onClick={() => handleCopy(ev)}
@@ -91,6 +108,17 @@ export function EventListView({ events, emptyMessage }: EventListViewProps) {
                 {copiedId === ev.id ? <Check className="h-3.5 w-3.5" /> : <Copy className="h-3.5 w-3.5" />}
                 {copiedId === ev.id ? T.common.copied : T.common.copyUrl}
               </button>
+              {plan === "premium" && (
+                <button
+                  type="button"
+                  onClick={() => handleDelete(ev)}
+                  disabled={isDeleting}
+                  className="inline-flex items-center justify-center rounded-lg border border-border/60 p-2 text-muted-foreground transition-colors hover:bg-destructive/10 hover:text-destructive disabled:pointer-events-none disabled:opacity-50"
+                  aria-label={T.eventDetail.delete}
+                >
+                  <Trash2 className="h-3.5 w-3.5" />
+                </button>
+              )}
             </div>
           </div>
         );
