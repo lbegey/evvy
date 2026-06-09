@@ -131,7 +131,6 @@ export const fr: Translations = {
         bullets: [
           { text: "Jusqu'à 10 événements actifs", included: true },
           { text: "Jusqu'à 50 réponses RSVP par événement", included: true },
-          { text: "Les événements ne peuvent pas être supprimés", included: false },
           { text: "Mention « Organisé avec Evvy » affichée", included: false },
           { text: "Pas de branding personnalisé", included: false },
           { text: "Pas de statistiques", included: false },
@@ -147,7 +146,6 @@ export const fr: Translations = {
         bullets: [
           { text: "Événements illimités", included: true },
           { text: "RSVP illimités", included: true },
-          { text: "Création et suppression libres", included: true },
           { text: "Mention Evvy entièrement supprimée", included: true },
           { text: "Logo, couleurs et fond personnalisés", included: true },
           { text: "Statistiques complètes : vues, clics, scans QR, export CSV", included: true },

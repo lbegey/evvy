@@ -129,7 +129,6 @@ export const en = {
         bullets: [
           { text: "Up to 10 active events", included: true },
           { text: "Up to 50 RSVPs per event", included: true },
-          { text: "Events can't be deleted", included: false },
           { text: "\"Organized with Evvy\" branding shown", included: false },
           { text: "No custom branding", included: false },
           { text: "No analytics", included: false },
@@ -145,7 +144,6 @@ export const en = {
         bullets: [
           { text: "Unlimited events", included: true },
           { text: "Unlimited RSVPs", included: true },
-          { text: "Create and delete freely", included: true },
           { text: "Evvy branding fully removed", included: true },
           { text: "Custom logo, colors and background", included: true },
           { text: "Full analytics: page views, clicks, QR scans, CSV export", included: true },
