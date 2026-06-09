@@ -1,48 +1,32 @@
 import { db } from "@/lib/db";
 import type { NextRequest } from "next/server";
-
-function toICSDate(d: Date): string {
-  return d.toISOString().replace(/[-:]/g, "").replace(/\.\d{3}/, "");
-}
-
-function escapeICS(s: string): string {
-  return s
-    .replace(/\\/g, "\\\\")
-    .replace(/;/g, "\\;")
-    .replace(/,/g, "\\,")
-    .replace(/\n/g, "\\n");
-}
+import { buildVEvent, wrapVCalendar } from "@/lib/ics";
 
 export async function GET(
   _req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   const { id } = await params;
-  const event = await db.event.findUnique({ where: { id } });
+  const event = await db.event.findFirst({
+    where: { OR: [{ id }, { slug: id }] },
+  });
   if (!event) return new Response("Not found", { status: 404 });
 
-  const lines = [
-    "BEGIN:VCALENDAR",
-    "VERSION:2.0",
-    "PRODID:-//Evvy//EN",
-    "CALSCALE:GREGORIAN",
-    "METHOD:PUBLISH",
-    "BEGIN:VEVENT",
-    `UID:${event.id}@evvy`,
-    `DTSTART:${toICSDate(event.startAt)}`,
-    `DTEND:${toICSDate(event.endAt)}`,
-    `SUMMARY:${escapeICS(event.title)}`,
-    event.description ? `DESCRIPTION:${escapeICS(event.description)}` : null,
-    event.location ? `LOCATION:${escapeICS(event.location)}` : null,
-    `DTSTAMP:${toICSDate(new Date())}`,
-    "END:VEVENT",
-    "END:VCALENDAR",
-  ]
-    .filter(Boolean)
-    .join("\r\n");
+  const vevent = buildVEvent({
+    id: event.id,
+    title: event.title,
+    description: event.description,
+    location: event.location,
+    startAt: event.startAt,
+    endAt: event.endAt,
+    allDay: event.allDay,
+    timezone: event.timezone,
+  });
 
+  const ics = wrapVCalendar(event.title, [vevent]);
   const slug = event.title.replace(/[^a-z0-9]/gi, "_").toLowerCase();
-  return new Response(lines, {
+
+  return new Response(ics, {
     headers: {
       "Content-Type": "text/calendar; charset=utf-8",
       "Content-Disposition": `attachment; filename="${slug}.ics"`,

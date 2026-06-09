@@ -1,17 +1,6 @@
 import { db } from "@/lib/db";
 import type { NextRequest } from "next/server";
-
-function toICSDate(d: Date): string {
-  return d.toISOString().replace(/[-:]/g, "").replace(/\.\d{3}/, "");
-}
-
-function escapeICS(s: string): string {
-  return s
-    .replace(/\\/g, "\\\\")
-    .replace(/;/g, "\\;")
-    .replace(/,/g, "\\,")
-    .replace(/\n/g, "\\n");
-}
+import { buildVEvent, wrapVCalendar } from "@/lib/ics";
 
 export async function GET(
   _req: NextRequest,
@@ -24,31 +13,23 @@ export async function GET(
   });
   if (!calendar) return new Response("Not found", { status: 404 });
 
-  const lines = [
-    "BEGIN:VCALENDAR",
-    "VERSION:2.0",
-    "PRODID:-//Evvy//EN",
-    "CALSCALE:GREGORIAN",
-    "METHOD:PUBLISH",
-    `X-WR-CALNAME:${escapeICS(calendar.name)}`,
-    ...calendar.events.flatMap((event) => [
-      "BEGIN:VEVENT",
-      `UID:${event.id}@evvy`,
-      `DTSTART:${toICSDate(event.startAt)}`,
-      `DTEND:${toICSDate(event.endAt)}`,
-      `SUMMARY:${escapeICS(event.title)}`,
-      event.description ? `DESCRIPTION:${escapeICS(event.description)}` : null,
-      event.location ? `LOCATION:${escapeICS(event.location)}` : null,
-      `DTSTAMP:${toICSDate(new Date())}`,
-      "END:VEVENT",
-    ]),
-    "END:VCALENDAR",
-  ]
-    .filter(Boolean)
-    .join("\r\n");
+  const vevents = calendar.events.map((event) =>
+    buildVEvent({
+      id: event.id,
+      title: event.title,
+      description: event.description,
+      location: event.location,
+      startAt: event.startAt,
+      endAt: event.endAt,
+      allDay: event.allDay,
+      timezone: event.timezone,
+    })
+  );
 
+  const ics = wrapVCalendar(calendar.name, vevents);
   const slug = calendar.name.replace(/[^a-z0-9]/gi, "_").toLowerCase();
-  return new Response(lines, {
+
+  return new Response(ics, {
     headers: {
       "Content-Type": "text/calendar; charset=utf-8",
       "Content-Disposition": `attachment; filename="${slug}.ics"`,
