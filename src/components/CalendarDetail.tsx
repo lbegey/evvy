@@ -37,6 +37,7 @@ interface CalendarRecord {
   description: string | null;
   color: string | null;
   slug: string | null;
+  language: string;
   brandingEnabled: boolean;
   brandLogoUrl: string | null;
   brandLogoSize: number | null;
@@ -499,7 +500,7 @@ export function CalendarDetail({ calendar, events, calendars, appUrl, plan }: Ca
       <CalendarDialog
         open={editOpen}
         onOpenChange={setEditOpen}
-        editing={{ name: calendar.name, description: calendar.description ?? "", color: calendar.color ?? "" }}
+        editing={{ name: calendar.name, description: calendar.description ?? "", color: calendar.color ?? "", language: calendar.language }}
         onSubmit={handleEditSubmit}
         isPending={isSaving}
         error={editError}

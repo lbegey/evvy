@@ -10,6 +10,7 @@ type CalendarData = {
   name: string;
   description: string;
   color: string;
+  language: string;
 };
 
 type CalendarBrandingData = {
@@ -41,6 +42,7 @@ export async function createCalendar(data: CalendarData): Promise<{ id: string }
       name: data.name,
       description: data.description || null,
       color: data.color || null,
+      language: data.language || "en",
       userId: session.user.id,
     },
   });
@@ -63,6 +65,7 @@ export async function updateCalendar(id: string, data: CalendarData): Promise<{ 
       name: data.name,
       description: data.description || null,
       color: data.color || null,
+      language: data.language || "en",
     },
   });
 

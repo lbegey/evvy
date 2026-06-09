@@ -85,6 +85,7 @@ model Calendar {
   brandColor           String?
   brandBackgroundColor String?
   brandBackgroundImageUrl String?
+  language    String   @default("en")
   userId      String
   user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   events      Event[]

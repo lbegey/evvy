@@ -35,6 +35,7 @@ export default async function CalendarPage({
         description: calendar.description,
         color: calendar.color,
         slug: calendar.slug,
+        language: calendar.language,
         brandingEnabled: calendar.brandingEnabled,
         brandLogoUrl: calendar.brandLogoUrl,
         brandLogoSize: calendar.brandLogoSize,

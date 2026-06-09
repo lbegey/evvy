@@ -6,6 +6,7 @@ import { X, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Select } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { cn } from "@/lib/utils";
@@ -14,6 +15,7 @@ export interface CalendarDialogValues {
   name: string;
   description: string;
   color: string;
+  language: string;
 }
 
 interface CalendarDialogProps {
@@ -25,13 +27,14 @@ interface CalendarDialogProps {
   error?: string | null;
 }
 
-const EMPTY: CalendarDialogValues = { name: "", description: "", color: "" };
+const EMPTY: CalendarDialogValues = { name: "", description: "", color: "", language: "en" };
 
 export function CalendarDialog({ open, onOpenChange, editing, onSubmit, isPending, error }: CalendarDialogProps) {
   const { T } = useLanguage();
   const [name, setName] = useState(editing?.name ?? "");
   const [description, setDescription] = useState(editing?.description ?? "");
   const [color, setColor] = useState(editing?.color ?? "");
+  const [language, setLanguage] = useState(editing?.language ?? "en");
   const [nameError, setNameError] = useState(false);
 
   const previewColor = /^#[0-9a-fA-F]{3,8}$/.test(color) ? color : undefined;
@@ -42,6 +45,7 @@ export function CalendarDialog({ open, onOpenChange, editing, onSubmit, isPendin
       setName(values.name);
       setDescription(values.description);
       setColor(values.color);
+      setLanguage(values.language);
       setNameError(false);
     }
   }, [open, editing]);
@@ -52,7 +56,7 @@ export function CalendarDialog({ open, onOpenChange, editing, onSubmit, isPendin
       setNameError(true);
       return;
     }
-    await onSubmit({ name: name.trim(), description: description.trim(), color: color.trim() });
+    await onSubmit({ name: name.trim(), description: description.trim(), color: color.trim(), language });
   };
 
   return (
@@ -118,6 +122,18 @@ export function CalendarDialog({ open, onOpenChange, editing, onSubmit, isPendin
                   className="flex-1"
                 />
               </div>
+            </div>
+
+            <div className="space-y-1.5">
+              <Label htmlFor="cal-lang">{T.eventForm.pageLanguage}</Label>
+              <Select
+                id="cal-lang"
+                value={language}
+                onChange={(e) => setLanguage(e.target.value)}
+              >
+                <option value="en">{T.eventForm.languages.en}</option>
+                <option value="fr">{T.eventForm.languages.fr}</option>
+              </Select>
             </div>
 
             {error && <p className="text-xs text-destructive">{error}</p>}
