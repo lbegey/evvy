@@ -1,11 +1,11 @@
 "use client";
 
-import { useEffect, useMemo, useState, useTransition } from "react";
+import { useMemo, useState, useTransition } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import {
   ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight, Plus,
-  Search, Grid3x3, List, CalendarClock, History, CalendarPlus, RotateCcw, Loader2,
+  Search, Grid3x3, List, CalendarClock, History, CalendarPlus, RotateCcw,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -92,7 +92,6 @@ export function CalendarView({ events, calendars, plan, initialYear, initialMont
   const [dialogOpen, setDialogOpen] = useState(false);
   const [selectedDate, setSelectedDate] = useState<Date>(today);
   const [isPending, startTransition] = useTransition();
-  const [pendingView, setPendingView] = useState<ViewMode | null>(null);
   const [dayEventsOpen, setDayEventsOpen] = useState(false);
   const [dayEventsDate, setDayEventsDate] = useState<Date | null>(null);
   const [dayEventsList, setDayEventsList] = useState<CalendarEvent[]>([]);
@@ -106,38 +105,38 @@ export function CalendarView({ events, calendars, plan, initialYear, initialMont
     ? (initialViewMode as ViewMode)
     : "calendar";
 
-  const viewParam = searchParams.get("view");
-  const viewMode: ViewMode = (VIEW_MODE_IDS as string[]).includes(viewParam ?? "")
-    ? (viewParam as ViewMode)
-    : savedViewMode;
+  const [viewMode, setViewModeState] = useState<ViewMode>(() => {
+    const viewParam = searchParams.get("view");
+    return (VIEW_MODE_IDS as string[]).includes(viewParam ?? "")
+      ? (viewParam as ViewMode)
+      : savedViewMode;
+  });
 
-  useEffect(() => {
-    if (pendingView !== null && viewMode === pendingView) {
-      setPendingView(null);
-    }
-  }, [viewMode, pendingView]);
+  const [calendarFilter, setCalendarFilterState] = useState<string>(() => {
+    const calendarParam = searchParams.get("calendar");
+    return calendarParam === "none" || calendars.some((c) => c.id === calendarParam)
+      ? calendarParam!
+      : "all";
+  });
 
   const setViewMode = (mode: ViewMode) => {
-    if (pendingView !== null || mode === viewMode) return;
-    setPendingView(mode);
-    const params = new URLSearchParams(searchParams.toString());
+    if (mode === viewMode) return;
+    setViewModeState(mode);
+    const params = new URLSearchParams(window.location.search);
     if (mode === "calendar") params.delete("view");
     else params.set("view", mode);
     const qs = params.toString();
-    router.push(qs ? `/dashboard?${qs}` : "/dashboard");
+    window.history.replaceState(null, "", qs ? `/dashboard?${qs}` : "/dashboard");
     if (mode !== savedViewMode) setUserDashboardView(mode).catch(() => {});
   };
 
-  const calendarParam = searchParams.get("calendar");
-  const calendarFilter =
-    calendarParam === "none" || calendars.some((c) => c.id === calendarParam) ? calendarParam! : "all";
-
   const setCalendarFilter = (value: string) => {
-    const params = new URLSearchParams(searchParams.toString());
+    setCalendarFilterState(value);
+    const params = new URLSearchParams(window.location.search);
     if (value === "all") params.delete("calendar");
     else params.set("calendar", value);
     const qs = params.toString();
-    router.push(qs ? `/dashboard?${qs}` : "/dashboard");
+    window.history.replaceState(null, "", qs ? `/dashboard?${qs}` : "/dashboard");
   };
 
   const year = current.getFullYear();
@@ -253,8 +252,8 @@ export function CalendarView({ events, calendars, plan, initialYear, initialMont
   const resetFilters = () => {
     setSearch("");
     setFilterTz("all");
-    router.push("/dashboard");
-    router.refresh();
+    setCalendarFilterState("all");
+    window.history.replaceState(null, "", "/dashboard");
   };
 
   return (
@@ -349,31 +348,22 @@ export function CalendarView({ events, calendars, plan, initialYear, initialMont
       {/* View mode switcher + search */}
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="inline-flex items-center gap-0.5 rounded-lg border border-border/60 bg-muted/20 p-0.5">
-          {VIEW_MODES.map(({ id, label, icon: Icon }) => {
-            const isActive = pendingView !== null ? pendingView === id : viewMode === id;
-            const isLoading = pendingView === id;
-            return (
-              <button
-                key={id}
-                type="button"
-                onClick={() => setViewMode(id)}
-                disabled={pendingView !== null}
-                className={cn(
-                  "inline-flex cursor-pointer items-center gap-1.5 rounded-md px-2.5 py-1.5 text-xs font-medium transition-colors sm:px-3",
-                  "disabled:cursor-wait",
-                  isActive
-                    ? "bg-background text-foreground shadow-sm"
-                    : "text-muted-foreground hover:text-foreground"
-                )}
-              >
-                {isLoading
-                  ? <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                  : <Icon className="h-3.5 w-3.5" />
-                }
-                <span className="hidden sm:inline">{label}</span>
-              </button>
-            );
-          })}
+          {VIEW_MODES.map(({ id, label, icon: Icon }) => (
+            <button
+              key={id}
+              type="button"
+              onClick={() => setViewMode(id)}
+              className={cn(
+                "inline-flex cursor-pointer items-center gap-1.5 rounded-md px-2.5 py-1.5 text-xs font-medium transition-colors sm:px-3",
+                viewMode === id
+                  ? "bg-background text-foreground shadow-sm"
+                  : "text-muted-foreground hover:text-foreground"
+              )}
+            >
+              <Icon className="h-3.5 w-3.5" />
+              <span className="hidden sm:inline">{label}</span>
+            </button>
+          ))}
         </div>
 
         <div className="flex flex-wrap items-center gap-2">
