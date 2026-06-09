@@ -685,7 +685,7 @@ export const fr: Translations = {
     confirmDelete: "Supprimer ce calendrier ? Ses événements seront conservés mais ne seront plus regroupés. Cette action est irréversible.",
     locked: "Les calendriers personnalisés sont une fonctionnalité Premium.",
     unlock: "Passer en Premium",
-    searchPlaceholder: "Rechercher un calendrier par nom…",
+    searchPlaceholder: "Rechercher…",
     noResults: "Aucun calendrier ne correspond à votre recherche.",
     pagination: {
       previous: "Précédent",

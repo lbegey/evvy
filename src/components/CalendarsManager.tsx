@@ -119,7 +119,7 @@ export function CalendarsManager({ calendars, appUrl, plan }: CalendarsManagerPr
             />
           </div>
         )}
-        <Button onClick={openCreate} disabled={atFreeLimit} size="sm" className="shrink-0 gap-1.5">
+        <Button onClick={openCreate} disabled={atFreeLimit} className="shrink-0 gap-1.5">
           <Plus className="h-4 w-4" />
           <span className="hidden sm:inline">{T.calendars.create}</span>
         </Button>

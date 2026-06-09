@@ -683,7 +683,7 @@ export const en = {
     confirmDelete: "Delete this calendar? Its events will be kept but ungrouped. This action is irreversible.",
     locked: "Custom calendars are a Premium feature.",
     unlock: "Upgrade to Premium",
-    searchPlaceholder: "Search calendars by name…",
+    searchPlaceholder: "Search…",
     noResults: "No calendars match your search.",
     pagination: {
       previous: "Previous",
