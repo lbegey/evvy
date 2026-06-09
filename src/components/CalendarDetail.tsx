@@ -287,7 +287,7 @@ export function CalendarDetail({ calendar, events, calendars, appUrl, plan }: Ca
         {deleteError && <p className="text-sm text-destructive">{deleteError}</p>}
 
         {/* Mobile section nav */}
-        <nav className="-mx-4 flex gap-1 overflow-x-auto no-scrollbar px-4 pb-1 lg:hidden">
+        <nav className="hidden">
           {SIDEBAR_SECTIONS.map(({ id, labelKey, icon: Icon }) => (
             <a
               key={id}
