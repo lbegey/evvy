@@ -1,8 +1,13 @@
+"use client";
+
 import Link from "next/link";
 import { Logo } from "@/components/Logo";
 import { Separator } from "@/components/ui/separator";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 export function Footer() {
+  const { T } = useLanguage();
+
   return (
     <footer className="mt-auto border-t border-border/60 bg-muted/30">
       <div className="mx-auto max-w-6xl px-6 py-12">
@@ -11,13 +16,13 @@ export function Footer() {
 
           <nav className="flex flex-wrap items-center gap-6 text-sm text-muted-foreground">
             <Link href="/privacy" className="transition-colors hover:text-foreground">
-              Privacy
+              {T.footer.privacy}
             </Link>
             <Link href="/terms" className="transition-colors hover:text-foreground">
-              Terms
+              {T.footer.terms}
             </Link>
             <Link href="/contact" className="transition-colors hover:text-foreground">
-              Contact
+              {T.footer.contact}
             </Link>
           </nav>
         </div>
@@ -25,7 +30,7 @@ export function Footer() {
         <Separator className="my-8" />
 
         <p className="text-center text-sm text-muted-foreground">
-          © {new Date().getFullYear()} Evvy. All rights reserved.
+          © {new Date().getFullYear()} Evvy. {T.footer.allRightsReserved}
         </p>
       </div>
     </footer>

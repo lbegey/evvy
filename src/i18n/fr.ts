@@ -787,6 +787,13 @@ export const fr: Translations = {
     },
   },
 
+  footer: {
+    privacy: "Confidentialité",
+    terms: "Conditions",
+    contact: "Contact",
+    allRightsReserved: "Tous droits réservés.",
+  },
+
   cookies: {
     message:
       "Nous utilisons des cookies pour améliorer votre expérience et mémoriser vos préférences.",

@@ -785,6 +785,13 @@ export const en = {
     },
   },
 
+  footer: {
+    privacy: "Privacy",
+    terms: "Terms",
+    contact: "Contact",
+    allRightsReserved: "All rights reserved.",
+  },
+
   cookies: {
     message:
       "We use cookies to improve your experience and remember your preferences.",
