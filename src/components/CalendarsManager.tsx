@@ -163,36 +163,36 @@ export function CalendarsManager({ calendars, appUrl, plan }: CalendarsManagerPr
               </div>
 
               <div className="relative z-20 ml-auto flex shrink-0 items-center gap-1.5">
-                <button
-                  type="button"
+                <Button
+                  variant="ghost"
+                  size="icon-sm"
                   onClick={() => handleCopy(calendar.id)}
-                  className={cn(
-                    "inline-flex items-center gap-1.5 rounded-lg border border-border/60 px-2.5 py-1.5 text-xs transition-colors",
-                    copiedId === calendar.id ? "border-green-500/40 bg-green-50 text-green-700" : "text-muted-foreground hover:bg-muted hover:text-foreground"
-                  )}
-                  title={`${appUrl}/c/${calendar.id}`}
+                  title={copiedId === calendar.id ? T.common.copied : T.common.copyUrl}
+                  aria-label={copiedId === calendar.id ? T.common.copied : T.common.copyUrl}
+                  className={cn(copiedId === calendar.id && "border border-green-500/40 bg-green-50 text-green-700 hover:bg-green-50 hover:text-green-700")}
                 >
                   {copiedId === calendar.id ? <Check className="h-3.5 w-3.5" /> : <Copy className="h-3.5 w-3.5" />}
-                  {copiedId === calendar.id ? T.common.copied : T.common.copyUrl}
-                </button>
-                <Link
-                  href={`/c/${calendar.id}`}
-                  target="_blank"
-                  className="inline-flex items-center gap-1.5 rounded-lg border border-border/60 px-2.5 py-1.5 text-xs text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
-                  title={`${appUrl}/c/${calendar.id}`}
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="gap-1.5"
+                  nativeButton={false}
+                  render={<Link href={`/c/${calendar.id}`} target="_blank" title={`${appUrl}/c/${calendar.id}`} />}
                 >
                   <ExternalLink className="h-3.5 w-3.5" />
                   {T.calendars.open}
-                </Link>
-                <button
-                  type="button"
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="icon-sm"
                   onClick={() => handleDelete(calendar.id)}
                   disabled={isDeleting}
-                  className="inline-flex items-center justify-center rounded-lg border border-border/60 p-2 text-muted-foreground transition-colors hover:bg-destructive/10 hover:text-destructive disabled:pointer-events-none disabled:opacity-50"
                   aria-label={T.calendars.delete}
+                  className="text-muted-foreground hover:bg-destructive/10 hover:text-destructive"
                 >
                   <Trash2 className="h-3.5 w-3.5" />
-                </button>
+                </Button>
               </div>
             </li>
           ))}
