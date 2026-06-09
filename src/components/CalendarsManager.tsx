@@ -173,7 +173,7 @@ export function CalendarsManager({ calendars, appUrl, plan }: CalendarsManagerPr
                   title={`${appUrl}/c/${calendar.id}`}
                 >
                   {copiedId === calendar.id ? <Check className="h-3.5 w-3.5" /> : <Copy className="h-3.5 w-3.5" />}
-                  {copiedId === calendar.id ? T.common.copied : T.common.copy}
+                  {copiedId === calendar.id ? T.common.copied : T.common.copyUrl}
                 </button>
                 <Link
                   href={`/c/${calendar.id}`}

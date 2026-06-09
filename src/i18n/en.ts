@@ -6,6 +6,7 @@ export const en = {
     delete: "Delete",
     copy: "Copy",
     copied: "Copied!",
+    copyUrl: "Copy URL",
     open: "Open",
     back: "Back",
     or: "or",

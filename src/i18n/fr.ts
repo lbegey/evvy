@@ -8,6 +8,7 @@ export const fr: Translations = {
     delete: "Supprimer",
     copy: "Copier",
     copied: "Copié !",
+    copyUrl: "Copier l'URL",
     open: "Ouvrir",
     back: "Retour",
     or: "ou",

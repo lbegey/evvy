@@ -89,7 +89,7 @@ export function EventListView({ events, emptyMessage }: EventListViewProps) {
                 )}
               >
                 {copiedId === ev.id ? <Check className="h-3.5 w-3.5" /> : <Copy className="h-3.5 w-3.5" />}
-                {copiedId === ev.id ? T.common.copied : T.common.copy}
+                {copiedId === ev.id ? T.common.copied : T.common.copyUrl}
               </button>
             </div>
           </div>
