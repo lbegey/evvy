@@ -5,7 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import {
   ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight, Plus,
-  Search, Grid3x3, List, CalendarClock, History, CalendarPlus, RotateCcw,
+  Search, Grid3x3, List, CalendarClock, History, CalendarPlus, RotateCcw, Loader2,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -91,6 +91,8 @@ export function CalendarView({ events, calendars, plan, initialYear, initialMont
   const [dialogOpen, setDialogOpen] = useState(false);
   const [selectedDate, setSelectedDate] = useState<Date>(today);
   const [isPending, startTransition] = useTransition();
+  const [isSwitchingView, startViewSwitch] = useTransition();
+  const [pendingView, setPendingView] = useState<ViewMode | null>(null);
   const [dayEventsOpen, setDayEventsOpen] = useState(false);
   const [dayEventsDate, setDayEventsDate] = useState<Date | null>(null);
   const [dayEventsList, setDayEventsList] = useState<CalendarEvent[]>([]);
@@ -110,11 +112,15 @@ export function CalendarView({ events, calendars, plan, initialYear, initialMont
     : savedViewMode;
 
   const setViewMode = (mode: ViewMode) => {
+    if (isSwitchingView) return;
+    setPendingView(mode);
     const params = new URLSearchParams(searchParams.toString());
     if (mode === "calendar") params.delete("view");
     else params.set("view", mode);
     const qs = params.toString();
-    router.push(qs ? `/dashboard?${qs}` : "/dashboard");
+    startViewSwitch(() => {
+      router.push(qs ? `/dashboard?${qs}` : "/dashboard");
+    });
     if (mode !== savedViewMode) setUserDashboardView(mode).catch(() => {});
   };
 
@@ -339,22 +345,31 @@ export function CalendarView({ events, calendars, plan, initialYear, initialMont
       {/* View mode switcher + search */}
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="inline-flex items-center gap-0.5 rounded-lg border border-border/60 bg-muted/20 p-0.5">
-          {VIEW_MODES.map(({ id, label, icon: Icon }) => (
-            <button
-              key={id}
-              type="button"
-              onClick={() => setViewMode(id)}
-              className={cn(
-                "inline-flex items-center gap-1.5 rounded-md px-2.5 py-1.5 text-xs font-medium transition-colors sm:px-3",
-                viewMode === id
-                  ? "bg-background text-foreground shadow-sm"
-                  : "text-muted-foreground hover:text-foreground"
-              )}
-            >
-              <Icon className="h-3.5 w-3.5" />
-              <span className="hidden sm:inline">{label}</span>
-            </button>
-          ))}
+          {VIEW_MODES.map(({ id, label, icon: Icon }) => {
+            const isActive = isSwitchingView ? pendingView === id : viewMode === id;
+            const isLoading = isSwitchingView && pendingView === id;
+            return (
+              <button
+                key={id}
+                type="button"
+                onClick={() => setViewMode(id)}
+                disabled={isSwitchingView}
+                className={cn(
+                  "inline-flex cursor-pointer items-center gap-1.5 rounded-md px-2.5 py-1.5 text-xs font-medium transition-colors sm:px-3",
+                  "disabled:cursor-wait",
+                  isActive
+                    ? "bg-background text-foreground shadow-sm"
+                    : "text-muted-foreground hover:text-foreground"
+                )}
+              >
+                {isLoading
+                  ? <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                  : <Icon className="h-3.5 w-3.5" />
+                }
+                <span className="hidden sm:inline">{label}</span>
+              </button>
+            );
+          })}
         </div>
 
         <div className="flex flex-wrap items-center gap-2">
