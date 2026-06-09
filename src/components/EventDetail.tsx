@@ -330,16 +330,18 @@ export function EventDetail({ event, appUrl, plan, calendars, stats, rsvps }: Ev
             <Pencil className="h-3.5 w-3.5" />
             {T.eventDetail.edit}
           </Button>
-          <Button
-            size="sm"
-            variant="outline"
-            className="gap-1.5 text-destructive hover:text-destructive"
-            onClick={handleDelete}
-            disabled={isDeleting}
-          >
-            <Trash2 className="h-3.5 w-3.5" />
-            {isDeleting ? T.eventDetail.deleting : T.eventDetail.delete}
-          </Button>
+          {plan === "premium" && (
+            <Button
+              size="sm"
+              variant="outline"
+              className="gap-1.5 text-destructive hover:text-destructive"
+              onClick={handleDelete}
+              disabled={isDeleting}
+            >
+              <Trash2 className="h-3.5 w-3.5" />
+              {isDeleting ? T.eventDetail.deleting : T.eventDetail.delete}
+            </Button>
+          )}
         </div>
       </div>
       {deleteError && <p className="text-sm text-destructive">{deleteError}</p>}

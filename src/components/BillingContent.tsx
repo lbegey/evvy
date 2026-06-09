@@ -1,6 +1,5 @@
 "use client";
 
-import { Check, X } from "lucide-react";
 import { BillingActions } from "@/components/BillingActions";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { cn } from "@/lib/utils";
@@ -13,7 +12,6 @@ interface BillingContentProps {
 
 export function BillingContent({ plan, cancelAtPeriodEnd, currentPeriodEnd }: BillingContentProps) {
   const { T } = useLanguage();
-  const rows = T.billing.compare.rows;
 
   return (
     <section className="mx-auto max-w-6xl space-y-6 px-4 py-6 sm:space-y-8 sm:px-6 sm:py-8">
@@ -60,40 +58,6 @@ export function BillingContent({ plan, cancelAtPeriodEnd, currentPeriodEnd }: Bi
           <p className="mt-1 text-2xl font-bold text-foreground">{T.billing.premiumPlan.price}</p>
           <p className="mt-1 text-xs text-muted-foreground">{T.billing.premiumPlan.tagline}</p>
         </div>
-      </div>
-
-      <div className="overflow-hidden rounded-xl border border-border/60">
-        <div className="border-b border-border/60 bg-muted/30 px-5 py-4">
-          <h2 className="text-sm font-semibold text-foreground">{T.billing.compare.title}</h2>
-          <p className="mt-0.5 text-xs text-muted-foreground">{T.billing.compare.subtitle}</p>
-        </div>
-
-        <div className="grid grid-cols-2 border-b border-border/60 bg-muted/10 text-xs font-semibold text-muted-foreground">
-          <div className="px-5 py-2.5">{T.billing.freePlan.name}</div>
-          <div className="border-l border-border/60 px-5 py-2.5 text-primary">{T.billing.premiumPlan.name}</div>
-        </div>
-
-        <ul>
-          {rows.map((row, i) => (
-            <li
-              key={i}
-              className={cn("grid grid-cols-2 text-sm", i !== rows.length - 1 && "border-b border-border/60")}
-            >
-              <div className="flex items-start gap-2 px-5 py-3">
-                {row.freeIncluded ? (
-                  <Check className="mt-0.5 h-4 w-4 shrink-0 text-green-600" />
-                ) : (
-                  <X className="mt-0.5 h-4 w-4 shrink-0 text-red-500" />
-                )}
-                <span className="text-muted-foreground">{row.free}</span>
-              </div>
-              <div className="flex items-start gap-2 border-l border-border/60 px-5 py-3">
-                <Check className="mt-0.5 h-4 w-4 shrink-0 text-green-600" />
-                <span className="text-foreground">{row.premium}</span>
-              </div>
-            </li>
-          ))}
-        </ul>
       </div>
 
       <div className="flex items-center gap-3">

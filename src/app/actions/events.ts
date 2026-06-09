@@ -33,7 +33,7 @@ type EventBrandingData = {
   brandBackgroundImageUrl: string | null;
 };
 
-const FREE_EVENT_LIMIT = 3;
+const FREE_EVENT_LIMIT = 10;
 const FREE_RSVP_LIMIT = 50;
 
 export async function createEvent(data: EventData): Promise<{ id: string } | { error: "limit" }> {
@@ -79,10 +79,7 @@ export async function updateEvent(id: string, data: EventData) {
   const event = await db.event.findUnique({ where: { id } });
   if (!event || event.userId !== session.user.id) throw new Error("Forbidden");
 
-  const user = await db.user.findUnique({ where: { id: session.user.id } });
-  const canEditDate = user?.plan === "premium";
-
-  if (canEditDate && new Date(data.endAt) < new Date(data.startAt)) {
+  if (new Date(data.endAt) < new Date(data.startAt)) {
     throw new Error("End date cannot be before start date");
   }
 
@@ -94,11 +91,11 @@ export async function updateEvent(id: string, data: EventData) {
       location: data.location || null,
       organizerEmail: data.organizerEmail || null,
       imageUrl: data.imageUrl !== undefined ? (data.imageUrl || null) : undefined,
-      startAt: canEditDate ? new Date(data.startAt) : undefined,
-      endAt: canEditDate ? new Date(data.endAt) : undefined,
-      allDay: canEditDate ? data.allDay : undefined,
+      startAt: new Date(data.startAt),
+      endAt: new Date(data.endAt),
+      allDay: data.allDay,
       isOnline: data.isOnline,
-      timezone: canEditDate ? data.timezone : undefined,
+      timezone: data.timezone,
       language: data.language,
       rsvpEnabled: data.rsvpEnabled,
     },

@@ -127,7 +127,7 @@ export const en = {
         period: "/ month",
         tagline: "Just here to try things out",
         bullets: [
-          { text: "Up to 3 active events", included: true },
+          { text: "Up to 10 active events", included: true },
           { text: "Up to 50 RSVPs per event", included: true },
           { text: "Events can't be deleted", included: false },
           { text: "\"Organized with Evvy\" branding shown", included: false },
@@ -180,7 +180,7 @@ export const en = {
         },
         {
           q: "How many events can I create on the free plan?",
-          a: "The free plan lets you keep up to 3 active events at a time. Upgrade to Premium for unlimited events, unlimited RSVPs, custom calendars and full branding control.",
+          a: "The free plan lets you keep up to 10 active events at a time. Upgrade to Premium for unlimited events, unlimited RSVPs, custom calendars and full branding control.",
         },
       ],
     },
@@ -335,7 +335,7 @@ export const en = {
       emailInvalid: "Invalid email",
       endBeforeStart: "The end date and time cannot be before the start",
       limitReached:
-        "Free plan is limited to 3 events. Upgrade to Premium for unlimited events.",
+        "Free plan is limited to 10 events. Upgrade to Premium for unlimited events.",
     },
   },
 
@@ -574,7 +574,7 @@ export const en = {
       title: "Free vs. Premium, side by side",
       subtitle: "Same features, row by row — see exactly what changes when you upgrade.",
       rows: [
-        { free: "Up to 3 active events", premium: "Unlimited events", freeIncluded: true },
+        { free: "Up to 10 active events", premium: "Unlimited events", freeIncluded: true },
         { free: "Up to 50 RSVPs per event", premium: "Unlimited RSVPs", freeIncluded: true },
         { free: "Events can't be deleted", premium: "Create and delete freely", freeIncluded: false },
         { free: "\"Organized with Evvy\" branding shown", premium: "Evvy branding fully removed", freeIncluded: false },

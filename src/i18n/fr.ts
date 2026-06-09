@@ -129,7 +129,7 @@ export const fr: Translations = {
         period: "/ mois",
         tagline: "Juste de quoi tester",
         bullets: [
-          { text: "Jusqu'à 3 événements actifs", included: true },
+          { text: "Jusqu'à 10 événements actifs", included: true },
           { text: "Jusqu'à 50 réponses RSVP par événement", included: true },
           { text: "Les événements ne peuvent pas être supprimés", included: false },
           { text: "Mention « Organisé avec Evvy » affichée", included: false },
@@ -182,7 +182,7 @@ export const fr: Translations = {
         },
         {
           q: "Combien d'événements puis-je créer sur le plan gratuit ?",
-          a: "Le plan gratuit vous permet de garder jusqu'à 3 événements actifs à la fois. Passez à Premium pour des événements illimités, des RSVPs illimités, des calendriers personnalisés et un contrôle total du branding.",
+          a: "Le plan gratuit vous permet de garder jusqu'à 10 événements actifs à la fois. Passez à Premium pour des événements illimités, des RSVPs illimités, des calendriers personnalisés et un contrôle total du branding.",
         },
       ],
     },
@@ -337,7 +337,7 @@ export const fr: Translations = {
       emailInvalid: "Email invalide",
       endBeforeStart: "La date et l'heure de fin ne peuvent pas être avant le début",
       limitReached:
-        "L'offre gratuite est limitée à 3 événements. Passez en Premium pour des événements illimités.",
+        "L'offre gratuite est limitée à 10 événements. Passez en Premium pour des événements illimités.",
     },
   },
 
@@ -576,7 +576,7 @@ export const fr: Translations = {
       title: "Gratuit vs. Premium, côte à côte",
       subtitle: "Mêmes fonctionnalités, ligne par ligne — voyez exactement ce qui change en passant au forfait payant.",
       rows: [
-        { free: "Jusqu'à 3 événements actifs", premium: "Événements illimités", freeIncluded: true },
+        { free: "Jusqu'à 10 événements actifs", premium: "Événements illimités", freeIncluded: true },
         { free: "Jusqu'à 50 réponses RSVP par événement", premium: "RSVP illimités", freeIncluded: true },
         { free: "Les événements ne peuvent pas être supprimés", premium: "Création et suppression libres", freeIncluded: false },
         { free: "Mention « Organisé avec Evvy » affichée", premium: "Mention Evvy entièrement supprimée", freeIncluded: false },

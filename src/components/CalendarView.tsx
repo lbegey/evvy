@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState, useTransition } from "react";
+import { useEffect, useMemo, useState, useTransition } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import {
@@ -91,7 +91,6 @@ export function CalendarView({ events, calendars, plan, initialYear, initialMont
   const [dialogOpen, setDialogOpen] = useState(false);
   const [selectedDate, setSelectedDate] = useState<Date>(today);
   const [isPending, startTransition] = useTransition();
-  const [isSwitchingView, startViewSwitch] = useTransition();
   const [pendingView, setPendingView] = useState<ViewMode | null>(null);
   const [dayEventsOpen, setDayEventsOpen] = useState(false);
   const [dayEventsDate, setDayEventsDate] = useState<Date | null>(null);
@@ -111,16 +110,20 @@ export function CalendarView({ events, calendars, plan, initialYear, initialMont
     ? (viewParam as ViewMode)
     : savedViewMode;
 
+  useEffect(() => {
+    if (pendingView !== null && viewMode === pendingView) {
+      setPendingView(null);
+    }
+  }, [viewMode, pendingView]);
+
   const setViewMode = (mode: ViewMode) => {
-    if (isSwitchingView) return;
+    if (pendingView !== null || mode === viewMode) return;
     setPendingView(mode);
     const params = new URLSearchParams(searchParams.toString());
     if (mode === "calendar") params.delete("view");
     else params.set("view", mode);
     const qs = params.toString();
-    startViewSwitch(() => {
-      router.push(qs ? `/dashboard?${qs}` : "/dashboard");
-    });
+    router.push(qs ? `/dashboard?${qs}` : "/dashboard");
     if (mode !== savedViewMode) setUserDashboardView(mode).catch(() => {});
   };
 
@@ -346,14 +349,14 @@ export function CalendarView({ events, calendars, plan, initialYear, initialMont
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="inline-flex items-center gap-0.5 rounded-lg border border-border/60 bg-muted/20 p-0.5">
           {VIEW_MODES.map(({ id, label, icon: Icon }) => {
-            const isActive = isSwitchingView ? pendingView === id : viewMode === id;
-            const isLoading = isSwitchingView && pendingView === id;
+            const isActive = pendingView !== null ? pendingView === id : viewMode === id;
+            const isLoading = pendingView === id;
             return (
               <button
                 key={id}
                 type="button"
                 onClick={() => setViewMode(id)}
-                disabled={isSwitchingView}
+                disabled={pendingView !== null}
                 className={cn(
                   "inline-flex cursor-pointer items-center gap-1.5 rounded-md px-2.5 py-1.5 text-xs font-medium transition-colors sm:px-3",
                   "disabled:cursor-wait",

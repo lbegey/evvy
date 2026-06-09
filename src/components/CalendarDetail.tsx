@@ -451,15 +451,17 @@ export function CalendarDetail({ calendar, events, calendars, appUrl, plan }: Ca
                           <p className="truncate text-xs text-muted-foreground">{dateLabel}</p>
                         </div>
                       </Link>
-                      <button
-                        type="button"
-                        onClick={() => handleDeleteEvent(ev.id)}
-                        disabled={isDeletingEvent && deletingEventId === ev.id}
-                        className="inline-flex shrink-0 items-center justify-center rounded-lg border border-border/60 p-2 text-muted-foreground transition-colors hover:bg-destructive/10 hover:text-destructive disabled:pointer-events-none disabled:opacity-50"
-                        aria-label={T.calendars.delete}
-                      >
-                        <Trash2 className="h-3.5 w-3.5" />
-                      </button>
+                      {plan === "premium" && (
+                        <button
+                          type="button"
+                          onClick={() => handleDeleteEvent(ev.id)}
+                          disabled={isDeletingEvent && deletingEventId === ev.id}
+                          className="inline-flex shrink-0 items-center justify-center rounded-lg border border-border/60 p-2 text-muted-foreground transition-colors hover:bg-destructive/10 hover:text-destructive disabled:pointer-events-none disabled:opacity-50"
+                          aria-label={T.calendars.delete}
+                        >
+                          <Trash2 className="h-3.5 w-3.5" />
+                        </button>
+                      )}
                     </div>
                   );
                 })}

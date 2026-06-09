@@ -103,8 +103,6 @@ export function EditEventDialog({ open, onOpenChange, plan, event }: EditEventDi
   const [isPending, startTransition] = useTransition();
   const [imageUrl, setImageUrl] = useState(event.imageUrl ?? "");
   const { T, lang } = useLanguage();
-  const dateLocked = plan !== "premium";
-
   const startLocal = isoToLocal(event.startAt, event.timezone);
   const endLocal = isoToLocal(event.endAt, event.timezone);
 
@@ -215,9 +213,8 @@ export function EditEventDialog({ open, onOpenChange, plan, event }: EditEventDi
                   <input
                     type="checkbox"
                     id="ed-allday"
-                    disabled={dateLocked}
                     {...form.register("allDay")}
-                    className="h-4 w-4 rounded border-border accent-primary cursor-pointer disabled:cursor-not-allowed disabled:opacity-50"
+                    className="h-4 w-4 rounded border-border accent-primary cursor-pointer"
                   />
                   <Label htmlFor="ed-allday" className="cursor-pointer font-normal">{T.eventForm.allDay}</Label>
                 </div>
@@ -247,12 +244,12 @@ export function EditEventDialog({ open, onOpenChange, plan, event }: EditEventDi
                   <div className="flex items-end gap-2">
                     <div className="min-w-0 flex-1 space-y-1.5">
                       <Label htmlFor="ed-start-date">{T.eventForm.date} *</Label>
-                      <Input id="ed-start-date" type="date" disabled={dateLocked} {...form.register("startDate")} />
+                      <Input id="ed-start-date" type="date" {...form.register("startDate")} />
                     </div>
                     {!allDay && (
                       <div className="w-[104px] shrink-0 space-y-1.5">
                         <Label htmlFor="ed-start-time">{T.eventForm.start} *</Label>
-                        <Input id="ed-start-time" type="time" disabled={dateLocked} {...form.register("startTime")} />
+                        <Input id="ed-start-time" type="time" {...form.register("startTime")} />
                       </div>
                     )}
                   </div>
@@ -262,12 +259,12 @@ export function EditEventDialog({ open, onOpenChange, plan, event }: EditEventDi
                   <div className="flex items-end gap-2">
                     <div className="min-w-0 flex-1 space-y-1.5">
                       <Label htmlFor="ed-end-date">{T.eventForm.date} *</Label>
-                      <Input id="ed-end-date" type="date" min={startDate} disabled={dateLocked} {...form.register("endDate")} />
+                      <Input id="ed-end-date" type="date" min={startDate} {...form.register("endDate")} />
                     </div>
                     {!allDay && (
                       <div className="w-[104px] shrink-0 space-y-1.5">
                         <Label htmlFor="ed-end-time">{T.eventForm.end} *</Label>
-                        <Input id="ed-end-time" type="time" disabled={dateLocked} {...form.register("endTime")} />
+                        <Input id="ed-end-time" type="time" {...form.register("endTime")} />
                       </div>
                     )}
                   </div>
@@ -277,10 +274,6 @@ export function EditEventDialog({ open, onOpenChange, plan, event }: EditEventDi
                 )}
               </div>
 
-              {dateLocked && (
-                <p className="text-xs text-muted-foreground">{T.eventForm.dateLockedHint}</p>
-              )}
-
               <div className="space-y-1.5">
                 <Label>{T.eventForm.coverImage}</Label>
                 <ImageDropzone value={imageUrl} onChange={setImageUrl} />
@@ -289,7 +282,7 @@ export function EditEventDialog({ open, onOpenChange, plan, event }: EditEventDi
               <div className="grid gap-4 sm:grid-cols-2">
                 <div className="space-y-1.5">
                   <Label htmlFor="ed-tz">{T.eventForm.timezone}</Label>
-                  <Select id="ed-tz" disabled={dateLocked} {...form.register("timezone")}>
+                  <Select id="ed-tz" {...form.register("timezone")}>
                     {TIMEZONES.map(({ group, zones }) => (
                       <optgroup key={group} label={group}>
                         {zones.map(({ label, value }) => (
