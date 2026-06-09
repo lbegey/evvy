@@ -2,6 +2,7 @@ import { betterAuth, APIError } from "better-auth";
 import { prismaAdapter } from "better-auth/adapters/prisma";
 import { Resend } from "resend";
 import { db } from "@/lib/db";
+import { buildPasswordResetEmail } from "@/lib/email";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
@@ -19,7 +20,7 @@ export const auth = betterAuth({
         from: "Evvy <noreply@evvycal.app>",
         to: user.email,
         subject: "Reset your Evvy password",
-        html: `<p>Click the link below to reset your password. It expires in 1 hour.</p><p><a href="${url}">${url}</a></p>`,
+        html: buildPasswordResetEmail(url),
       });
     },
   },

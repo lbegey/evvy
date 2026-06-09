@@ -8,6 +8,7 @@ import { db } from "@/lib/db";
 import { stripe } from "@/lib/stripe";
 import { getAppUrl } from "@/lib/url";
 import { Resend } from "resend";
+import { buildEmailChangeEmail } from "@/lib/email";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
@@ -44,8 +45,8 @@ export async function changeEmail(newEmail: string): Promise<{ error: "invalid" 
   const { error: emailError } = await resend.emails.send({
     from: "Evvy <noreply@evvycal.app>",
     to: user.email,
-    subject: "Confirm your email change",
-    html: `<p>You requested to change your Evvy email address to <strong>${email}</strong>.</p><p>Click the link below to confirm. It expires in 1 hour.</p><p><a href="${confirmUrl}">${confirmUrl}</a></p><p>If you didn't request this, you can ignore this email.</p>`,
+    subject: "Confirm your Evvy email change",
+    html: buildEmailChangeEmail(email, confirmUrl),
   });
   if (emailError) {
     console.error("[Evvy] Resend error (email change):", emailError);
