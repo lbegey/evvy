@@ -160,7 +160,15 @@ export default async function PublicEventPage({
   const brandStyle: CSSProperties | undefined = (brandColor || brandBackgroundColor || brandBackgroundImageUrl || brandTextColor || brandCardColor)
     ? {
         ...(brandColor ? { "--primary": brandColor, "--border": brandColor, "--ring": brandColor } as CSSProperties : {}),
-        ...(brandTextColor ? { "--foreground": brandTextColor, "--card-foreground": brandTextColor } as CSSProperties : {}),
+        ...(brandTextColor ? {
+          "--foreground": brandTextColor,
+          "--card-foreground": brandTextColor,
+          "--popover-foreground": brandTextColor,
+          "--muted-foreground": brandTextColor,
+          "--primary-foreground": brandTextColor,
+          "--secondary-foreground": brandTextColor,
+          "--accent-foreground": brandTextColor,
+        } as CSSProperties : {}),
         ...(brandCardColor ? { "--card": brandCardColor, "--background": brandCardColor } as CSSProperties : {}),
         ...(brandBackgroundColor ? { backgroundColor: brandBackgroundColor } : {}),
         ...(brandBackgroundImageUrl ? { backgroundImage: `url(${JSON.stringify(brandBackgroundImageUrl)})`, backgroundSize: "cover", backgroundPosition: "center" } : {}),
