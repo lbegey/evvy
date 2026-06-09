@@ -228,10 +228,10 @@ function BrandingMock() {
 
 function HeroCalendarBackdrop() {
   return (
-    <div aria-hidden className="pointer-events-none absolute inset-0 -z-10 hidden overflow-hidden sm:block">
+    <div aria-hidden className="pointer-events-none absolute inset-0 -z-10 overflow-hidden">
       <CalendarRange
         strokeWidth={1.5}
-        className="absolute bottom-0 left-[24%] h-[30rem] w-[30rem] -translate-x-1/2 translate-y-1/4 -rotate-[10deg] text-primary/[0.07] sm:h-[37rem] sm:w-[37rem] lg:h-[43rem] lg:w-[43rem]"
+        className="absolute bottom-0 left-[24%] h-[28rem] w-[28rem] -translate-x-1/2 translate-y-1/4 -rotate-[10deg] text-primary/[0.04] sm:h-[37rem] sm:w-[37rem] sm:text-primary/[0.07] lg:h-[43rem] lg:w-[43rem]"
       />
     </div>
   );
@@ -375,7 +375,7 @@ export function LandingContent({ demoCalendar }: LandingContentProps) {
                 </ul>
                 <Link
                   href="/register"
-                  className="mt-6 inline-flex items-center gap-1.5 text-sm font-semibold text-primary underline-offset-4 hover:underline"
+                  className="mt-6 inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/5 px-4 py-2 text-sm font-medium text-primary transition-colors hover:bg-primary/10"
                 >
                   {f.cta}
                 </Link>
@@ -389,7 +389,7 @@ export function LandingContent({ demoCalendar }: LandingContentProps) {
       </section>
 
       {/* ─── Branding / White-label ─── */}
-      <section className="border-y border-border/60 bg-muted/20 px-4 py-20 sm:px-6 sm:py-28">
+      <section className="bg-muted/20 px-4 py-20 sm:px-6 sm:py-28">
         <div className="mx-auto grid max-w-5xl items-center gap-10 lg:grid-cols-2 lg:gap-16">
           <div className="lg:order-1">
             <BrandingMock />
@@ -412,7 +412,7 @@ export function LandingContent({ demoCalendar }: LandingContentProps) {
             </ul>
             <Link
               href="/register"
-              className="mt-6 inline-flex items-center gap-1.5 text-sm font-semibold text-primary underline-offset-4 hover:underline"
+              className="mt-6 inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/5 px-4 py-2 text-sm font-medium text-primary transition-colors hover:bg-primary/10"
             >
               {T.landing.branding.cta}
             </Link>
@@ -429,7 +429,7 @@ export function LandingContent({ demoCalendar }: LandingContentProps) {
                 {T.landing.demo.badge}
               </span>
               <h2 className="mt-4 text-3xl font-bold tracking-tight sm:text-4xl">{T.landing.demo.title}</h2>
-              <p className="mt-3 text-muted-foreground">{T.landing.demo.description}</p>
+              <p className="mt-3 leading-relaxed text-muted-foreground">{T.landing.demo.description}</p>
             </div>
 
             <div className="mx-auto mt-10 max-w-2xl overflow-hidden rounded-2xl border border-border/60 bg-card shadow-sm">
@@ -495,7 +495,7 @@ export function LandingContent({ demoCalendar }: LandingContentProps) {
             <div className="mt-8 text-center">
               <Link
                 href="/register"
-                className="inline-flex items-center gap-1.5 text-sm font-semibold text-primary underline-offset-4 hover:underline"
+                className="inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/5 px-4 py-2 text-sm font-medium text-primary transition-colors hover:bg-primary/10"
               >
                 {T.landing.demo.cta}
               </Link>
@@ -505,14 +505,14 @@ export function LandingContent({ demoCalendar }: LandingContentProps) {
       )}
 
       {/* ─── Pricing ─── */}
-      <section id="pricing" className="px-4 py-20 sm:px-6 sm:py-28">
+      <section id="pricing" className="bg-muted/20 px-4 py-20 sm:px-6 sm:py-28">
         <div className="mx-auto max-w-5xl">
           <div className="mx-auto max-w-xl text-center">
             <span className="inline-flex items-center rounded-full bg-primary/10 px-3 py-1 text-xs font-medium text-primary">
               {T.landing.pricing.badge}
             </span>
             <h2 className="mt-4 text-3xl font-bold tracking-tight sm:text-4xl">{T.landing.pricing.title}</h2>
-            <p className="mt-3 text-muted-foreground">{T.landing.pricing.subtitle}</p>
+            <p className="mt-3 leading-relaxed text-muted-foreground">{T.landing.pricing.subtitle}</p>
           </div>
 
           <div className="mx-auto mt-10 grid max-w-3xl gap-6 sm:grid-cols-2">
@@ -576,11 +576,11 @@ export function LandingContent({ demoCalendar }: LandingContentProps) {
       </section>
 
       {/* ─── FAQ ─── */}
-      <section id="faq" className="bg-[#F9FAFB] px-4 py-20 sm:px-6 sm:py-28">
+      <section id="faq" className="px-4 py-20 sm:px-6 sm:py-28">
         <div className="mx-auto max-w-[800px]">
           <div className="text-center">
             <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">{T.landing.faq.title}</h2>
-            <p className="mt-3 text-muted-foreground">{T.landing.faq.subtitle}</p>
+            <p className="mt-3 leading-relaxed text-muted-foreground">{T.landing.faq.subtitle}</p>
           </div>
           <div className="mt-10">
             {T.landing.faq.items.map((item, i) => (
@@ -609,7 +609,6 @@ export function LandingContent({ demoCalendar }: LandingContentProps) {
             />
 
             <h2 className="relative text-3xl font-bold tracking-tight sm:text-4xl">{T.landing.finalCta.title}</h2>
-            <p className="relative mx-auto mt-3 max-w-xl text-white/80">{T.landing.finalCta.subtitle}</p>
 
             <div className="relative mt-8 flex flex-wrap items-center justify-center gap-3">
               <Button
