@@ -69,7 +69,7 @@ export function CalendarDialog({ open, onOpenChange, editing, onSubmit, isPendin
         <Dialog.Popup className={cn(
           "fixed left-1/2 top-1/2 z-50 w-full max-w-md -translate-x-1/2 -translate-y-1/2",
           "border border-border/60 bg-background p-6 shadow-xl",
-          "transition-all duration-200 overflow-y-auto max-h-[88vh]",
+          "transition-[transform,opacity] duration-200 overflow-y-auto max-h-[88vh]",
           "data-[starting-style]:opacity-0 data-[starting-style]:scale-95",
           "data-[ending-style]:opacity-0 data-[ending-style]:scale-95"
         )}>

@@ -185,7 +185,7 @@ export function EditEventDialog({ open, onOpenChange, plan, event }: EditEventDi
         <Dialog.Popup className={cn(
           "fixed left-1/2 top-1/2 z-50 flex h-[min(92vh,56rem)] w-[min(96vw,52rem)] -translate-x-1/2 -translate-y-1/2 flex-col",
           "border border-border/60 bg-background shadow-xl",
-          "transition-all duration-200",
+          "transition-[transform,opacity] duration-200",
           "data-[starting-style]:opacity-0 data-[starting-style]:scale-95",
           "data-[ending-style]:opacity-0 data-[ending-style]:scale-95"
         )}>
