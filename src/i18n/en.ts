@@ -812,12 +812,12 @@ export const en = {
 
   privacy: {
     title: "Privacy Policy",
-    lastUpdated: "Last updated: June 2025",
+    lastUpdated: "Last updated: June 2026",
   },
 
   terms: {
     title: "Terms of Service",
-    lastUpdated: "Last updated: June 2025",
+    lastUpdated: "Last updated: June 2026",
   },
 } as const;
 

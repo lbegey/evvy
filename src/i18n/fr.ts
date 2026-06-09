@@ -815,11 +815,11 @@ export const fr: Translations = {
 
   privacy: {
     title: "Politique de confidentialité",
-    lastUpdated: "Dernière mise à jour : Juin 2025",
+    lastUpdated: "Dernière mise à jour : Juin 2026",
   },
 
   terms: {
     title: "Conditions d'utilisation",
-    lastUpdated: "Dernière mise à jour : Juin 2025",
+    lastUpdated: "Dernière mise à jour : Juin 2026",
   },
 };
