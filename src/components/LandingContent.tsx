@@ -3,7 +3,6 @@
 import { useState } from "react";
 import Link from "next/link";
 import {
-  Sparkles,
   CheckCircle2,
   ChevronDown,
   Mail,
@@ -298,11 +297,6 @@ export function LandingContent({ demoCalendar }: LandingContentProps) {
         {/* Calendar backdrop */}
         <HeroCalendarBackdrop />
         <div className="relative mx-auto max-w-5xl text-center">
-          <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/5 px-4 py-1.5 text-xs font-medium text-primary animate-fade-in-up">
-            <Sparkles className="h-3 w-3" />
-            {T.landing.hero.badge}
-          </div>
-
           <h1
             className="text-4xl font-bold tracking-tight sm:text-6xl lg:text-7xl animate-fade-in-up"
             style={{ animationDelay: "0.1s" }}
@@ -370,12 +364,6 @@ export function LandingContent({ demoCalendar }: LandingContentProps) {
                     </li>
                   ))}
                 </ul>
-                <Link
-                  href="/register"
-                  className="mt-6 inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/5 px-4 py-2 text-sm font-medium text-primary transition-colors hover:bg-primary/10"
-                >
-                  {f.cta}
-                </Link>
               </div>
               <div className={cn("animate-fade-in-up", f.reverse && "lg:order-1")} style={{ animationDelay: `${0.05 * i + 0.1}s` }}>
                 {f.mockup}
@@ -404,12 +392,6 @@ export function LandingContent({ demoCalendar }: LandingContentProps) {
                 </li>
               ))}
             </ul>
-            <Link
-              href="/register"
-              className="mt-6 inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/5 px-4 py-2 text-sm font-medium text-primary transition-colors hover:bg-primary/10"
-            >
-              {T.landing.branding.cta}
-            </Link>
           </div>
         </div>
       </section>
@@ -430,7 +412,7 @@ export function LandingContent({ demoCalendar }: LandingContentProps) {
                 rel="noopener noreferrer"
                 className="group block border-b border-border/60 bg-muted/30 px-6 py-5 transition-colors hover:bg-muted/50"
               >
-                <div className="flex items-center justify-between gap-3">
+                <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between sm:gap-3">
                   <div className="min-w-0">
                     <p className="truncate text-base font-semibold text-foreground">{T.landing.demo.calendarName}</p>
                     <p className="mt-0.5 text-sm text-muted-foreground">{T.landing.demo.calendarDescription}</p>
