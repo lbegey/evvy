@@ -242,35 +242,35 @@ export function EditEventDialog({ open, onOpenChange, plan, event }: EditEventDi
               </div>
 
               <div className="space-y-2.5 rounded-xl border border-border/60 bg-muted/10 p-3">
-                <div className="flex items-end gap-2">
-                  <span className="w-9 shrink-0 pb-2.5 text-xs font-medium text-muted-foreground">
-                    {T.eventForm.from}
-                  </span>
-                  <div className="flex-1 space-y-1.5">
-                    <Label htmlFor="ed-start-date">{T.eventForm.date} *</Label>
-                    <Input id="ed-start-date" type="date" disabled={dateLocked} {...form.register("startDate")} />
-                  </div>
-                  {!allDay && (
-                    <div className="flex-1 space-y-1.5">
-                      <Label htmlFor="ed-start-time">{T.eventForm.start} *</Label>
-                      <Input id="ed-start-time" type="time" disabled={dateLocked} {...form.register("startTime")} />
+                <div className="space-y-1.5">
+                  <span className="text-xs font-medium text-muted-foreground">{T.eventForm.from}</span>
+                  <div className="flex items-end gap-2">
+                    <div className="min-w-0 flex-1 space-y-1.5">
+                      <Label htmlFor="ed-start-date">{T.eventForm.date} *</Label>
+                      <Input id="ed-start-date" type="date" disabled={dateLocked} {...form.register("startDate")} />
                     </div>
-                  )}
+                    {!allDay && (
+                      <div className="w-[104px] shrink-0 space-y-1.5">
+                        <Label htmlFor="ed-start-time">{T.eventForm.start} *</Label>
+                        <Input id="ed-start-time" type="time" disabled={dateLocked} {...form.register("startTime")} />
+                      </div>
+                    )}
+                  </div>
                 </div>
-                <div className="flex items-end gap-2">
-                  <span className="w-9 shrink-0 pb-2.5 text-xs font-medium text-muted-foreground">
-                    {T.eventForm.to}
-                  </span>
-                  <div className="flex-1 space-y-1.5">
-                    <Label htmlFor="ed-end-date">{T.eventForm.date} *</Label>
-                    <Input id="ed-end-date" type="date" min={startDate} disabled={dateLocked} {...form.register("endDate")} />
-                  </div>
-                  {!allDay && (
-                    <div className="flex-1 space-y-1.5">
-                      <Label htmlFor="ed-end-time">{T.eventForm.end} *</Label>
-                      <Input id="ed-end-time" type="time" disabled={dateLocked} {...form.register("endTime")} />
+                <div className="space-y-1.5">
+                  <span className="text-xs font-medium text-muted-foreground">{T.eventForm.to}</span>
+                  <div className="flex items-end gap-2">
+                    <div className="min-w-0 flex-1 space-y-1.5">
+                      <Label htmlFor="ed-end-date">{T.eventForm.date} *</Label>
+                      <Input id="ed-end-date" type="date" min={startDate} disabled={dateLocked} {...form.register("endDate")} />
                     </div>
-                  )}
+                    {!allDay && (
+                      <div className="w-[104px] shrink-0 space-y-1.5">
+                        <Label htmlFor="ed-end-time">{T.eventForm.end} *</Label>
+                        <Input id="ed-end-time" type="time" disabled={dateLocked} {...form.register("endTime")} />
+                      </div>
+                    )}
+                  </div>
                 </div>
                 {form.formState.errors.endDate && (
                   <p className="text-xs text-destructive">{T.eventForm.errors.endBeforeStart}</p>
