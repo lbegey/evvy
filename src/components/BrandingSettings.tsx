@@ -182,7 +182,16 @@ export function BrandingSettings({
             className="rounded-xl border p-4 bg-cover bg-center overflow-hidden"
             style={{
               ...(previewColor ? { "--primary": previewColor, "--border": previewColor, "--ring": previewColor } as CSSProperties : {}),
-              ...(previewTextColor ? { "--foreground": previewTextColor, "--card-foreground": previewTextColor } as CSSProperties : {}),
+              ...(previewTextColor ? {
+                "--foreground": previewTextColor,
+                "--card-foreground": previewTextColor,
+                "--popover-foreground": previewTextColor,
+                "--muted-foreground": previewTextColor,
+                "--primary-foreground": previewTextColor,
+                "--secondary-foreground": previewTextColor,
+                "--accent-foreground": previewTextColor,
+              } as CSSProperties : {}),
+              ...(previewCardColor ? { "--card": previewCardColor, "--background": previewCardColor } as CSSProperties : {}),
               ...(previewBackgroundColor ? { backgroundColor: previewBackgroundColor } : {}),
               ...(backgroundImageUrl ? { backgroundImage: `url(${JSON.stringify(backgroundImageUrl)})`, backgroundSize: "cover", backgroundPosition: "center" } : {}),
             }}
@@ -192,7 +201,7 @@ export function BrandingSettings({
               style={previewCardColor ? { backgroundColor: previewCardColor } : undefined}
             >
               {logoUrl && (
-                <img src={logoUrl} alt="" style={{ height: logoSize }} className="w-auto object-contain mb-1" />
+                <img src={logoUrl} alt="" style={{ height: logoSize }} className="w-auto max-w-full object-contain mb-1" />
               )}
               <p className="text-sm font-semibold text-foreground">Event title</p>
               <p className="text-xs text-muted-foreground">Mon 9 Jun · 10:00 – 11:00</p>

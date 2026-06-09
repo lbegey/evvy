@@ -27,6 +27,7 @@ export function BrandingColorField({
           type="color"
           value={hex}
           onChange={(e) => onChange(e.target.value)}
+          onBlur={onBlur}
           className="h-8 w-10 shrink-0 cursor-pointer rounded border border-input bg-transparent p-0.5"
         />
         <Input

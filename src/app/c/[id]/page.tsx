@@ -225,7 +225,7 @@ export default async function PublicCalendarPage({
                 src={brandLogoUrl}
                 alt=""
                 style={{ height: brandLogoSize }}
-                className={cn("w-auto object-contain opacity-90", brandLogoRounded && "rounded-lg")}
+                className={cn("w-auto max-w-full object-contain opacity-90", brandLogoRounded && "rounded-lg")}
               />
             </span>
           </div>
