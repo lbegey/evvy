@@ -127,7 +127,7 @@ export function AdminUsersManager({ currentUserId, users }: AdminUsersManagerPro
           <p className="text-xs text-muted-foreground">{T.admin.stats.activeSubscribers}</p>
           <p className="mt-1 text-2xl font-bold text-foreground">{activeSubscriberCount}</p>
         </div>
-        <div className="rounded-xl border border-border/60 p-4">
+        <div className="rounded-xl border border-border/60 bg-muted/40 p-4">
           <p className="text-xs text-muted-foreground">{T.admin.stats.monthlyRevenue}</p>
           <p className="mt-1 text-2xl font-bold text-foreground">{currencyFmt.format(monthlyRevenue)}</p>
         </div>
