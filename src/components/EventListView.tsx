@@ -4,6 +4,7 @@ import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { CalendarX2, Copy, Check, Trash2 } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import type { CalendarEvent } from "@/components/CalendarView";
 import { deleteEvent } from "@/app/actions/events";
 import { useLanguage } from "@/contexts/LanguageContext";
@@ -95,30 +96,27 @@ export function EventListView({ events, emptyMessage, plan }: EventListViewProps
               </p>
             </div>
             <div className="relative z-20 flex shrink-0 items-center gap-1.5">
-              <button
-                type="button"
+              <Button
+                variant="ghost"
+                size="icon-sm"
                 onClick={() => handleCopy(ev)}
                 aria-label={copiedId === ev.id ? T.common.copied : T.common.copyUrl}
                 title={copiedId === ev.id ? T.common.copied : T.common.copyUrl}
-                className={cn(
-                  "inline-flex items-center justify-center rounded-lg border border-border/60 p-2 transition-colors",
-                  copiedId === ev.id
-                    ? "border-green-500/40 bg-green-50 text-green-700"
-                    : "text-muted-foreground hover:bg-muted hover:text-foreground"
-                )}
+                className={cn(copiedId === ev.id && "border border-green-500/40 bg-green-50 text-green-700 hover:bg-green-50 hover:text-green-700")}
               >
                 {copiedId === ev.id ? <Check className="h-3.5 w-3.5" /> : <Copy className="h-3.5 w-3.5" />}
-              </button>
+              </Button>
               {plan === "premium" && (
-                <button
-                  type="button"
+                <Button
+                  variant="ghost"
+                  size="icon-sm"
                   onClick={() => handleDelete(ev)}
                   disabled={isDeleting}
-                  className="inline-flex items-center justify-center rounded-lg border border-border/60 p-2 text-muted-foreground transition-colors hover:bg-destructive/10 hover:text-destructive disabled:pointer-events-none disabled:opacity-50"
                   aria-label={T.eventDetail.delete}
+                  className="text-muted-foreground hover:bg-destructive/10 hover:text-destructive"
                 >
                   <Trash2 className="h-3.5 w-3.5" />
-                </button>
+                </Button>
               )}
             </div>
           </div>

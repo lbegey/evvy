@@ -138,55 +138,60 @@ export function CalendarsManager({ calendars, appUrl, plan }: CalendarsManagerPr
           <p className="text-sm text-muted-foreground">{T.calendars.noResults}</p>
         </div>
       ) : (
-        <ul className="space-y-2.5">
-          {pagedCalendars.map((calendar) => (
-            <li
-              key={calendar.id}
-              className="group relative flex flex-wrap items-center justify-between gap-3 rounded-xl border border-border/60 p-4 transition-colors hover:bg-muted/40"
-            >
-              <Link
-                href={`/dashboard/calendars/${calendar.id}`}
-                className="absolute inset-0 z-10 rounded-xl"
-                aria-label={calendar.name}
-              />
-              <div className="relative flex min-w-0 items-center gap-3">
-                <span
-                  className="h-3 w-3 shrink-0 rounded-full border border-border/60"
-                  style={{ backgroundColor: /^#[0-9a-fA-F]{3,8}$/.test(calendar.color ?? "") ? calendar.color! : undefined }}
+        <ul className="space-y-2">
+          {pagedCalendars.map((calendar) => {
+            const hasColor = /^#[0-9a-fA-F]{3,8}$/.test(calendar.color ?? "");
+            return (
+              <li
+                key={calendar.id}
+                className="group relative flex items-center gap-3 rounded-xl border border-border/60 bg-background p-3 transition-colors hover:bg-muted/20"
+              >
+                <Link
+                  href={`/dashboard/calendars/${calendar.id}`}
+                  className="absolute inset-0 z-10 rounded-xl"
+                  aria-label={calendar.name}
                 />
-                <div className="min-w-0">
-                  <p className="truncate text-sm font-medium text-foreground transition-colors group-hover:text-primary">{calendar.name}</p>
-                  <p className="text-xs text-muted-foreground">
+                <div
+                  className="flex w-12 shrink-0 items-center justify-center rounded-lg bg-muted/50 py-3"
+                  style={hasColor ? { backgroundColor: `${calendar.color}20` } : undefined}
+                >
+                  <CalendarRange
+                    className="h-5 w-5 text-muted-foreground"
+                    style={hasColor ? { color: calendar.color! } : undefined}
+                  />
+                </div>
+                <div className="min-w-0 flex-1">
+                  <p className="truncate text-sm font-medium text-foreground">{calendar.name}</p>
+                  <p className="truncate text-xs text-muted-foreground">
                     {calendar.eventCount} {calendar.eventCount === 1 ? T.calendars.event : T.calendars.events}
+                    {calendar.description ? ` · ${calendar.description}` : ""}
                   </p>
                 </div>
-              </div>
-
-              <div className="relative z-20 ml-auto flex shrink-0 items-center gap-1.5">
-                <Button
-                  variant="ghost"
-                  size="icon-sm"
-                  onClick={() => handleCopy(calendar.id)}
-                  title={copiedId === calendar.id ? T.common.copied : T.common.copyUrl}
-                  aria-label={copiedId === calendar.id ? T.common.copied : T.common.copyUrl}
-                  className={cn(copiedId === calendar.id && "border border-green-500/40 bg-green-50 text-green-700 hover:bg-green-50 hover:text-green-700")}
-                >
-                  {copiedId === calendar.id ? <Check className="h-3.5 w-3.5" /> : <Copy className="h-3.5 w-3.5" />}
-                </Button>
-
-                <Button
-                  variant="ghost"
-                  size="icon-sm"
-                  onClick={() => handleDelete(calendar.id)}
-                  disabled={isDeleting}
-                  aria-label={T.calendars.delete}
-                  className="text-muted-foreground hover:bg-destructive/10 hover:text-destructive"
-                >
-                  <Trash2 className="h-3.5 w-3.5" />
-                </Button>
-              </div>
-            </li>
-          ))}
+                <div className="relative z-20 flex shrink-0 items-center gap-1.5">
+                  <Button
+                    variant="ghost"
+                    size="icon-sm"
+                    onClick={() => handleCopy(calendar.id)}
+                    title={copiedId === calendar.id ? T.common.copied : T.common.copyUrl}
+                    aria-label={copiedId === calendar.id ? T.common.copied : T.common.copyUrl}
+                    className={cn(copiedId === calendar.id && "border border-green-500/40 bg-green-50 text-green-700 hover:bg-green-50 hover:text-green-700")}
+                  >
+                    {copiedId === calendar.id ? <Check className="h-3.5 w-3.5" /> : <Copy className="h-3.5 w-3.5" />}
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="icon-sm"
+                    onClick={() => handleDelete(calendar.id)}
+                    disabled={isDeleting}
+                    aria-label={T.calendars.delete}
+                    className="text-muted-foreground hover:bg-destructive/10 hover:text-destructive"
+                  >
+                    <Trash2 className="h-3.5 w-3.5" />
+                  </Button>
+                </div>
+              </li>
+            );
+          })}
         </ul>
       )}
 
