@@ -14,10 +14,37 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? "https://evvycal.app";
+
 export const metadata: Metadata = {
-  title: "Evvy — Add to Calendar, instantly",
+  metadataBase: new URL(APP_URL),
+  title: {
+    default: "Evvy — Share your events, beautifully",
+    template: "%s | Evvy",
+  },
   description:
-    "Create beautiful add-to-calendar links and buttons for your events. Works with Google Calendar, Apple Calendar, Outlook, and more.",
+    "Create shareable event and calendar pages in seconds. Let guests add events to Google Calendar, Apple, Outlook, and more — with one click.",
+  openGraph: {
+    type: "website",
+    siteName: "Evvy",
+    title: "Evvy — Share your events, beautifully",
+    description:
+      "Create shareable event and calendar pages in seconds. Let guests add events to Google Calendar, Apple, Outlook, and more — with one click.",
+    url: APP_URL,
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Evvy — Share your events, beautifully",
+    description:
+      "Create shareable event and calendar pages in seconds. Let guests add events to Google Calendar, Apple, Outlook, and more — with one click.",
+  },
+  alternates: {
+    canonical: APP_URL,
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
 };
 
 export default function RootLayout({

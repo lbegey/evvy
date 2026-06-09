@@ -1,5 +1,6 @@
 import Link from "next/link";
 import type { CSSProperties } from "react";
+import type { Metadata } from "next";
 import { headers, cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { CalendarDays, CalendarOff, Clock, Globe, MapPin, Mail, Pencil } from "lucide-react";
@@ -14,6 +15,49 @@ import { getAppUrl } from "@/lib/url";
 import { cn } from "@/lib/utils";
 import { en } from "@/i18n/en";
 import { fr } from "@/i18n/fr";
+
+const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? "https://evvycal.app";
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}): Promise<Metadata> {
+  const { id } = await params;
+  const event = await db.event.findFirst({
+    where: { OR: [{ id }, { slug: id }] },
+    select: { title: true, description: true, imageUrl: true, slug: true, startAt: true, location: true, isOnline: true },
+  });
+  if (!event) return { title: "Event not found" };
+
+  const canonicalId = event.slug ?? id;
+  const url = `${APP_URL}/e/${canonicalId}`;
+  const desc = event.description
+    ? event.description.replace(/[#*_`[\]]/g, "").slice(0, 160)
+    : [
+        event.startAt.toLocaleDateString("en-US", { dateStyle: "long" }),
+        event.isOnline ? "Online" : event.location,
+      ].filter(Boolean).join(" · ");
+
+  return {
+    title: event.title,
+    description: desc,
+    alternates: { canonical: url },
+    openGraph: {
+      title: event.title,
+      description: desc,
+      url,
+      type: "website",
+      ...(event.imageUrl ? { images: [{ url: event.imageUrl, alt: event.title }] } : {}),
+    },
+    twitter: {
+      card: event.imageUrl ? "summary_large_image" : "summary",
+      title: event.title,
+      description: desc,
+      ...(event.imageUrl ? { images: [event.imageUrl] } : {}),
+    },
+  };
+}
 
 const CAL_SERVICES = [
   { key: "google",    name: "Google Calendar", logo: "/logos/google-calendar.png" },
@@ -147,8 +191,32 @@ export default async function PublicEventPage({
     ? `https://maps.google.com/?q=${encodeURIComponent(event.location)}`
     : null;
 
+  const canonicalEventId = event.slug ?? event.id;
+  const eventUrl = `${APP_URL}/e/${canonicalEventId}`;
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Event",
+    name: event.title,
+    ...(event.description ? { description: event.description.replace(/[#*_`[\]]/g, "").slice(0, 300) } : {}),
+    startDate: event.startAt.toISOString(),
+    endDate: event.endAt.toISOString(),
+    eventStatus: "https://schema.org/EventScheduled",
+    eventAttendanceMode: event.isOnline
+      ? "https://schema.org/OnlineEventAttendanceMode"
+      : "https://schema.org/OfflineEventAttendanceMode",
+    ...(event.location
+      ? event.isOnline
+        ? { location: { "@type": "VirtualLocation", url: event.location } }
+        : { location: { "@type": "Place", name: event.location, address: event.location } }
+      : {}),
+    ...(event.imageUrl ? { image: event.imageUrl } : {}),
+    url: eventUrl,
+    organizer: { "@type": "Organization", name: "Evvy", url: APP_URL },
+  };
+
   return (
     <div className="flex min-h-screen flex-col justify-center bg-muted/20 py-6 px-4 sm:py-8" style={brandStyle}>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       <PageViewTracker id={event.id} />
       <EventLiveRefresh id={event.id} updatedAt={event.updatedAt.toISOString()} />
 

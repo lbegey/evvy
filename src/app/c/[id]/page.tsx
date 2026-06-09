@@ -1,5 +1,6 @@
 import Link from "next/link";
 import type { CSSProperties } from "react";
+import type { Metadata } from "next";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { CalendarRange, CalendarOff, Clock, MapPin } from "lucide-react";
@@ -11,6 +12,34 @@ import { cn } from "@/lib/utils";
 import { buildGoogleSubscribeUrl, buildOutlookSubscribeUrl, buildOffice365SubscribeUrl } from "@/lib/calendar-urls";
 import { en } from "@/i18n/en";
 import { fr } from "@/i18n/fr";
+
+const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? "https://evvycal.app";
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}): Promise<Metadata> {
+  const { id } = await params;
+  const calendar = await db.calendar.findFirst({
+    where: { OR: [{ id }, { slug: id }] },
+    select: { name: true, description: true, slug: true, _count: { select: { events: true } } },
+  });
+  if (!calendar) return { title: "Calendar not found" };
+
+  const canonicalId = calendar.slug ?? id;
+  const url = `${APP_URL}/c/${canonicalId}`;
+  const count = calendar._count.events;
+  const desc = calendar.description ?? `${count} event${count === 1 ? "" : "s"}`;
+
+  return {
+    title: calendar.name,
+    description: desc,
+    alternates: { canonical: url },
+    openGraph: { title: calendar.name, description: desc, url, type: "website" },
+    twitter: { card: "summary", title: calendar.name, description: desc },
+  };
+}
 
 const CAL_SERVICES = [
   { key: "google",    name: "Google Calendar", logo: "/logos/google-calendar.png" },
