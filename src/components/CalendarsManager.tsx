@@ -151,15 +151,10 @@ export function CalendarsManager({ calendars, appUrl, plan }: CalendarsManagerPr
                   className="absolute inset-0 z-10 rounded-xl"
                   aria-label={calendar.name}
                 />
-                <div
-                  className="flex w-12 shrink-0 items-center justify-center rounded-lg bg-muted/50 py-3"
-                  style={hasColor ? { backgroundColor: `${calendar.color}20` } : undefined}
-                >
-                  <CalendarRange
-                    className="h-5 w-5 text-muted-foreground"
-                    style={hasColor ? { color: calendar.color! } : undefined}
-                  />
-                </div>
+                <span
+                  className="h-3 w-3 shrink-0 rounded-full"
+                  style={{ backgroundColor: hasColor ? calendar.color! : "var(--muted-foreground)" }}
+                />
                 <div className="min-w-0 flex-1">
                   <p className="truncate text-sm font-medium text-foreground">{calendar.name}</p>
                   <p className="truncate text-xs text-muted-foreground">
