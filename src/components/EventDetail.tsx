@@ -295,9 +295,51 @@ export function EventDetail({ event, appUrl, plan, calendars, stats, rsvps, ques
   };
 
   return (
-    <div className="mx-auto max-w-6xl px-4 py-6 sm:px-6 sm:py-8 lg:flex lg:items-start lg:gap-8">
+    <>
+      {/* Fixed action bar */}
+      <div className="fixed top-16 left-0 right-0 z-40 border-b border-border/60 bg-background/95 backdrop-blur-sm">
+        <div className="mx-auto flex h-12 max-w-6xl items-center justify-between px-4 sm:px-6">
+          <Link
+            href={backUrl}
+            className="inline-flex items-center gap-1.5 text-sm text-muted-foreground transition-colors hover:text-foreground"
+          >
+            <ArrowLeft className="h-4 w-4" />
+            <span className="hidden sm:inline">{T.eventDetail.backToCalendar}</span>
+          </Link>
+          <div className="flex items-center gap-2">
+            <Button
+              size="sm"
+              variant="outline"
+              className="gap-1.5"
+              nativeButton={false}
+              render={<a href={publicUrl} target="_blank" rel="noopener noreferrer" />}
+            >
+              <ExternalLink className="h-3.5 w-3.5" />
+              <span className="hidden sm:inline">{T.common.open}</span>
+            </Button>
+            <Button size="sm" variant="outline" className="gap-1.5" onClick={() => setEditOpen(true)}>
+              <Pencil className="h-3.5 w-3.5" />
+              <span className="hidden sm:inline">{T.eventDetail.edit}</span>
+            </Button>
+            {plan === "premium" && (
+              <Button
+                size="sm"
+                variant="outline"
+                className="gap-1.5 text-destructive hover:text-destructive"
+                onClick={handleDelete}
+                disabled={isDeleting}
+              >
+                <Trash2 className="h-3.5 w-3.5" />
+                <span className="hidden sm:inline">{isDeleting ? T.eventDetail.deleting : T.eventDetail.delete}</span>
+              </Button>
+            )}
+          </div>
+        </div>
+      </div>
+
+    <div className="mx-auto max-w-6xl px-4 pt-20 pb-6 sm:px-6 sm:pt-24 sm:pb-8 lg:flex lg:items-start lg:gap-8">
       {/* Sidebar navigation */}
-      <aside className="hidden shrink-0 lg:sticky lg:top-20 lg:block lg:w-44">
+      <aside className="hidden shrink-0 lg:sticky lg:top-28 lg:block lg:w-44">
         <nav className="space-y-0.5">
           {SIDEBAR_SECTIONS.map(({ id, labelKey, icon: Icon }) => (
             <a
@@ -318,54 +360,7 @@ export function EventDetail({ event, appUrl, plan, calendars, stats, rsvps, ques
       </aside>
 
       <div className="min-w-0 max-w-4xl flex-1 space-y-6 sm:space-y-8">
-      {/* Nav */}
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <Link
-          href={backUrl}
-          className="inline-flex items-center gap-1.5 text-sm text-muted-foreground transition-colors hover:text-foreground"
-        >
-          <ArrowLeft className="h-4 w-4" />
-          {T.eventDetail.backToCalendar}
-        </Link>
-        <div className="flex items-center gap-2">
-          <Button size="sm" variant="outline" className="gap-1.5" onClick={() => setEditOpen(true)}>
-            <Pencil className="h-3.5 w-3.5" />
-            {T.eventDetail.edit}
-          </Button>
-          {plan === "premium" && (
-            <Button
-              size="sm"
-              variant="outline"
-              className="gap-1.5 text-destructive hover:text-destructive"
-              onClick={handleDelete}
-              disabled={isDeleting}
-            >
-              <Trash2 className="h-3.5 w-3.5" />
-              {isDeleting ? T.eventDetail.deleting : T.eventDetail.delete}
-            </Button>
-          )}
-        </div>
-      </div>
       {deleteError && <p className="text-sm text-destructive">{deleteError}</p>}
-
-      {/* Mobile section nav */}
-      <nav className="hidden">
-        {SIDEBAR_SECTIONS.map(({ id, labelKey, icon: Icon }) => (
-          <a
-            key={id}
-            href={`#${id}`}
-            className={cn(
-              "flex shrink-0 items-center gap-1.5 rounded-full border px-3 py-1 text-xs transition-colors",
-              activeSection === id
-                ? "border-primary/40 bg-primary/10 text-primary font-medium"
-                : "border-border/60 text-muted-foreground hover:bg-muted hover:text-foreground"
-            )}
-          >
-            <Icon className="h-3.5 w-3.5 shrink-0" />
-            {T.eventDetail.sidebar[labelKey]}
-          </a>
-        ))}
-      </nav>
 
       {/* Event info */}
       <div id="info" className="scroll-mt-24">
@@ -756,5 +751,6 @@ export function EventDetail({ event, appUrl, plan, calendars, stats, rsvps, ques
       />
       </div>
     </div>
+    </>
   );
 }
