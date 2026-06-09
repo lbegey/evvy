@@ -268,13 +268,14 @@ export function CalendarView({ events, calendars, plan, initialYear, initialMont
             title={label}
             aria-label={label}
             className={cn(
-              "flex flex-1 cursor-pointer items-center justify-center rounded-md py-1.5 transition-colors",
+              "flex flex-1 cursor-pointer items-center justify-center gap-1.5 rounded-md py-1.5 transition-colors",
               viewMode === id
                 ? "bg-background text-foreground shadow-sm"
                 : "text-muted-foreground hover:text-foreground"
             )}
           >
             <Icon className="h-4 w-4 shrink-0" />
+            <span className="hidden text-xs font-medium sm:inline">{label}</span>
           </button>
         ))}
       </div>
