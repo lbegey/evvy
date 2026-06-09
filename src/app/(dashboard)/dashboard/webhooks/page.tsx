@@ -44,7 +44,7 @@ export default async function WebhooksPage() {
   }
 
   return (
-    <section className="mx-auto max-w-2xl space-y-6 px-4 py-6 sm:space-y-8 sm:px-6 sm:py-8">
+    <section className="mx-auto max-w-6xl space-y-6 px-4 py-6 sm:space-y-8 sm:px-6 sm:py-8">
       <WebhookManager plan={plan} webhook={webhookData} />
     </section>
   );
