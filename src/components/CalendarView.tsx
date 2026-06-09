@@ -298,10 +298,10 @@ export function CalendarView({ events, calendars, plan, initialYear, initialMont
         </div>
       </div>
 
-      {/* Row 2: title/nav + filters + search */}
-      <div className="flex flex-wrap items-center justify-between gap-2">
+      {/* Row 2: title/nav (left) + search+reset (right) */}
+      <div className="flex items-center justify-between gap-2">
         {/* Left: title + calendar nav */}
-        <div className="flex items-center gap-1">
+        <div className="flex min-w-0 items-center gap-1">
           {viewMode === "calendar" ? (
             <>
               <div className="flex items-center gap-0.5">
@@ -312,7 +312,7 @@ export function CalendarView({ events, calendars, plan, initialYear, initialMont
                   <ChevronLeft className="h-4 w-4" />
                 </Button>
               </div>
-              <h1 className="min-w-[120px] text-center text-base font-semibold tracking-tight sm:text-lg">
+              <h1 className="min-w-[112px] text-center text-sm font-semibold tracking-tight sm:min-w-[128px] sm:text-base">
                 {T.calendar.months[month]}{" "}
                 <span className="text-muted-foreground">{year}</span>
               </h1>
@@ -331,14 +331,39 @@ export function CalendarView({ events, calendars, plan, initialYear, initialMont
               )}
             </>
           ) : (
-            <h1 className="text-base font-semibold tracking-tight sm:text-lg">
+            <h1 className="text-sm font-semibold tracking-tight sm:text-base">
               {T.calendar.viewModes[viewMode]}
             </h1>
           )}
         </div>
 
-        {/* Right: filters + search */}
-        <div className="flex items-center gap-1.5">
+        {/* Right: search + reset */}
+        <div className="flex shrink-0 items-center gap-1.5">
+          <div className="relative">
+            <Search className="pointer-events-none absolute top-1/2 left-2.5 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground" />
+            <Input
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder={T.calendar.searchPlaceholder}
+              className="w-28 pl-8 text-xs sm:w-40"
+            />
+          </div>
+          <Button
+            variant="outline"
+            size="icon-sm"
+            onClick={resetFilters}
+            aria-label={T.calendar.resetFilters}
+            title={T.calendar.resetFilters}
+            className="shrink-0"
+          >
+            <RotateCcw className="h-4 w-4" />
+          </Button>
+        </div>
+      </div>
+
+      {/* Row 3: filters (only when relevant) */}
+      {(calendars.length > 0 || eventTimezones.length > 0) && (
+        <div className="flex flex-wrap items-center gap-1.5">
           {calendars.length > 0 && (
             <select
               value={calendarFilter}
@@ -375,29 +400,8 @@ export function CalendarView({ events, calendars, plan, initialYear, initialMont
               ))}
             </select>
           )}
-
-          <div className="relative">
-            <Search className="pointer-events-none absolute top-1/2 left-2.5 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground" />
-            <Input
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              placeholder={T.calendar.searchPlaceholder}
-              className="w-36 pl-8 text-xs sm:w-44"
-            />
-          </div>
-
-          <Button
-            variant="outline"
-            size="icon-sm"
-            onClick={resetFilters}
-            aria-label={T.calendar.resetFilters}
-            title={T.calendar.resetFilters}
-            className="shrink-0"
-          >
-            <RotateCcw className="h-4 w-4" />
-          </Button>
         </div>
-      </div>
+      )}
 
       {viewMode !== "calendar" && (
         <EventListView
