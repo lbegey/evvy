@@ -107,21 +107,21 @@ export function CalendarsManager({ calendars, appUrl, plan }: CalendarsManagerPr
         </div>
       )}
 
-      <div className="flex flex-wrap items-center justify-between gap-3">
+      <div className="flex items-center gap-2">
         {calendars.length > 0 && (
-          <div className="relative min-w-0 flex-1 sm:max-w-xs">
+          <div className="relative min-w-0 flex-1">
             <Search className="pointer-events-none absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground" />
             <Input
               value={search}
               onChange={(e) => handleSearchChange(e.target.value)}
               placeholder={T.calendars.searchPlaceholder}
-              className="pl-8 text-xs"
+              className="w-full pl-8 text-xs"
             />
           </div>
         )}
-        <Button onClick={openCreate} disabled={atFreeLimit} className="shrink-0 gap-1.5">
+        <Button onClick={openCreate} disabled={atFreeLimit} size="sm" className="shrink-0 gap-1.5">
           <Plus className="h-4 w-4" />
-          {T.calendars.create}
+          <span className="hidden sm:inline">{T.calendars.create}</span>
         </Button>
       </div>
 
