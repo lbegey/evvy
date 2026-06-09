@@ -2,6 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { MailCheck, X, Loader2 } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import { authClient } from "@/lib/auth-client";
 import { useLanguage } from "@/contexts/LanguageContext";
 
@@ -39,9 +40,9 @@ export function VerificationBanner() {
             <span className="ml-1 font-medium text-amber-700">{T.auth.verification.resent}</span>
           )}
         </div>
-        <button type="button" onClick={() => setDismissed(true)} className="shrink-0 text-amber-600">
+        <Button variant="ghost" size="icon-sm" onClick={() => setDismissed(true)} className="shrink-0 text-amber-600 hover:bg-amber-100 hover:text-amber-700">
           <X className="h-4 w-4" />
-        </button>
+        </Button>
       </div>
     </div>
   );

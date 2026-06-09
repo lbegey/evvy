@@ -100,14 +100,9 @@ export function RsvpSection({ eventId, rsvpEnabled, rsvps, questions = [], expan
         </div>
         <div className="flex items-center gap-3">
           {onExpand && (
-            <button
-              type="button"
-              onClick={onExpand}
-              title={T.rsvpSection.expand}
-              className="cursor-pointer rounded-lg p-1.5 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-ring/50"
-            >
+            <Button variant="ghost" size="icon-sm" onClick={onExpand} title={T.rsvpSection.expand} aria-label={T.rsvpSection.expand}>
               <Maximize2 className="h-4 w-4" />
-            </button>
+            </Button>
           )}
           <span className={cn("text-xs font-medium", rsvpEnabled ? "text-primary" : "text-muted-foreground")}>
             {rsvpEnabled ? T.rsvpSection.enabled : T.rsvpSection.disabled}
@@ -200,27 +195,29 @@ export function RsvpSection({ eventId, rsvpEnabled, rsvps, questions = [], expan
                             <tr key={r.id} className="border-b border-border/30 last:border-0 hover:bg-muted/20">
                               <td className="px-3 py-2 text-left">
                                 <div className="flex items-center gap-0.5">
-                                  <button
-                                    type="button"
+                                  <Button
+                                    variant="ghost"
+                                    size="icon-sm"
                                     title={T.rsvpSection.delete}
+                                    aria-label={T.rsvpSection.delete}
                                     onClick={() => handleDelete(r.id)}
                                     disabled={deletingId === r.id}
-                                    className="cursor-pointer rounded-lg p-1.5 text-muted-foreground transition-colors hover:bg-destructive/10 hover:text-destructive focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-ring/50 disabled:pointer-events-none disabled:opacity-50"
+                                    className="text-muted-foreground hover:bg-destructive/10 hover:text-destructive"
                                   >
                                     <Trash2 className="h-3.5 w-3.5" />
-                                  </button>
+                                  </Button>
                                   {hasAnswers && (
-                                    <button
-                                      type="button"
+                                    <Button
+                                      variant="ghost"
+                                      size="icon-sm"
                                       onClick={() => setExpandedRows((prev) => {
                                         const next = new Set(prev);
                                         if (next.has(r.id)) next.delete(r.id); else next.add(r.id);
                                         return next;
                                       })}
-                                      className="cursor-pointer rounded-lg p-1.5 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
                                     >
                                       {isExpanded ? <ChevronUp className="h-3.5 w-3.5" /> : <ChevronDown className="h-3.5 w-3.5" />}
-                                    </button>
+                                    </Button>
                                   )}
                                 </div>
                               </td>

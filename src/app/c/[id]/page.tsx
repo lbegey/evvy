@@ -8,6 +8,7 @@ import { db } from "@/lib/db";
 import { Logo } from "@/components/Logo";
 import { CalendarLiveRefresh } from "@/components/CalendarLiveRefresh";
 import { getAppUrl } from "@/lib/url";
+import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { buildGoogleSubscribeUrl, buildOutlookSubscribeUrl, buildOffice365SubscribeUrl } from "@/lib/calendar-urls";
 import { en } from "@/i18n/en";
@@ -94,10 +95,7 @@ export default async function PublicCalendarPage({
           <p className="mt-2 text-sm text-muted-foreground">
             {T.publicCalendar.notFound.subtitle}
           </p>
-          <Link
-            href="/"
-            className="mt-6 inline-flex items-center gap-1.5 rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground cursor-pointer"
-          >
+          <Link href="/" className={cn(buttonVariants(), "mt-6")}>
             {T.publicCalendar.notFound.backHome}
           </Link>
         </div>

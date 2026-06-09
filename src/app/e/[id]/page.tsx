@@ -12,6 +12,7 @@ import { PageViewTracker } from "@/components/PageViewTracker";
 import { EventLiveRefresh } from "@/components/EventLiveRefresh";
 import { markdownToHtml } from "@/lib/markdown";
 import { getAppUrl } from "@/lib/url";
+import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { en } from "@/i18n/en";
 import { fr } from "@/i18n/fr";
@@ -115,10 +116,7 @@ export default async function PublicEventPage({
           <p className="mt-2 text-sm text-muted-foreground">
             {T.publicEvent.notFound.subtitle}
           </p>
-          <Link
-            href="/"
-            className="mt-6 inline-flex items-center gap-1.5 rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground cursor-pointer"
-          >
+          <Link href="/" className={cn(buttonVariants(), "mt-6")}>
             {T.publicEvent.notFound.backHome}
           </Link>
         </div>
@@ -279,7 +277,7 @@ export default async function PublicEventPage({
               {isCreator && (
                 <Link
                   href={`/dashboard/events/${event.id}`}
-                  className="inline-flex shrink-0 cursor-pointer items-center gap-1.5 rounded-lg border border-border/60 px-2.5 py-1.5 text-xs font-medium text-muted-foreground"
+                  className={cn(buttonVariants({ variant: "outline", size: "sm" }), "shrink-0 gap-1.5")}
                 >
                   <Pencil className="h-3 w-3" />
                   {T.publicEvent.edit}
