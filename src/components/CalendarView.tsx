@@ -257,96 +257,9 @@ export function CalendarView({ events, calendars, plan, initialYear, initialMont
   };
 
   return (
-    <div className="space-y-4 sm:space-y-6">
-      {/* Header */}
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div className="flex flex-wrap items-center gap-2 sm:gap-3">
-          {viewMode === "calendar" ? (
-            <h1 className="text-xl font-bold tracking-tight sm:text-2xl">
-              {T.calendar.months[month]}{" "}
-              <span className="text-muted-foreground">{year}</span>
-            </h1>
-          ) : (
-            <h1 className="text-xl font-bold tracking-tight sm:text-2xl">
-              {T.calendar.viewModes[viewMode]}
-            </h1>
-          )}
-        </div>
-
-        <div className="flex items-center gap-1.5 sm:gap-2">
-          {viewMode === "calendar" && !isCurrentPeriod && (
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() =>
-                setCurrent(new Date(today.getFullYear(), today.getMonth(), 1))
-              }
-              className="text-xs sm:text-sm"
-            >
-              {T.calendar.today}
-            </Button>
-          )}
-
-          {viewMode === "calendar" && (
-            <div className="flex items-center gap-0.5">
-              <Button
-                variant="ghost"
-                size="icon-sm"
-                onClick={() => setCurrent(new Date(year - 1, month, 1))}
-                aria-label={T.calendar.prevYear}
-              >
-                <ChevronsLeft className="h-4 w-4" />
-              </Button>
-              <Button
-                variant="ghost"
-                size="icon-sm"
-                onClick={() => setCurrent(new Date(year, month - 1, 1))}
-                aria-label={T.calendar.prevMonth}
-              >
-                <ChevronLeft className="h-4 w-4" />
-              </Button>
-              <Button
-                variant="ghost"
-                size="icon-sm"
-                onClick={() => setCurrent(new Date(year, month + 1, 1))}
-                aria-label={T.calendar.nextMonth}
-              >
-                <ChevronRight className="h-4 w-4" />
-              </Button>
-              <Button
-                variant="ghost"
-                size="icon-sm"
-                onClick={() => setCurrent(new Date(year + 1, month, 1))}
-                aria-label={T.calendar.nextYear}
-              >
-                <ChevronsRight className="h-4 w-4" />
-              </Button>
-            </div>
-          )}
-
-          {plan === "premium" && (
-            <Button
-              size="sm"
-              variant="outline"
-              className="gap-1.5 text-xs sm:text-sm"
-              onClick={() => { setCalendarCreateError(null); setCalendarDialogOpen(true); }}
-            >
-              <CalendarPlus className="h-4 w-4" />
-              <span className="hidden sm:inline">{T.calendar.newCalendar}</span>
-              <span className="sm:hidden">+</span>
-            </Button>
-          )}
-
-          <Button size="sm" className="gap-1.5 text-xs sm:text-sm" onClick={() => openDialog(today)}>
-            <Plus className="h-4 w-4" />
-            <span className="hidden sm:inline">{T.calendar.newEvent}</span>
-            <span className="sm:hidden">New</span>
-          </Button>
-        </div>
-      </div>
-
-      {/* View mode switcher + search */}
-      <div className="flex flex-wrap items-center justify-between gap-3">
+    <div className="space-y-3 sm:space-y-4">
+      {/* Row 1: tabs + action buttons */}
+      <div className="flex items-center justify-between gap-2">
         <div className="inline-flex items-center gap-0.5 rounded-lg border border-border/60 bg-muted/20 p-0.5">
           {VIEW_MODES.map(({ id, label, icon: Icon }) => (
             <button
@@ -366,7 +279,66 @@ export function CalendarView({ events, calendars, plan, initialYear, initialMont
           ))}
         </div>
 
-        <div className="flex flex-wrap items-center gap-2">
+        <div className="flex items-center gap-1.5">
+          {plan === "premium" && (
+            <Button
+              size="sm"
+              variant="outline"
+              className="gap-1.5 text-xs sm:text-sm"
+              onClick={() => { setCalendarCreateError(null); setCalendarDialogOpen(true); }}
+            >
+              <CalendarPlus className="h-4 w-4" />
+              <span className="hidden sm:inline">{T.calendar.newCalendar}</span>
+            </Button>
+          )}
+          <Button size="sm" className="gap-1.5 text-xs sm:text-sm" onClick={() => openDialog(today)}>
+            <Plus className="h-4 w-4" />
+            <span className="hidden sm:inline">{T.calendar.newEvent}</span>
+          </Button>
+        </div>
+      </div>
+
+      {/* Row 2: title/nav + filters + search */}
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        {/* Left: title + calendar nav */}
+        <div className="flex items-center gap-1">
+          {viewMode === "calendar" ? (
+            <>
+              <div className="flex items-center gap-0.5">
+                <Button variant="ghost" size="icon-sm" onClick={() => setCurrent(new Date(year - 1, month, 1))} aria-label={T.calendar.prevYear}>
+                  <ChevronsLeft className="h-4 w-4" />
+                </Button>
+                <Button variant="ghost" size="icon-sm" onClick={() => setCurrent(new Date(year, month - 1, 1))} aria-label={T.calendar.prevMonth}>
+                  <ChevronLeft className="h-4 w-4" />
+                </Button>
+              </div>
+              <h1 className="min-w-[120px] text-center text-base font-semibold tracking-tight sm:text-lg">
+                {T.calendar.months[month]}{" "}
+                <span className="text-muted-foreground">{year}</span>
+              </h1>
+              <div className="flex items-center gap-0.5">
+                <Button variant="ghost" size="icon-sm" onClick={() => setCurrent(new Date(year, month + 1, 1))} aria-label={T.calendar.nextMonth}>
+                  <ChevronRight className="h-4 w-4" />
+                </Button>
+                <Button variant="ghost" size="icon-sm" onClick={() => setCurrent(new Date(year + 1, month, 1))} aria-label={T.calendar.nextYear}>
+                  <ChevronsRight className="h-4 w-4" />
+                </Button>
+              </div>
+              {!isCurrentPeriod && (
+                <Button variant="outline" size="sm" onClick={() => setCurrent(new Date(today.getFullYear(), today.getMonth(), 1))} className="ml-1 text-xs">
+                  {T.calendar.today}
+                </Button>
+              )}
+            </>
+          ) : (
+            <h1 className="text-base font-semibold tracking-tight sm:text-lg">
+              {T.calendar.viewModes[viewMode]}
+            </h1>
+          )}
+        </div>
+
+        {/* Right: filters + search */}
+        <div className="flex items-center gap-1.5">
           {calendars.length > 0 && (
             <select
               value={calendarFilter}
@@ -381,9 +353,7 @@ export function CalendarView({ events, calendars, plan, initialYear, initialMont
               <option value="all">{T.calendar.calendarFilter.all}</option>
               <option value="none">{T.calendar.calendarFilter.none}</option>
               {calendars.map((c) => (
-                <option key={c.id} value={c.id}>
-                  {c.name}
-                </option>
+                <option key={c.id} value={c.id}>{c.name}</option>
               ))}
             </select>
           )}
@@ -401,35 +371,31 @@ export function CalendarView({ events, calendars, plan, initialYear, initialMont
             >
               <option value="all">{T.calendar.allTimezones}</option>
               {eventTimezones.map((tz) => (
-                <option key={tz} value={tz}>
-                  {tz}
-                </option>
+                <option key={tz} value={tz}>{tz}</option>
               ))}
             </select>
           )}
 
-          <div className="flex w-full items-center gap-2 sm:w-auto">
-            <div className="relative min-w-0 flex-1 sm:max-w-[220px] sm:flex-none sm:w-56">
-              <Search className="pointer-events-none absolute top-1/2 left-2.5 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground" />
-              <Input
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                placeholder={T.calendar.searchPlaceholder}
-                className="pl-8 text-sm"
-              />
-            </div>
-
-            <Button
-              variant="outline"
-              size="icon-sm"
-              onClick={resetFilters}
-              aria-label={T.calendar.resetFilters}
-              title={T.calendar.resetFilters}
-              className="shrink-0"
-            >
-              <RotateCcw className="h-4 w-4" />
-            </Button>
+          <div className="relative">
+            <Search className="pointer-events-none absolute top-1/2 left-2.5 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground" />
+            <Input
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder={T.calendar.searchPlaceholder}
+              className="w-36 pl-8 text-xs sm:w-44"
+            />
           </div>
+
+          <Button
+            variant="outline"
+            size="icon-sm"
+            onClick={resetFilters}
+            aria-label={T.calendar.resetFilters}
+            title={T.calendar.resetFilters}
+            className="shrink-0"
+          >
+            <RotateCcw className="h-4 w-4" />
+          </Button>
         </div>
       </div>
 
