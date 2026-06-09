@@ -226,15 +226,10 @@ export function EventQuestionsSection({ eventId, plan, questions: initialQuestio
       )}
 
       {editing === null && (
-        <button
-          type="button"
-          onClick={openNew}
-          disabled={isPending}
-          className="flex items-center gap-1.5 text-sm font-medium text-primary hover:text-primary/80 disabled:opacity-50"
-        >
-          <Plus className="h-4 w-4" />
+        <Button variant="outline" size="sm" className="gap-1.5" onClick={openNew} disabled={isPending}>
+          <Plus className="h-3.5 w-3.5" />
           {T.rsvpQuestions.add}
-        </button>
+        </Button>
       )}
     </div>
   );

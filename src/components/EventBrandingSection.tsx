@@ -4,6 +4,7 @@ import { useState, useTransition, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Settings2 } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { ImageDropzone } from "@/components/ImageDropzone";
 import { BrandingColorField } from "@/components/BrandingColorField";
@@ -143,10 +144,10 @@ export function EventBrandingSection({
         </div>
       </div>
 
-      <Link href="/dashboard/branding" className="inline-flex items-center gap-1.5 text-xs text-muted-foreground transition-colors hover:text-foreground">
+      <Button variant="outline" size="sm" className="gap-1.5" nativeButton={false} render={<Link href="/dashboard/branding" />}>
         <Settings2 className="h-3.5 w-3.5" />
         {T.eventDetail.branding.accountBranding}
-      </Link>
+      </Button>
 
       {enabled && (
         <div className="space-y-4 border-t border-border/60 pt-4">
