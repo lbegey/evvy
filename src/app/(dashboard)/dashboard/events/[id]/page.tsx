@@ -75,6 +75,8 @@ export default async function EventPage({
         brandLogoTransparentBg: event.brandLogoTransparentBg,
         brandLogoRounded: event.brandLogoRounded,
         brandColor: event.brandColor,
+        brandTextColor: event.brandTextColor,
+        brandCardColor: event.brandCardColor,
         brandBackgroundColor: event.brandBackgroundColor,
         brandBackgroundImageUrl: event.brandBackgroundImageUrl,
         calendarId: event.calendarId,

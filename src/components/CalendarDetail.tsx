@@ -44,6 +44,8 @@ interface CalendarRecord {
   brandLogoTransparentBg: boolean;
   brandLogoRounded: boolean;
   brandColor: string | null;
+  brandTextColor: string | null;
+  brandCardColor: string | null;
   brandBackgroundColor: string | null;
   brandBackgroundImageUrl: string | null;
   eventCount: number;
@@ -411,6 +413,8 @@ export function CalendarDetail({ calendar, events, calendars, appUrl, plan }: Ca
             brandLogoTransparentBg={calendar.brandLogoTransparentBg}
             brandLogoRounded={calendar.brandLogoRounded}
             brandColor={calendar.brandColor}
+            brandTextColor={calendar.brandTextColor}
+            brandCardColor={calendar.brandCardColor}
             brandBackgroundColor={calendar.brandBackgroundColor}
             brandBackgroundImageUrl={calendar.brandBackgroundImageUrl}
           />

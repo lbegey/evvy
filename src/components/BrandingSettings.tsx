@@ -3,9 +3,9 @@
 import { useState, useTransition, useEffect, useRef, type CSSProperties } from "react";
 import { Loader2, Check, RotateCcw } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { ImageDropzone } from "@/components/ImageDropzone";
+import { BrandingColorField } from "@/components/BrandingColorField";
 import { updateBranding, resetBranding } from "@/app/actions/user";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { cn } from "@/lib/utils";
@@ -21,17 +21,24 @@ interface BrandingSettingsProps {
   brandLogoTransparentBg: boolean;
   brandLogoRounded: boolean;
   brandColor: string | null;
+  brandTextColor: string | null;
+  brandCardColor: string | null;
   brandBackgroundColor: string | null;
   brandBackgroundImageUrl: string | null;
 }
 
-export function BrandingSettings({ brandLogoUrl, brandLogoSize, brandLogoTransparentBg, brandLogoRounded, brandColor, brandBackgroundColor, brandBackgroundImageUrl }: BrandingSettingsProps) {
+export function BrandingSettings({
+  brandLogoUrl, brandLogoSize, brandLogoTransparentBg, brandLogoRounded,
+  brandColor, brandTextColor, brandCardColor, brandBackgroundColor, brandBackgroundImageUrl,
+}: BrandingSettingsProps) {
   const { T } = useLanguage();
   const [logoUrl, setLogoUrl] = useState(brandLogoUrl ?? "");
   const [logoSize, setLogoSize] = useState(brandLogoSize ?? DEFAULT_LOGO_SIZE);
   const [logoTransparentBg, setLogoTransparentBg] = useState(brandLogoTransparentBg);
   const [logoRounded, setLogoRounded] = useState(brandLogoRounded);
   const [color, setColor] = useState(brandColor ?? "");
+  const [textColor, setTextColor] = useState(brandTextColor ?? "");
+  const [cardColor, setCardColor] = useState(brandCardColor ?? "");
   const [backgroundColor, setBackgroundColor] = useState(brandBackgroundColor ?? "");
   const [backgroundImageUrl, setBackgroundImageUrl] = useState(brandBackgroundImageUrl ?? "");
   const [saved, setSaved] = useState(false);
@@ -42,29 +49,30 @@ export function BrandingSettings({ brandLogoUrl, brandLogoSize, brandLogoTranspa
   const skipNextSave = useRef(false);
 
   const previewColor = /^#[0-9a-fA-F]{3,8}$/.test(color) ? color : undefined;
+  const previewTextColor = /^#[0-9a-fA-F]{3,8}$/.test(textColor) ? textColor : undefined;
+  const previewCardColor = /^#[0-9a-fA-F]{3,8}$/.test(cardColor) ? cardColor : undefined;
   const previewBackgroundColor = /^#[0-9a-fA-F]{3,8}$/.test(backgroundColor) ? backgroundColor : undefined;
-  const hasCustomBranding = Boolean(logoUrl || color || backgroundColor || backgroundImageUrl);
+  const hasCustomBranding = Boolean(logoUrl || color || textColor || cardColor || backgroundColor || backgroundImageUrl);
 
   useEffect(() => {
-    if (isFirstRender.current) {
-      isFirstRender.current = false;
-      return;
-    }
-    if (skipNextSave.current) {
-      skipNextSave.current = false;
-      return;
-    }
+    if (isFirstRender.current) { isFirstRender.current = false; return; }
+    if (skipNextSave.current) { skipNextSave.current = false; return; }
     setSaved(false);
     const timer = setTimeout(() => {
       startTransition(async () => {
-        await updateBranding({ brandLogoUrl: logoUrl, brandLogoSize: logoSize, brandLogoTransparentBg: logoTransparentBg, brandLogoRounded: logoRounded, brandColor: color, brandBackgroundColor: backgroundColor, brandBackgroundImageUrl: backgroundImageUrl });
+        await updateBranding({
+          brandLogoUrl: logoUrl, brandLogoSize: logoSize,
+          brandLogoTransparentBg: logoTransparentBg, brandLogoRounded: logoRounded,
+          brandColor: color, brandTextColor: textColor, brandCardColor: cardColor,
+          brandBackgroundColor: backgroundColor, brandBackgroundImageUrl: backgroundImageUrl,
+        });
         setSaved(true);
         if (savedTimerRef.current) clearTimeout(savedTimerRef.current);
         savedTimerRef.current = setTimeout(() => setSaved(false), 2000);
       });
     }, AUTOSAVE_DELAY_MS);
     return () => clearTimeout(timer);
-  }, [logoUrl, logoSize, logoTransparentBg, logoRounded, color, backgroundColor, backgroundImageUrl]);
+  }, [logoUrl, logoSize, logoTransparentBg, logoRounded, color, textColor, cardColor, backgroundColor, backgroundImageUrl]);
 
   useEffect(() => {
     return () => { if (savedTimerRef.current) clearTimeout(savedTimerRef.current); };
@@ -76,206 +84,146 @@ export function BrandingSettings({ brandLogoUrl, brandLogoSize, brandLogoTranspa
     skipNextSave.current = true;
     startReset(async () => {
       await resetBranding();
-      setLogoUrl("");
-      setLogoSize(DEFAULT_LOGO_SIZE);
-      setLogoTransparentBg(true);
-      setLogoRounded(false);
-      setColor("");
-      setBackgroundColor("");
-      setBackgroundImageUrl("");
+      setLogoUrl(""); setLogoSize(DEFAULT_LOGO_SIZE); setLogoTransparentBg(true); setLogoRounded(false);
+      setColor(""); setTextColor(""); setCardColor(""); setBackgroundColor(""); setBackgroundImageUrl("");
     });
   };
 
   return (
-    <div className="rounded-xl border border-border/60 bg-card p-5 space-y-5">
-      <div>
-        <h2 className="text-base font-semibold text-foreground">{T.branding.title}</h2>
-        <p className="mt-1 text-sm text-muted-foreground">{T.branding.subtitle}</p>
-      </div>
+    <div className="space-y-6">
+      {/* Logo */}
+      <div className="rounded-xl border border-border/60 bg-card p-5 space-y-4">
+        <h2 className="text-sm font-semibold text-foreground">{T.branding.logo}</h2>
 
-      <div className="space-y-1.5">
-        <Label>{T.branding.logo}</Label>
-        <ImageDropzone
-          value={logoUrl}
-          onChange={setLogoUrl}
-          hint={T.branding.logoHint}
-          previewClassName="h-20 w-auto max-w-full rounded-lg object-contain border border-border/60 bg-muted/20 p-3"
-        />
-      </div>
-
-      {logoUrl && (
         <div className="space-y-1.5">
-          <Label htmlFor="brand-logo-size">{T.branding.logoSize}</Label>
-          <div className="flex items-center gap-3">
-            <input
-              id="brand-logo-size"
-              type="range"
-              min={MIN_LOGO_SIZE}
-              max={MAX_LOGO_SIZE}
-              value={logoSize}
-              onChange={(e) => setLogoSize(Number(e.target.value))}
-              className="h-2 flex-1 cursor-pointer accent-primary"
-            />
-            <span className="w-14 shrink-0 text-right text-sm tabular-nums text-muted-foreground">
-              {logoSize}px
-            </span>
-          </div>
-          <p className="text-xs text-muted-foreground">{T.branding.logoSizeHint}</p>
+          <ImageDropzone
+            value={logoUrl}
+            onChange={setLogoUrl}
+            hint={T.branding.logoHint}
+            previewClassName="h-20 w-auto max-w-full rounded-lg object-contain border border-border/60 bg-muted/20 p-3"
+          />
+        </div>
 
-          <div className="grid gap-3 sm:grid-cols-2">
-            <div className="flex items-center justify-between gap-3 rounded-lg border border-border/60 px-3 py-2.5">
-              <div>
-                <Label htmlFor="brand-logo-transparent" className="cursor-pointer">{T.branding.logoTransparentBg}</Label>
-                <p className="text-xs text-muted-foreground">{T.branding.logoTransparentBgHint}</p>
+        {logoUrl && (
+          <div className="space-y-3">
+            <div className="space-y-1.5">
+              <Label htmlFor="bs-logo-size">{T.branding.logoSize}</Label>
+              <div className="flex items-center gap-3">
+                <input
+                  id="bs-logo-size"
+                  type="range"
+                  min={MIN_LOGO_SIZE}
+                  max={MAX_LOGO_SIZE}
+                  value={logoSize}
+                  onChange={(e) => setLogoSize(Number(e.target.value))}
+                  className="h-2 flex-1 cursor-pointer accent-primary"
+                />
+                <span className="w-14 shrink-0 text-right text-sm tabular-nums text-muted-foreground">{logoSize}px</span>
               </div>
-              <button
-                type="button"
-                id="brand-logo-transparent"
-                role="switch"
-                aria-checked={logoTransparentBg}
-                onClick={() => setLogoTransparentBg((v) => !v)}
-                disabled={isPending || isResetting}
-                className={cn(
-                  "relative inline-flex h-5 w-9 shrink-0 cursor-pointer items-center rounded-full transition-colors",
-                  "focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-ring/50",
-                  "disabled:pointer-events-none disabled:opacity-50",
-                  logoTransparentBg ? "bg-primary" : "bg-muted-foreground/30"
-                )}
-              >
-                <span className={cn("inline-block h-3.5 w-3.5 rounded-full bg-background shadow transition-transform", logoTransparentBg ? "translate-x-4.5" : "translate-x-0.5")} />
-              </button>
+              <p className="text-xs text-muted-foreground">{T.branding.logoSizeHint}</p>
             </div>
 
-            <div className="flex items-center justify-between gap-3 rounded-lg border border-border/60 px-3 py-2.5">
-              <div>
-                <Label htmlFor="brand-logo-rounded" className="cursor-pointer">{T.branding.logoRounded}</Label>
-                <p className="text-xs text-muted-foreground">{T.branding.logoRoundedHint}</p>
-              </div>
-              <button
-                type="button"
-                id="brand-logo-rounded"
-                role="switch"
-                aria-checked={logoRounded}
-                onClick={() => setLogoRounded((v) => !v)}
-                disabled={isPending || isResetting}
-                className={cn(
-                  "relative inline-flex h-5 w-9 shrink-0 cursor-pointer items-center rounded-full transition-colors",
-                  "focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-ring/50",
-                  "disabled:pointer-events-none disabled:opacity-50",
-                  logoRounded ? "bg-primary" : "bg-muted-foreground/30"
-                )}
-              >
-                <span className={cn("inline-block h-3.5 w-3.5 rounded-full bg-background shadow transition-transform", logoRounded ? "translate-x-4.5" : "translate-x-0.5")} />
-              </button>
+            <div className="grid gap-3 sm:grid-cols-2">
+              {[
+                { id: "bs-logo-transparent", label: T.branding.logoTransparentBg, hint: T.branding.logoTransparentBgHint, checked: logoTransparentBg, toggle: () => setLogoTransparentBg(v => !v) },
+                { id: "bs-logo-rounded", label: T.branding.logoRounded, hint: T.branding.logoRoundedHint, checked: logoRounded, toggle: () => setLogoRounded(v => !v) },
+              ].map(({ id, label, hint, checked, toggle }) => (
+                <div key={id} className="flex items-center justify-between gap-3 rounded-lg border border-border/60 px-3 py-2.5">
+                  <div>
+                    <Label htmlFor={id} className="cursor-pointer">{label}</Label>
+                    <p className="text-xs text-muted-foreground">{hint}</p>
+                  </div>
+                  <button
+                    type="button" id={id} role="switch" aria-checked={checked}
+                    onClick={toggle} disabled={isPending || isResetting}
+                    className={cn(
+                      "relative inline-flex h-5 w-9 shrink-0 cursor-pointer items-center rounded-full transition-colors",
+                      "focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-ring/50",
+                      "disabled:pointer-events-none disabled:opacity-50",
+                      checked ? "bg-primary" : "bg-muted-foreground/30"
+                    )}
+                  >
+                    <span className={cn("inline-block h-3.5 w-3.5 rounded-full bg-background shadow transition-transform", checked ? "translate-x-4.5" : "translate-x-0.5")} />
+                  </button>
+                </div>
+              ))}
             </div>
           </div>
-        </div>
-      )}
-
-      <div className="space-y-1.5">
-        <Label htmlFor="brand-color">{T.branding.color}</Label>
-        <div className="flex items-center gap-2">
-          <input
-            id="brand-color"
-            type="color"
-            value={/^#[0-9a-fA-F]{6}$/.test(color) ? color : "#000000"}
-            onChange={(e) => setColor(e.target.value)}
-            className="h-8 w-10 shrink-0 cursor-pointer rounded border border-input bg-transparent p-0.5"
-          />
-          <Input
-            value={color}
-            onChange={(e) => setColor(e.target.value)}
-            placeholder="#6366f1"
-            className="flex-1"
-          />
-        </div>
-        <p className="text-xs text-muted-foreground">{T.branding.colorHint}</p>
+        )}
       </div>
 
-      <div className="space-y-1.5">
-        <Label htmlFor="brand-bg-color">{T.branding.backgroundColor}</Label>
-        <div className="flex items-center gap-2">
-          <input
-            id="brand-bg-color"
-            type="color"
-            value={/^#[0-9a-fA-F]{6}$/.test(backgroundColor) ? backgroundColor : "#f4f4f5"}
-            onChange={(e) => setBackgroundColor(e.target.value)}
-            className="h-8 w-10 shrink-0 cursor-pointer rounded border border-input bg-transparent p-0.5"
-          />
-          <Input
-            value={backgroundColor}
-            onChange={(e) => setBackgroundColor(e.target.value)}
-            placeholder="#f4f4f5"
-            className="flex-1"
-          />
+      {/* Colors */}
+      <div className="rounded-xl border border-border/60 bg-card p-5 space-y-4">
+        <h2 className="text-sm font-semibold text-foreground">Colors</h2>
+        <div className="grid gap-4 sm:grid-cols-2">
+          <BrandingColorField id="bs-color" label={T.branding.color} hint={T.branding.colorHint} value={color} placeholder="#6366f1" onChange={setColor} />
+          <BrandingColorField id="bs-text" label={T.branding.textColor} hint={T.branding.textColorHint} value={textColor} placeholder="#111111" defaultColor="#111111" onChange={setTextColor} />
+          <BrandingColorField id="bs-bg" label={T.branding.backgroundColor} hint={T.branding.backgroundColorHint} value={backgroundColor} placeholder="#f4f4f5" defaultColor="#f4f4f5" onChange={setBackgroundColor} />
+          <BrandingColorField id="bs-card" label={T.branding.cardColor} hint={T.branding.cardColorHint} value={cardColor} placeholder="#ffffff" defaultColor="#ffffff" onChange={setCardColor} />
         </div>
-        <p className="text-xs text-muted-foreground">{T.branding.backgroundColorHint}</p>
       </div>
 
-      <div className="space-y-1.5">
-        <Label>{T.branding.backgroundImage}</Label>
+      {/* Background image */}
+      <div className="rounded-xl border border-border/60 bg-card p-5 space-y-3">
+        <h2 className="text-sm font-semibold text-foreground">{T.branding.backgroundImage}</h2>
         <ImageDropzone
           value={backgroundImageUrl}
           onChange={setBackgroundImageUrl}
           hint={T.branding.backgroundImageHint}
           previewClassName="h-32 w-full rounded-lg object-cover border border-border/60 bg-muted/20"
         />
-        <p className="text-xs text-muted-foreground">{T.branding.backgroundImageHint}</p>
       </div>
 
-      {(logoUrl || previewColor || previewBackgroundColor || backgroundImageUrl) && (
-        <div className="space-y-1.5">
-          <Label>{T.branding.preview}</Label>
+      {/* Preview */}
+      {(logoUrl || previewColor || previewTextColor || previewCardColor || previewBackgroundColor || backgroundImageUrl) && (
+        <div className="rounded-xl border border-border/60 bg-card p-5 space-y-3">
+          <h2 className="text-sm font-semibold text-foreground">{T.branding.preview}</h2>
           <div
-            className="flex flex-wrap items-center gap-3 rounded-xl border p-4 bg-cover bg-center"
+            className="rounded-xl border p-4 bg-cover bg-center overflow-hidden"
             style={{
-              ...(previewColor ? ({ "--primary": previewColor, "--border": previewColor } as CSSProperties) : {}),
+              ...(previewColor ? { "--primary": previewColor, "--border": previewColor, "--ring": previewColor } as CSSProperties : {}),
+              ...(previewTextColor ? { "--foreground": previewTextColor, "--card-foreground": previewTextColor } as CSSProperties : {}),
               ...(previewBackgroundColor ? { backgroundColor: previewBackgroundColor } : {}),
-              ...(backgroundImageUrl ? { backgroundImage: `url(${JSON.stringify(backgroundImageUrl)})` } : {}),
+              ...(backgroundImageUrl ? { backgroundImage: `url(${JSON.stringify(backgroundImageUrl)})`, backgroundSize: "cover", backgroundPosition: "center" } : {}),
             }}
           >
-            {logoUrl && (
-              <img src={logoUrl} alt="" style={{ height: logoSize }} className="w-auto object-contain" />
-            )}
-            <button
-              type="button"
-              className="cursor-default rounded-lg bg-primary px-3 py-1.5 text-xs font-medium text-primary-foreground"
+            <div
+              className="rounded-lg border border-border/60 p-3 space-y-2"
+              style={previewCardColor ? { backgroundColor: previewCardColor } : undefined}
             >
-              {T.eventForm.create}
-            </button>
-            <span className="rounded-lg border border-border/60 px-3 py-1.5 text-xs text-muted-foreground">
-              {T.common.open}
-            </span>
+              {logoUrl && (
+                <img src={logoUrl} alt="" style={{ height: logoSize }} className="w-auto object-contain mb-1" />
+              )}
+              <p className="text-sm font-semibold text-foreground">Event title</p>
+              <p className="text-xs text-muted-foreground">Mon 9 Jun · 10:00 – 11:00</p>
+              <div className="flex items-center gap-2 pt-1">
+                <button type="button" className="cursor-default rounded-md bg-primary px-2.5 py-1 text-xs font-medium text-primary-foreground">
+                  Add to calendar
+                </button>
+                <span className="rounded-md border border-border/60 px-2.5 py-1 text-xs text-foreground">RSVP</span>
+              </div>
+            </div>
           </div>
         </div>
       )}
 
+      {/* Footer actions */}
       <div className="flex flex-wrap items-center gap-3">
-        <Button
-          type="button"
-          variant="outline"
-          onClick={onReset}
-          disabled={isPending || isResetting || !hasCustomBranding}
-          className="gap-1.5"
-        >
+        <Button type="button" variant="outline" onClick={onReset} disabled={isPending || isResetting || !hasCustomBranding} className="gap-1.5">
           {isResetting ? <Loader2 className="h-4 w-4 animate-spin" /> : <RotateCcw className="h-4 w-4" />}
           {T.branding.reset}
         </Button>
         {isPending && (
           <p className="flex items-center gap-1.5 text-xs text-muted-foreground">
-            <Loader2 className="h-3 w-3 animate-spin" />
-            {T.branding.saving}
+            <Loader2 className="h-3 w-3 animate-spin" />{T.branding.saving}
           </p>
         )}
         {saved && !isPending && (
           <p className="flex items-center gap-1.5 text-xs text-green-600">
-            <Check className="h-3 w-3" />
-            {T.branding.saved}
+            <Check className="h-3 w-3" />{T.branding.saved}
           </p>
         )}
-        {isResetting && (
-          <p className="text-xs text-muted-foreground">{T.branding.resetDone}</p>
-        )}
+        {isResetting && <p className="text-xs text-muted-foreground">{T.branding.resetDone}</p>}
       </div>
     </div>
   );

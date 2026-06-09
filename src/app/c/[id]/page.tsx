@@ -72,6 +72,8 @@ export default async function PublicCalendarPage({
           brandLogoTransparentBg: true,
           brandLogoRounded: true,
           brandColor: true,
+          brandTextColor: true,
+          brandCardColor: true,
           brandBackgroundColor: true,
           brandBackgroundImageUrl: true,
         },
@@ -126,9 +128,17 @@ export default async function PublicCalendarPage({
   const brandBackgroundImageUrl = isPremiumOrganizer
     ? (useCalendarOverride ? calendar.brandBackgroundImageUrl : calendar.user.brandBackgroundImageUrl)
     : null;
-  const brandStyle: CSSProperties | undefined = (brandColor || brandBackgroundColor || brandBackgroundImageUrl)
+  const brandTextColor = isPremiumOrganizer
+    ? (useCalendarOverride ? calendar.brandTextColor : calendar.user.brandTextColor)
+    : null;
+  const brandCardColor = isPremiumOrganizer
+    ? (useCalendarOverride ? calendar.brandCardColor : calendar.user.brandCardColor)
+    : null;
+  const brandStyle: CSSProperties | undefined = (brandColor || brandBackgroundColor || brandBackgroundImageUrl || brandTextColor || brandCardColor)
     ? {
         ...(brandColor ? { "--primary": brandColor, "--border": brandColor, "--ring": brandColor } as CSSProperties : {}),
+        ...(brandTextColor ? { "--foreground": brandTextColor, "--card-foreground": brandTextColor } as CSSProperties : {}),
+        ...(brandCardColor ? { "--card": brandCardColor, "--background": brandCardColor } as CSSProperties : {}),
         ...(brandBackgroundColor ? { backgroundColor: brandBackgroundColor } : {}),
         ...(brandBackgroundImageUrl ? { backgroundImage: `url(${JSON.stringify(brandBackgroundImageUrl)})`, backgroundSize: "cover", backgroundPosition: "center" } : {}),
       }

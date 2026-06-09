@@ -90,6 +90,8 @@ export default async function PublicEventPage({
             brandLogoTransparentBg: true,
             brandLogoRounded: true,
             brandColor: true,
+            brandTextColor: true,
+            brandCardColor: true,
             brandBackgroundColor: true,
             brandBackgroundImageUrl: true,
           },
@@ -149,9 +151,17 @@ export default async function PublicEventPage({
   const brandBackgroundImageUrl = isPremiumOrganizer
     ? (useEventOverride ? event.brandBackgroundImageUrl : event.user.brandBackgroundImageUrl)
     : null;
-  const brandStyle: CSSProperties | undefined = (brandColor || brandBackgroundColor || brandBackgroundImageUrl)
+  const brandTextColor = isPremiumOrganizer
+    ? (useEventOverride ? event.brandTextColor : event.user.brandTextColor)
+    : null;
+  const brandCardColor = isPremiumOrganizer
+    ? (useEventOverride ? event.brandCardColor : event.user.brandCardColor)
+    : null;
+  const brandStyle: CSSProperties | undefined = (brandColor || brandBackgroundColor || brandBackgroundImageUrl || brandTextColor || brandCardColor)
     ? {
         ...(brandColor ? { "--primary": brandColor, "--border": brandColor, "--ring": brandColor } as CSSProperties : {}),
+        ...(brandTextColor ? { "--foreground": brandTextColor, "--card-foreground": brandTextColor } as CSSProperties : {}),
+        ...(brandCardColor ? { "--card": brandCardColor, "--background": brandCardColor } as CSSProperties : {}),
         ...(brandBackgroundColor ? { backgroundColor: brandBackgroundColor } : {}),
         ...(brandBackgroundImageUrl ? { backgroundImage: `url(${JSON.stringify(brandBackgroundImageUrl)})`, backgroundSize: "cover", backgroundPosition: "center" } : {}),
       }

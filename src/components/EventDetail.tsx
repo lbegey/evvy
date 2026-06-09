@@ -59,6 +59,8 @@ interface Event {
   brandLogoTransparentBg: boolean;
   brandLogoRounded: boolean;
   brandColor: string | null;
+  brandTextColor: string | null;
+  brandCardColor: string | null;
   brandBackgroundColor: string | null;
   brandBackgroundImageUrl: string | null;
   calendarId: string | null;
@@ -509,6 +511,8 @@ export function EventDetail({ event, appUrl, plan, calendars, stats, rsvps }: Ev
           brandLogoTransparentBg={event.brandLogoTransparentBg}
           brandLogoRounded={event.brandLogoRounded}
           brandColor={event.brandColor}
+          brandTextColor={event.brandTextColor}
+          brandCardColor={event.brandCardColor}
           brandBackgroundColor={event.brandBackgroundColor}
           brandBackgroundImageUrl={event.brandBackgroundImageUrl}
         />

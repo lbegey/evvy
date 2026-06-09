@@ -23,6 +23,8 @@ model User {
   brandLogoTransparentBg Boolean   @default(true)
   brandLogoRounded       Boolean   @default(false)
   brandColor             String?
+  brandTextColor         String?
+  brandCardColor         String?
   brandBackgroundColor   String?
   brandBackgroundImageUrl String?
   stripeCustomerId       String?   @unique
@@ -59,6 +61,8 @@ model Event {
   brandLogoTransparentBg Boolean @default(true)
   brandLogoRounded     Boolean  @default(false)
   brandColor           String?
+  brandTextColor       String?
+  brandCardColor       String?
   brandBackgroundColor String?
   brandBackgroundImageUrl String?
   userId         String
@@ -83,6 +87,8 @@ model Calendar {
   brandLogoTransparentBg Boolean @default(true)
   brandLogoRounded     Boolean  @default(false)
   brandColor           String?
+  brandTextColor       String?
+  brandCardColor       String?
   brandBackgroundColor String?
   brandBackgroundImageUrl String?
   language    String   @default("en")

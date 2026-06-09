@@ -16,6 +16,8 @@ export default async function BrandingPage() {
       brandLogoTransparentBg={user?.brandLogoTransparentBg ?? true}
       brandLogoRounded={user?.brandLogoRounded ?? false}
       brandColor={user?.brandColor ?? null}
+      brandTextColor={user?.brandTextColor ?? null}
+      brandCardColor={user?.brandCardColor ?? null}
       brandBackgroundColor={user?.brandBackgroundColor ?? null}
       brandBackgroundImageUrl={user?.brandBackgroundImageUrl ?? null}
     />

@@ -20,6 +20,8 @@ type CalendarBrandingData = {
   brandLogoTransparentBg: boolean;
   brandLogoRounded: boolean;
   brandColor: string | null;
+  brandTextColor: string | null;
+  brandCardColor: string | null;
   brandBackgroundColor: string | null;
   brandBackgroundImageUrl: string | null;
 };
@@ -112,6 +114,8 @@ export async function updateCalendarBranding(id: string, data: CalendarBrandingD
       brandLogoTransparentBg: data.brandLogoTransparentBg,
       brandLogoRounded: data.brandLogoRounded,
       brandColor: data.brandColor,
+      brandTextColor: data.brandTextColor,
+      brandCardColor: data.brandCardColor,
       brandBackgroundColor: data.brandBackgroundColor,
       brandBackgroundImageUrl: data.brandBackgroundImageUrl,
     },
