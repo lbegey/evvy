@@ -98,15 +98,16 @@ export function EventListView({ events, emptyMessage, plan }: EventListViewProps
               <button
                 type="button"
                 onClick={() => handleCopy(ev)}
+                aria-label={copiedId === ev.id ? T.common.copied : T.common.copyUrl}
+                title={copiedId === ev.id ? T.common.copied : T.common.copyUrl}
                 className={cn(
-                  "inline-flex items-center gap-1.5 rounded-lg border border-border/60 px-2.5 py-1.5 text-xs transition-colors",
+                  "inline-flex items-center justify-center rounded-lg border border-border/60 p-2 transition-colors",
                   copiedId === ev.id
                     ? "border-green-500/40 bg-green-50 text-green-700"
                     : "text-muted-foreground hover:bg-muted hover:text-foreground"
                 )}
               >
                 {copiedId === ev.id ? <Check className="h-3.5 w-3.5" /> : <Copy className="h-3.5 w-3.5" />}
-                {copiedId === ev.id ? T.common.copied : T.common.copyUrl}
               </button>
               {plan === "premium" && (
                 <button
