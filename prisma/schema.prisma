@@ -37,6 +37,7 @@ model User {
   accounts               Account[]
   events                 Event[]
   calendars              Calendar[]
+  webhook                Webhook?
   emailChangeRequests    EmailChangeRequest[]
 }
 
@@ -71,6 +72,7 @@ model Event {
   calendar    Calendar?    @relation(fields: [calendarId], references: [id], onDelete: SetNull)
   clicks      EventClick[]
   rsvps       Rsvp[]
+  questions   RsvpQuestion[]
   createdAt   DateTime     @default(now())
   updatedAt   DateTime     @updatedAt
 }
@@ -108,16 +110,65 @@ model EventClick {
 }
 
 model Rsvp {
-  id               String   @id @default(cuid())
+  id               String       @id @default(cuid())
   eventId          String
   name             String
   email            String?
   status           String
   message          String?
-  reminderSent24h  Boolean  @default(false)
-  reminderSent7d   Boolean  @default(false)
-  createdAt        DateTime @default(now())
-  event            Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  reminderSent24h  Boolean      @default(false)
+  reminderSent7d   Boolean      @default(false)
+  createdAt        DateTime     @default(now())
+  event            Event        @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  answers          RsvpAnswer[]
+}
+
+model RsvpQuestion {
+  id        String       @id @default(cuid())
+  eventId   String
+  event     Event        @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  label     String
+  type      String       // "text" | "textarea" | "select" | "boolean"
+  options   String?      // JSON array: ["Option A","Option B"] — only for "select"
+  required  Boolean      @default(false)
+  order     Int          @default(0)
+  createdAt DateTime     @default(now())
+  updatedAt DateTime     @updatedAt
+  answers   RsvpAnswer[]
+}
+
+model RsvpAnswer {
+  id         String       @id @default(cuid())
+  rsvpId     String
+  rsvp       Rsvp         @relation(fields: [rsvpId], references: [id], onDelete: Cascade)
+  questionId String
+  question   RsvpQuestion @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  value      String
+  createdAt  DateTime     @default(now())
+}
+
+model Webhook {
+  id         String            @id @default(cuid())
+  userId     String            @unique
+  user       User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  url        String
+  secret     String
+  active     Boolean           @default(true)
+  events     String            // JSON: ["rsvp.created","rsvp.updated","rsvp.deleted"]
+  createdAt  DateTime          @default(now())
+  updatedAt  DateTime          @updatedAt
+  deliveries WebhookDelivery[]
+}
+
+model WebhookDelivery {
+  id         String   @id @default(cuid())
+  webhookId  String
+  webhook    Webhook  @relation(fields: [webhookId], references: [id], onDelete: Cascade)
+  eventType  String
+  payload    String
+  statusCode Int?
+  error      String?
+  createdAt  DateTime @default(now())
 }
 
 model Session {

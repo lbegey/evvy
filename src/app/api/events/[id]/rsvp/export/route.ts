@@ -15,10 +15,18 @@ export async function GET(
   if (!event || event.userId !== session.user.id)
     return new Response("Not found", { status: 404 });
 
-  const rsvps = await db.rsvp.findMany({
-    where: { eventId: id },
-    orderBy: { createdAt: "asc" },
-  });
+  const [rsvps, questions] = await Promise.all([
+    db.rsvp.findMany({
+      where: { eventId: id },
+      orderBy: { createdAt: "asc" },
+      include: { answers: { select: { questionId: true, value: true } } },
+    }),
+    db.rsvpQuestion.findMany({
+      where: { eventId: id },
+      orderBy: { order: "asc" },
+      select: { id: true, label: true },
+    }),
+  ]);
 
   const statusLabel: Record<string, string> = {
     yes: "Oui",
@@ -28,17 +36,27 @@ export async function GET(
 
   const escape = (s: string) => `"${s.replace(/"/g, '""')}"`;
 
+  const questionHeaders = questions.map((q) => escape(q.label));
+  const headerRow = ["Nom", "Email", "Statut", "Message", "Date", ...questionHeaders].join(",");
+
   const rows = [
-    "Nom,Email,Statut,Message,Date",
-    ...rsvps.map((r) =>
-      [
+    headerRow,
+    ...rsvps.map((r) => {
+      const base = [
         escape(r.name),
         escape(r.email ?? ""),
         escape(statusLabel[r.status] ?? r.status),
         escape(r.message ?? ""),
         escape(r.createdAt.toISOString()),
-      ].join(",")
-    ),
+      ];
+      const answerCols = questions.map((q) => {
+        const ans = r.answers.find((a) => a.questionId === q.id);
+        if (!ans) return escape("");
+        const val = ans.value === "true" ? "Oui" : ans.value === "false" ? "Non" : ans.value;
+        return escape(val);
+      });
+      return [...base, ...answerCols].join(",");
+    }),
   ].join("\r\n");
 
   return new Response("﻿" + rows, {

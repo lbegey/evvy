@@ -24,6 +24,7 @@ import {
   ListChecks,
   Code2,
   Palette,
+  HelpCircle,
   X,
 } from "lucide-react";
 import { Dialog } from "@base-ui/react/dialog";
@@ -32,6 +33,7 @@ import { EditEventDialog } from "@/components/EditEventDialog";
 import { RsvpSection, type RsvpRecord } from "@/components/RsvpSection";
 import { EventBrandingSection } from "@/components/EventBrandingSection";
 import { EventCalendarSection } from "@/components/EventCalendarSection";
+import { EventQuestionsSection, type RsvpQuestion } from "@/components/EventQuestionsSection";
 import { EventSlugSection } from "@/components/EventSlugSection";
 import { deleteEvent } from "@/app/actions/events";
 import { useLanguage } from "@/contexts/LanguageContext";
@@ -83,6 +85,7 @@ interface EventDetailProps {
   calendars: { id: string; name: string; color: string | null }[];
   stats: Stats;
   rsvps: RsvpRecord[];
+  questions: RsvpQuestion[];
 }
 
 function CopyButton({ value, label, copiedLabel }: { value: string; label: string; copiedLabel: string }) {
@@ -113,6 +116,7 @@ const SIDEBAR_SECTIONS = [
   { id: "public-link", labelKey: "publicLink", icon: Link2 },
   { id: "calendar", labelKey: "calendar", icon: CalendarRange },
   { id: "rsvp", labelKey: "rsvp", icon: Users },
+  { id: "questions", labelKey: "questions", icon: HelpCircle },
   { id: "branding", labelKey: "branding", icon: Palette },
   { id: "qr-code", labelKey: "qrCode", icon: QrCode },
   { id: "links", labelKey: "links", icon: ListChecks },
@@ -195,7 +199,7 @@ ${links}
 </div>`;
 }
 
-export function EventDetail({ event, appUrl, plan, calendars, stats, rsvps }: EventDetailProps) {
+export function EventDetail({ event, appUrl, plan, calendars, stats, rsvps, questions }: EventDetailProps) {
   const [editOpen, setEditOpen] = useState(false);
   const [rsvpModalOpen, setRsvpModalOpen] = useState(false);
   const [isDeleting, startDelete] = useTransition();
@@ -465,6 +469,7 @@ export function EventDetail({ event, appUrl, plan, calendars, stats, rsvps }: Ev
           eventId={event.id}
           rsvpEnabled={event.rsvpEnabled}
           rsvps={rsvps}
+          questions={questions}
           onExpand={() => setRsvpModalOpen(true)}
         />
       </div>
@@ -490,10 +495,20 @@ export function EventDetail({ event, appUrl, plan, calendars, stats, rsvps }: Ev
                 <X className="h-4 w-4" />
               </Dialog.Close>
             </div>
-            <RsvpSection eventId={event.id} rsvpEnabled={event.rsvpEnabled} rsvps={rsvps} expanded />
+            <RsvpSection eventId={event.id} rsvpEnabled={event.rsvpEnabled} rsvps={rsvps} questions={questions} expanded />
           </Dialog.Popup>
         </Dialog.Portal>
       </Dialog.Root>
+
+      {/* Questions */}
+      <section id="questions" className="scroll-mt-24 space-y-3 rounded-xl border border-border/60 p-4 sm:p-5">
+        <div className="flex items-center gap-2">
+          <HelpCircle className="h-4 w-4 text-muted-foreground" />
+          <h2 className="text-sm font-semibold text-foreground">{T.eventDetail.sidebar.questions}</h2>
+        </div>
+        <p className="text-xs text-muted-foreground">{T.rsvpQuestions.subtitle}</p>
+        <EventQuestionsSection eventId={event.id} plan={plan} questions={questions} />
+      </section>
 
       {/* Branding */}
       <section id="branding" className="scroll-mt-24 space-y-3 rounded-xl border border-border/60 p-4 sm:p-5">

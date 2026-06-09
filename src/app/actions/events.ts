@@ -6,6 +6,7 @@ import { headers, cookies } from "next/headers";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { isValidSlug, isSlugTaken } from "@/lib/slug";
+import { fireWebhook } from "@/lib/webhook";
 
 type EventData = {
   title: string;
@@ -213,7 +214,7 @@ export async function deleteRsvp(id: string): Promise<{ error: "forbidden" } | u
   const session = await auth.api.getSession({ headers: await headers() });
   if (!session) throw new Error("Unauthorized");
 
-  const rsvp = await db.rsvp.findUnique({ where: { id }, include: { event: true } });
+  const rsvp = await db.rsvp.findUnique({ where: { id }, include: { event: { select: { id: true, userId: true, slug: true, title: true } } } });
   if (!rsvp || rsvp.event.userId !== session.user.id) return { error: "forbidden" };
 
   await db.rsvp.delete({ where: { id } });
@@ -221,6 +222,11 @@ export async function deleteRsvp(id: string): Promise<{ error: "forbidden" } | u
   revalidatePath(`/dashboard/events/${rsvp.eventId}`);
   revalidatePath(`/e/${rsvp.eventId}`);
   if (rsvp.event.slug) revalidatePath(`/e/${rsvp.event.slug}`);
+
+  fireWebhook(rsvp.event.userId, "rsvp.deleted", {
+    rsvp: { id: rsvp.id, name: rsvp.name, email: rsvp.email, status: rsvp.status },
+    event: { id: rsvp.event.id, title: rsvp.event.title, slug: rsvp.event.slug },
+  }).catch(() => {});
 }
 
 export async function submitRsvp(data: {
@@ -229,8 +235,9 @@ export async function submitRsvp(data: {
   email: string;
   status: string;
   message: string;
+  answers?: { questionId: string; value: string }[];
 }): Promise<{ error: "full" | "closed" | "already" } | undefined> {
-  const event = await db.event.findFirst({ where: { OR: [{ id: data.eventId }, { slug: data.eventId }] }, include: { user: { select: { plan: true } } } });
+  const event = await db.event.findFirst({ where: { OR: [{ id: data.eventId }, { slug: data.eventId }] }, include: { user: { select: { plan: true, id: true } } } });
   if (!event || !event.rsvpEnabled || event.endAt < new Date()) return { error: "closed" };
 
   const email = data.email.trim().toLowerCase();
@@ -247,6 +254,9 @@ export async function submitRsvp(data: {
     if (count >= FREE_RSVP_LIMIT) return { error: "full" };
   }
 
+  const answers = data.answers ?? [];
+
+  let rsvpId: string;
   if (existing) {
     await db.rsvp.update({
       where: { id: existing.id },
@@ -256,20 +266,37 @@ export async function submitRsvp(data: {
         message: data.message || null,
       },
     });
+    if (answers.length > 0) {
+      await db.rsvpAnswer.deleteMany({ where: { rsvpId: existing.id } });
+      await db.rsvpAnswer.createMany({
+        data: answers.map((a) => ({ rsvpId: existing.id, questionId: a.questionId, value: a.value })),
+      });
+    }
+    rsvpId = existing.id;
   } else {
-    await db.rsvp.create({
+    const created = await db.rsvp.create({
       data: {
         eventId: event.id,
         name: data.name,
         email,
         status: data.status,
         message: data.message || null,
+        ...(answers.length > 0 ? {
+          answers: { createMany: { data: answers.map((a) => ({ questionId: a.questionId, value: a.value })) } },
+        } : {}),
       },
     });
+    rsvpId = created.id;
   }
 
   cookieStore.set(cookieName, "1", { maxAge: 60 * 60 * 24 * 365, path: "/", sameSite: "lax" });
 
   revalidatePath(`/e/${data.eventId}`);
   if (event.slug) revalidatePath(`/e/${event.slug}`);
+
+  // Fire webhook (fire-and-forget)
+  fireWebhook(event.user.id, existing ? "rsvp.updated" : "rsvp.created", {
+    rsvp: { id: rsvpId, name: data.name, email, status: data.status, message: data.message || null },
+    event: { id: event.id, title: event.title, slug: event.slug },
+  }).catch(() => {});
 }

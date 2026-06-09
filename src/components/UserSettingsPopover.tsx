@@ -3,7 +3,7 @@
 import { Popover } from "@base-ui/react/popover";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { CreditCard, Mail, LogOut, ChevronDown, ShieldCheck, User } from "lucide-react";
+import { CreditCard, Mail, LogOut, ChevronDown, ShieldCheck, User, Webhook } from "lucide-react";
 import { signOut } from "@/lib/auth-client";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { cn } from "@/lib/utils";
@@ -83,6 +83,18 @@ export function UserSettingsPopover({ user, initials, isSuperAdmin }: Props) {
             >
               <User className="h-4 w-4 text-muted-foreground" />
               {T.userMenu.profile}
+            </Popover.Close>
+
+            <Popover.Close
+              nativeButton={false}
+              render={<Link href="/dashboard/webhooks" />}
+              className={cn(
+                "flex w-full items-center gap-2.5 rounded-lg px-3 py-2",
+                "text-sm text-foreground transition-colors hover:bg-muted"
+              )}
+            >
+              <Webhook className="h-4 w-4 text-muted-foreground" />
+              {T.userMenu.webhooks}
             </Popover.Close>
 
             <Popover.Close

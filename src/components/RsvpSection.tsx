@@ -2,7 +2,7 @@
 
 import { useMemo, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { Download, Search, Users, ChevronLeft, ChevronRight, Maximize2, Trash2 } from "lucide-react";
+import { Download, Search, Users, ChevronLeft, ChevronRight, ChevronDown, ChevronUp, Maximize2, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toggleRsvp, deleteRsvp } from "@/app/actions/events";
@@ -11,6 +11,11 @@ import { cn } from "@/lib/utils";
 
 const PAGE_SIZE = 10;
 
+export interface RsvpAnswer {
+  questionId: string;
+  value: string;
+}
+
 export interface RsvpRecord {
   id: string;
   name: string;
@@ -18,22 +23,25 @@ export interface RsvpRecord {
   status: string;
   message: string | null;
   createdAt: string;
+  answers?: RsvpAnswer[];
 }
 
 interface RsvpSectionProps {
   eventId: string;
   rsvpEnabled: boolean;
   rsvps: RsvpRecord[];
+  questions?: { id: string; label: string }[];
   expanded?: boolean;
   onExpand?: () => void;
 }
 
-export function RsvpSection({ eventId, rsvpEnabled, rsvps, expanded = false, onExpand }: RsvpSectionProps) {
+export function RsvpSection({ eventId, rsvpEnabled, rsvps, questions = [], expanded = false, onExpand }: RsvpSectionProps) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
   const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [expandedRows, setExpandedRows] = useState<Set<string>>(new Set());
   const { T, lang } = useLanguage();
   const locale = lang === "fr" ? "fr-FR" : "en-US";
 
@@ -185,34 +193,71 @@ export function RsvpSection({ eventId, rsvpEnabled, rsvps, expanded = false, onE
                     <tbody>
                       {paginatedRsvps.map((r) => {
                         const cfg = STATUS_CONFIG[r.status] ?? { label: r.status, className: "bg-muted text-muted-foreground" };
+                        const hasAnswers = questions.length > 0 && (r.answers?.length ?? 0) > 0;
+                        const isExpanded = expandedRows.has(r.id);
                         return (
-                          <tr key={r.id} className="border-b border-border/30 last:border-0 hover:bg-muted/20">
-                            <td className="px-3 py-2 text-left">
-                              <button
-                                type="button"
-                                title={T.rsvpSection.delete}
-                                onClick={() => handleDelete(r.id)}
-                                disabled={deletingId === r.id}
-                                className="cursor-pointer rounded-lg p-1.5 text-muted-foreground transition-colors hover:bg-destructive/10 hover:text-destructive focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-ring/50 disabled:pointer-events-none disabled:opacity-50"
-                              >
-                                <Trash2 className="h-3.5 w-3.5" />
-                              </button>
-                            </td>
-                            <td className="px-3 py-2 font-medium text-foreground">{r.name}</td>
-                            <td className="px-3 py-2 text-muted-foreground">{r.email ?? "—"}</td>
-                            <td className="px-3 py-2">
-                              <span className={cn("rounded-full px-2 py-0.5 text-xs font-medium", cfg.className)}>
-                                {cfg.label}
-                              </span>
-                            </td>
-                            <td className={cn("px-3 py-2 text-muted-foreground", expanded ? "whitespace-pre-wrap break-words" : "max-w-[200px] truncate hidden sm:table-cell")}>{r.message ?? "—"}</td>
-                            <td className={cn("px-3 py-2 text-muted-foreground whitespace-nowrap", !expanded && "hidden sm:table-cell")}>
-                              {new Intl.DateTimeFormat(locale, {
-                                day: "2-digit", month: "2-digit", year: "numeric",
-                                hour: "2-digit", minute: "2-digit",
-                              }).format(new Date(r.createdAt))}
-                            </td>
-                          </tr>
+                          <>
+                            <tr key={r.id} className="border-b border-border/30 last:border-0 hover:bg-muted/20">
+                              <td className="px-3 py-2 text-left">
+                                <div className="flex items-center gap-0.5">
+                                  <button
+                                    type="button"
+                                    title={T.rsvpSection.delete}
+                                    onClick={() => handleDelete(r.id)}
+                                    disabled={deletingId === r.id}
+                                    className="cursor-pointer rounded-lg p-1.5 text-muted-foreground transition-colors hover:bg-destructive/10 hover:text-destructive focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-ring/50 disabled:pointer-events-none disabled:opacity-50"
+                                  >
+                                    <Trash2 className="h-3.5 w-3.5" />
+                                  </button>
+                                  {hasAnswers && (
+                                    <button
+                                      type="button"
+                                      onClick={() => setExpandedRows((prev) => {
+                                        const next = new Set(prev);
+                                        if (next.has(r.id)) next.delete(r.id); else next.add(r.id);
+                                        return next;
+                                      })}
+                                      className="cursor-pointer rounded-lg p-1.5 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+                                    >
+                                      {isExpanded ? <ChevronUp className="h-3.5 w-3.5" /> : <ChevronDown className="h-3.5 w-3.5" />}
+                                    </button>
+                                  )}
+                                </div>
+                              </td>
+                              <td className="px-3 py-2 font-medium text-foreground">{r.name}</td>
+                              <td className="px-3 py-2 text-muted-foreground">{r.email ?? "—"}</td>
+                              <td className="px-3 py-2">
+                                <span className={cn("rounded-full px-2 py-0.5 text-xs font-medium", cfg.className)}>
+                                  {cfg.label}
+                                </span>
+                              </td>
+                              <td className={cn("px-3 py-2 text-muted-foreground", expanded ? "whitespace-pre-wrap break-words" : "max-w-[200px] truncate hidden sm:table-cell")}>{r.message ?? "—"}</td>
+                              <td className={cn("px-3 py-2 text-muted-foreground whitespace-nowrap", !expanded && "hidden sm:table-cell")}>
+                                {new Intl.DateTimeFormat(locale, {
+                                  day: "2-digit", month: "2-digit", year: "numeric",
+                                  hour: "2-digit", minute: "2-digit",
+                                }).format(new Date(r.createdAt))}
+                              </td>
+                            </tr>
+                            {hasAnswers && isExpanded && (
+                              <tr key={`${r.id}-answers`} className="border-b border-border/30 bg-muted/10">
+                                <td colSpan={6} className="px-4 py-2.5">
+                                  <dl className="grid grid-cols-1 gap-x-6 gap-y-1 sm:grid-cols-2">
+                                    {questions.map((q) => {
+                                      const answer = r.answers?.find((a) => a.questionId === q.id);
+                                      if (!answer) return null;
+                                      return (
+                                        <div key={q.id} className="flex flex-col gap-0.5">
+                                          <dt className="text-xs font-medium text-muted-foreground">{q.label}</dt>
+                                          <dd className="text-xs text-foreground">{answer.value === "true" ? "✓" : answer.value === "false" ? "✗" : answer.value}</dd>
+                                        </div>
+                                      );
+                                    })}
+                                  </dl>
+                                </td>
+                              </tr>
+                            )}
+                          </>
                         );
                       })}
                     </tbody>

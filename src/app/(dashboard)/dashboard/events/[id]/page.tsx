@@ -22,7 +22,7 @@ export default async function EventPage({
 
   if (!event || event.userId !== session!.user.id) notFound();
 
-  const [clickRows, rsvps, calendars] = await Promise.all([
+  const [clickRows, rsvps, calendars, questions] = await Promise.all([
     db.eventClick.groupBy({
       by: ["service"],
       where: { eventId: id },
@@ -31,11 +31,16 @@ export default async function EventPage({
     db.rsvp.findMany({
       where: { eventId: id },
       orderBy: { createdAt: "desc" },
+      include: { answers: { select: { questionId: true, value: true } } },
     }),
     db.calendar.findMany({
       where: { userId: session!.user.id },
       select: { id: true, name: true, color: true },
       orderBy: { createdAt: "asc" },
+    }),
+    db.rsvpQuestion.findMany({
+      where: { eventId: id },
+      orderBy: { order: "asc" },
     }),
   ]);
 
@@ -85,6 +90,14 @@ export default async function EventPage({
       plan={user?.plan ?? "free"}
       calendars={calendars}
       stats={stats}
+      questions={questions.map((q) => ({
+        id: q.id,
+        label: q.label,
+        type: q.type,
+        options: q.options,
+        required: q.required,
+        order: q.order,
+      }))}
       rsvps={rsvps.map((r) => ({
         id: r.id,
         name: r.name,
@@ -92,6 +105,7 @@ export default async function EventPage({
         status: r.status,
         message: r.message,
         createdAt: r.createdAt.toISOString(),
+        answers: r.answers,
       }))}
     />
   );
