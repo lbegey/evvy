@@ -18,6 +18,8 @@ import {
   CalendarX2,
   ChevronLeft,
   ChevronRight,
+  QrCode,
+  Download,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { CalendarDialog, type CalendarDialogValues } from "@/components/CalendarDialog";
@@ -66,6 +68,7 @@ interface CalendarDetailProps {
 const SIDEBAR_SECTIONS = [
   { id: "info", labelKey: "info", icon: Info },
   { id: "public-link", labelKey: "publicLink", icon: Link2 },
+  { id: "qr-code", labelKey: "qrCode", icon: QrCode },
   { id: "branding", labelKey: "branding", icon: Palette },
   { id: "events", labelKey: "events", icon: CalendarRange },
 ] as const;
@@ -350,6 +353,45 @@ export function CalendarDetail({ calendar, events, calendars, appUrl, plan }: Ca
           </div>
 
           <CalendarSlugSection calendarId={calendar.id} plan={plan} appUrl={appUrl} slug={calendar.slug} />
+        </section>
+
+        {/* QR code */}
+        <section id="qr-code" className="scroll-mt-24 space-y-3 rounded-xl border border-border/60 p-4 sm:p-5">
+          <div>
+            <h2 className="text-sm font-semibold text-foreground">{T.eventDetail.qrCode.title}</h2>
+            <p className="text-xs text-muted-foreground mt-0.5">{T.calendarDetail.qrCode.subtitle}</p>
+          </div>
+          <div className="flex flex-wrap items-center gap-4">
+            <img
+              src={`${appUrl}/api/calendars/${calendar.id}/qrcode?format=png`}
+              alt={T.eventDetail.qrCode.title}
+              width={120}
+              height={120}
+              className="shrink-0 rounded-lg border border-border/60 bg-white p-2"
+            />
+            <div className="flex flex-col gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                className="gap-1.5"
+                nativeButton={false}
+                render={<a href={`${appUrl}/api/calendars/${calendar.id}/qrcode?format=png`} download />}
+              >
+                <Download className="h-3.5 w-3.5" />
+                {T.eventDetail.qrCode.downloadPng}
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                className="gap-1.5"
+                nativeButton={false}
+                render={<a href={`${appUrl}/api/calendars/${calendar.id}/qrcode?format=svg`} download />}
+              >
+                <Download className="h-3.5 w-3.5" />
+                {T.eventDetail.qrCode.downloadSvg}
+              </Button>
+            </div>
+          </div>
         </section>
 
         {/* Branding */}

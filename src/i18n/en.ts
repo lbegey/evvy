@@ -662,6 +662,9 @@ export const en = {
     branding: {
       subtitle: "Customize the look of this calendar's public page.",
     },
+    qrCode: {
+      subtitle: "Print it or share it — scanning opens the public calendar page.",
+    },
   },
 
   admin: {

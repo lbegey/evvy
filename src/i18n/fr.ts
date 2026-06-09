@@ -664,6 +664,9 @@ export const fr: Translations = {
     branding: {
       subtitle: "Personnalisez l'apparence de la page publique de ce calendrier.",
     },
+    qrCode: {
+      subtitle: "Imprimez-le ou partagez-le — le scanner ouvre la page publique du calendrier.",
+    },
   },
 
   admin: {
