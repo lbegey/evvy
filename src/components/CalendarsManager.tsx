@@ -3,7 +3,7 @@
 import { useMemo, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { Plus, Trash2, ExternalLink, CalendarRange, Search, ChevronLeft, ChevronRight } from "lucide-react";
+import { Plus, Trash2, ExternalLink, CalendarRange, Search, ChevronLeft, ChevronRight, Copy, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { CalendarDialog, type CalendarDialogValues } from "@/components/CalendarDialog";
@@ -12,6 +12,7 @@ import { useLanguage } from "@/contexts/LanguageContext";
 import { cn } from "@/lib/utils";
 
 const CALENDARS_PER_PAGE = 10;
+const FREE_CALENDAR_LIMIT = 1;
 
 export interface CalendarRecord {
   id: string;
@@ -24,9 +25,10 @@ export interface CalendarRecord {
 interface CalendarsManagerProps {
   calendars: CalendarRecord[];
   appUrl: string;
+  plan: string;
 }
 
-export function CalendarsManager({ calendars, appUrl }: CalendarsManagerProps) {
+export function CalendarsManager({ calendars, appUrl, plan }: CalendarsManagerProps) {
   const router = useRouter();
   const { T } = useLanguage();
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -36,6 +38,10 @@ export function CalendarsManager({ calendars, appUrl }: CalendarsManagerProps) {
   const [isDeleting, startDelete] = useTransition();
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
+  const [copiedId, setCopiedId] = useState<string | null>(null);
+
+  const isPremium = plan === "premium";
+  const atFreeLimit = !isPremium && calendars.length >= FREE_CALENDAR_LIMIT;
 
   const filteredCalendars = useMemo(() => {
     const query = search.trim().toLowerCase();
@@ -64,8 +70,8 @@ export function CalendarsManager({ calendars, appUrl }: CalendarsManagerProps) {
     setFormError(null);
     startTransition(async () => {
       const result = await createCalendar(data);
-      if (result && "error" in result && result.error === "forbidden") {
-        setFormError(T.calendars.locked);
+      if (result && "error" in result) {
+        setFormError(result.error === "limit" ? T.calendars.freeLimit : T.calendars.locked);
         return;
       }
       setDialogOpen(false);
@@ -83,8 +89,24 @@ export function CalendarsManager({ calendars, appUrl }: CalendarsManagerProps) {
     });
   };
 
+  const handleCopy = (id: string) => {
+    navigator.clipboard.writeText(`${appUrl}/c/${id}`).then(() => {
+      setCopiedId(id);
+      setTimeout(() => setCopiedId(null), 2000);
+    });
+  };
+
   return (
     <div className="space-y-4">
+      {!isPremium && (
+        <div className="flex items-center justify-between gap-3 rounded-lg border border-border/60 bg-muted/30 px-4 py-2.5 text-sm text-muted-foreground">
+          <span>{T.calendars.freeLimitBanner(calendars.length, FREE_CALENDAR_LIMIT)}</span>
+          <Link href="/dashboard/billing" className="shrink-0 text-xs font-medium text-primary underline-offset-4 hover:underline">
+            {T.calendars.unlock}
+          </Link>
+        </div>
+      )}
+
       <div className="flex flex-wrap items-center justify-between gap-3">
         {calendars.length > 0 && (
           <div className="relative min-w-0 flex-1 sm:max-w-xs">
@@ -97,7 +119,7 @@ export function CalendarsManager({ calendars, appUrl }: CalendarsManagerProps) {
             />
           </div>
         )}
-        <Button onClick={openCreate} className="shrink-0 gap-1.5">
+        <Button onClick={openCreate} disabled={atFreeLimit} className="shrink-0 gap-1.5">
           <Plus className="h-4 w-4" />
           {T.calendars.create}
         </Button>
@@ -141,12 +163,22 @@ export function CalendarsManager({ calendars, appUrl }: CalendarsManagerProps) {
               </div>
 
               <div className="relative z-20 ml-auto flex shrink-0 items-center gap-1.5">
+                <button
+                  type="button"
+                  onClick={() => handleCopy(calendar.id)}
+                  className={cn(
+                    "inline-flex items-center gap-1.5 rounded-lg border border-border/60 px-2.5 py-1.5 text-xs transition-colors",
+                    copiedId === calendar.id ? "border-green-500/40 bg-green-50 text-green-700" : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                  )}
+                  title={`${appUrl}/c/${calendar.id}`}
+                >
+                  {copiedId === calendar.id ? <Check className="h-3.5 w-3.5" /> : <Copy className="h-3.5 w-3.5" />}
+                  {copiedId === calendar.id ? T.common.copied : T.common.copy}
+                </button>
                 <Link
                   href={`/c/${calendar.id}`}
                   target="_blank"
-                  className={cn(
-                    "inline-flex items-center gap-1.5 rounded-lg border border-border/60 px-2.5 py-1.5 text-xs text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
-                  )}
+                  className="inline-flex items-center gap-1.5 rounded-lg border border-border/60 px-2.5 py-1.5 text-xs text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
                   title={`${appUrl}/c/${calendar.id}`}
                 >
                   <ExternalLink className="h-3.5 w-3.5" />
@@ -198,7 +230,6 @@ export function CalendarsManager({ calendars, appUrl }: CalendarsManagerProps) {
       <CalendarDialog
         open={dialogOpen}
         onOpenChange={setDialogOpen}
-        editing={null}
         onSubmit={handleSubmit}
         isPending={isPending}
         error={formError}

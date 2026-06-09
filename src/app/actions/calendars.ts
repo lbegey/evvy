@@ -6,6 +6,8 @@ import { headers } from "next/headers";
 import { revalidatePath } from "next/cache";
 import { isValidSlug, isSlugTaken } from "@/lib/slug";
 
+const FREE_CALENDAR_LIMIT = 1;
+
 type CalendarData = {
   name: string;
   description: string;
@@ -26,18 +28,25 @@ type CalendarBrandingData = {
   brandBackgroundImageUrl: string | null;
 };
 
-async function requirePremiumSession() {
+async function getSession() {
   const session = await auth.api.getSession({ headers: await headers() });
   if (!session) throw new Error("Unauthorized");
-
-  const user = await db.user.findUnique({ where: { id: session.user.id } });
-  if (user?.plan !== "premium") return { session, isPremium: false as const };
-  return { session, isPremium: true as const };
+  return session;
 }
 
-export async function createCalendar(data: CalendarData): Promise<{ id: string } | { error: "forbidden" }> {
-  const { session, isPremium } = await requirePremiumSession();
-  if (!isPremium) return { error: "forbidden" };
+async function isPremiumUser(userId: string): Promise<boolean> {
+  const user = await db.user.findUnique({ where: { id: userId }, select: { plan: true, role: true } });
+  return user?.plan === "premium" || user?.role === "super_admin";
+}
+
+export async function createCalendar(data: CalendarData): Promise<{ id: string } | { error: "forbidden" | "limit" }> {
+  const session = await getSession();
+  const isPremium = await isPremiumUser(session.user.id);
+
+  if (!isPremium) {
+    const count = await db.calendar.count({ where: { userId: session.user.id } });
+    if (count >= FREE_CALENDAR_LIMIT) return { error: "limit" };
+  }
 
   const calendar = await db.calendar.create({
     data: {
@@ -55,11 +64,10 @@ export async function createCalendar(data: CalendarData): Promise<{ id: string }
 }
 
 export async function updateCalendar(id: string, data: CalendarData): Promise<{ error: "forbidden" } | undefined> {
-  const { session, isPremium } = await requirePremiumSession();
-  if (!isPremium) return { error: "forbidden" };
+  const session = await getSession();
 
   const calendar = await db.calendar.findUnique({ where: { id } });
-  if (!calendar || calendar.userId !== session.user.id) throw new Error("Forbidden");
+  if (!calendar || calendar.userId !== session.user.id) return { error: "forbidden" };
 
   await db.calendar.update({
     where: { id },
@@ -77,11 +85,11 @@ export async function updateCalendar(id: string, data: CalendarData): Promise<{ 
 }
 
 export async function updateCalendarSlug(id: string, slug: string | null): Promise<{ error: "forbidden" | "invalid" | "taken" } | undefined> {
-  const { session, isPremium } = await requirePremiumSession();
-  if (!isPremium) return { error: "forbidden" };
+  const session = await getSession();
+  if (!(await isPremiumUser(session.user.id))) return { error: "forbidden" };
 
   const calendar = await db.calendar.findUnique({ where: { id } });
-  if (!calendar || calendar.userId !== session.user.id) throw new Error("Forbidden");
+  if (!calendar || calendar.userId !== session.user.id) return { error: "forbidden" };
 
   if (slug !== null) {
     if (!isValidSlug(slug)) return { error: "invalid" };
@@ -99,11 +107,11 @@ export async function updateCalendarSlug(id: string, slug: string | null): Promi
 }
 
 export async function updateCalendarBranding(id: string, data: CalendarBrandingData): Promise<{ error: "forbidden" } | undefined> {
-  const { session, isPremium } = await requirePremiumSession();
-  if (!isPremium) return { error: "forbidden" };
+  const session = await getSession();
+  if (!(await isPremiumUser(session.user.id))) return { error: "forbidden" };
 
   const calendar = await db.calendar.findUnique({ where: { id } });
-  if (!calendar || calendar.userId !== session.user.id) throw new Error("Forbidden");
+  if (!calendar || calendar.userId !== session.user.id) return { error: "forbidden" };
 
   await db.calendar.update({
     where: { id },
@@ -128,11 +136,10 @@ export async function updateCalendarBranding(id: string, data: CalendarBrandingD
 }
 
 export async function deleteCalendar(id: string): Promise<{ error: "forbidden" } | undefined> {
-  const { session, isPremium } = await requirePremiumSession();
-  if (!isPremium) return { error: "forbidden" };
+  const session = await getSession();
 
   const calendar = await db.calendar.findUnique({ where: { id } });
-  if (!calendar || calendar.userId !== session.user.id) throw new Error("Forbidden");
+  if (!calendar || calendar.userId !== session.user.id) return { error: "forbidden" };
 
   await db.calendar.delete({ where: { id } });
 
@@ -141,8 +148,8 @@ export async function deleteCalendar(id: string): Promise<{ error: "forbidden" }
 }
 
 export async function assignEventToCalendar(eventId: string, calendarId: string | null): Promise<{ error: "forbidden" } | undefined> {
-  const { session, isPremium } = await requirePremiumSession();
-  if (!isPremium) return { error: "forbidden" };
+  const session = await getSession();
+  if (!(await isPremiumUser(session.user.id))) return { error: "forbidden" };
 
   const event = await db.event.findUnique({ where: { id: eventId } });
   if (!event || event.userId !== session.user.id) throw new Error("Forbidden");

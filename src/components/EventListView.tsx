@@ -1,9 +1,11 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
-import { CalendarX2 } from "lucide-react";
+import { CalendarX2, Copy, Check } from "lucide-react";
 import type { CalendarEvent } from "@/components/CalendarView";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { cn } from "@/lib/utils";
 
 interface EventListViewProps {
   events: CalendarEvent[];
@@ -11,8 +13,17 @@ interface EventListViewProps {
 }
 
 export function EventListView({ events, emptyMessage }: EventListViewProps) {
-  const { lang } = useLanguage();
+  const { lang, T } = useLanguage();
   const locale = lang === "fr" ? "fr-FR" : "en-US";
+  const [copiedId, setCopiedId] = useState<string | null>(null);
+
+  const handleCopy = (ev: CalendarEvent) => {
+    const url = `${window.location.origin}/e/${ev.slug ?? ev.id}`;
+    navigator.clipboard.writeText(url).then(() => {
+      setCopiedId(ev.id);
+      setTimeout(() => setCopiedId(null), 2000);
+    });
+  };
 
   if (events.length === 0) {
     return (
@@ -46,11 +57,15 @@ export function EventListView({ events, emptyMessage }: EventListViewProps) {
           : `${dateLabel} · ${time}`;
 
         return (
-          <Link
+          <div
             key={ev.id}
-            href={`/dashboard/events/${ev.id}`}
-            className="flex items-center gap-3 rounded-xl border border-border/60 bg-background p-3 transition-colors hover:bg-muted/20"
+            className="group relative flex items-center gap-3 rounded-xl border border-border/60 bg-background p-3 transition-colors hover:bg-muted/20"
           >
+            <Link
+              href={`/dashboard/events/${ev.id}`}
+              className="absolute inset-0 z-10 rounded-xl"
+              aria-label={ev.title}
+            />
             <div className="flex w-12 shrink-0 flex-col items-center justify-center rounded-lg bg-muted/50 py-1.5">
               <span className="text-[10px] font-medium uppercase text-muted-foreground">{month}</span>
               <span className="text-base font-bold leading-none text-foreground">{day}</span>
@@ -62,7 +77,22 @@ export function EventListView({ events, emptyMessage }: EventListViewProps) {
                 {ev.location ? ` · ${ev.location}` : ""}
               </p>
             </div>
-          </Link>
+            <div className="relative z-20 shrink-0">
+              <button
+                type="button"
+                onClick={() => handleCopy(ev)}
+                className={cn(
+                  "inline-flex items-center gap-1.5 rounded-lg border border-border/60 px-2.5 py-1.5 text-xs transition-colors",
+                  copiedId === ev.id
+                    ? "border-green-500/40 bg-green-50 text-green-700"
+                    : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                )}
+              >
+                {copiedId === ev.id ? <Check className="h-3.5 w-3.5" /> : <Copy className="h-3.5 w-3.5" />}
+                {copiedId === ev.id ? T.common.copied : T.common.copy}
+              </button>
+            </div>
+          </div>
         );
       })}
     </div>

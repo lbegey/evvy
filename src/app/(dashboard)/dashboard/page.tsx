@@ -38,6 +38,7 @@ export default async function DashboardPage({
     endAt: e.endAt.toISOString(),
     timezone: e.timezone,
     calendarId: e.calendarId,
+    slug: e.slug,
   }));
 
   const initialYear = year ? parseInt(year) : undefined;

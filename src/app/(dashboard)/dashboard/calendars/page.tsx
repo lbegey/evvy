@@ -19,7 +19,7 @@ export default async function CalendarsPage() {
 
   return (
     <CalendarsPageContent
-      unlocked={plan === "premium"}
+      plan={plan}
       calendars={calendars.map((c) => ({
         id: c.id,
         name: c.name,

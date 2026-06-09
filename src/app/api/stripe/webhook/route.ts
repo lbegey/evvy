@@ -1,9 +1,12 @@
 import type { NextRequest } from "next/server";
 import Stripe from "stripe";
+import { Resend } from "resend";
 import { db } from "@/lib/db";
 import { stripe } from "@/lib/stripe";
+import { buildWelcomePremiumEmail, buildSubscriptionEndedEmail } from "@/lib/email";
 
 const WEBHOOK_SECRET = process.env.STRIPE_WEBHOOK_SECRET ?? "";
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 async function setUserPlanFromSubscription(customerId: string, subscription: Stripe.Subscription | null) {
   const user = await db.user.findUnique({ where: { stripeCustomerId: customerId } });
@@ -61,6 +64,19 @@ export async function POST(req: NextRequest) {
             : checkoutSession.subscription.id;
         const subscription = await stripe.subscriptions.retrieve(subscriptionId);
         await setUserPlanFromSubscription(checkoutSession.customer, subscription);
+
+        // Send welcome email
+        const user = await db.user.findUnique({ where: { stripeCustomerId: checkoutSession.customer } });
+        if (user) {
+          const lang = user.language === "fr" ? "fr" : "en";
+          const periodEnd = subscription.items.data[0]?.current_period_end;
+          await resend.emails.send({
+            from: "Evvy <noreply@evvycal.app>",
+            to: user.email,
+            subject: lang === "fr" ? "Bienvenue dans Evvy Premium !" : "Welcome to Evvy Premium!",
+            html: buildWelcomePremiumEmail(user.name, periodEnd ? new Date(periodEnd * 1000) : new Date(), lang),
+          });
+        }
       }
       break;
     }
@@ -69,7 +85,22 @@ export async function POST(req: NextRequest) {
     case "customer.subscription.deleted": {
       const subscription = event.data.object as Stripe.Subscription;
       const customerId = typeof subscription.customer === "string" ? subscription.customer : subscription.customer.id;
-      await setUserPlanFromSubscription(customerId, event.type === "customer.subscription.deleted" ? null : subscription);
+      const wasPremium = event.type === "customer.subscription.deleted";
+      await setUserPlanFromSubscription(customerId, wasPremium ? null : subscription);
+
+      // Send ended email only on hard deletion (not on updates like cancellation scheduling)
+      if (event.type === "customer.subscription.deleted") {
+        const user = await db.user.findUnique({ where: { stripeCustomerId: customerId } });
+        if (user) {
+          const lang = user.language === "fr" ? "fr" : "en";
+          await resend.emails.send({
+            from: "Evvy <noreply@evvycal.app>",
+            to: user.email,
+            subject: lang === "fr" ? "Votre abonnement Evvy a pris fin" : "Your Evvy subscription has ended",
+            html: buildSubscriptionEndedEmail(user.name, lang),
+          });
+        }
+      }
       break;
     }
   }

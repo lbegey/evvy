@@ -2,7 +2,7 @@ import { betterAuth, APIError } from "better-auth";
 import { prismaAdapter } from "better-auth/adapters/prisma";
 import { Resend } from "resend";
 import { db } from "@/lib/db";
-import { buildPasswordResetEmail } from "@/lib/email";
+import { buildPasswordResetEmail, buildVerificationEmail } from "@/lib/email";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
@@ -21,6 +21,21 @@ export const auth = betterAuth({
         to: user.email,
         subject: "Reset your Evvy password",
         html: buildPasswordResetEmail(url),
+      });
+    },
+  },
+  emailVerification: {
+    sendOnSignUp: true,
+    autoSignIn: true,
+    sendVerificationEmail: async ({ user, url }) => {
+      const dbUser = await db.user.findUnique({ where: { id: user.id }, select: { language: true } });
+      const lang = dbUser?.language === "fr" ? "fr" : "en";
+      const isFr = lang === "fr";
+      await resend.emails.send({
+        from: "Evvy <noreply@evvycal.app>",
+        to: user.email,
+        subject: isFr ? "Vérifiez votre adresse email – Evvy" : "Verify your email address – Evvy",
+        html: buildVerificationEmail(url, user.name, lang),
       });
     },
   },

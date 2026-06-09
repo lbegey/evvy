@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { Loader2 } from "lucide-react";
+import { Loader2, MailCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -25,6 +25,8 @@ export default function RegisterPage() {
   const router = useRouter();
   const { T } = useLanguage();
   const [serverError, setServerError] = useState<string | null>(null);
+  const [verificationSent, setVerificationSent] = useState(false);
+  const [registeredEmail, setRegisteredEmail] = useState("");
 
   const schema = z
     .object({
@@ -62,9 +64,31 @@ export default function RegisterPage() {
       );
       return;
     }
-    router.push("/dashboard");
-    router.refresh();
+    setRegisteredEmail(values.email);
+    setVerificationSent(true);
   };
+
+  if (verificationSent) {
+    return (
+      <div className="w-full max-w-sm text-center">
+        <div className="mx-auto mb-5 flex h-14 w-14 items-center justify-center rounded-full bg-primary/10">
+          <MailCheck className="h-7 w-7 text-primary" />
+        </div>
+        <h1 className="text-2xl font-bold tracking-tight text-foreground">{T.auth.verification.title}</h1>
+        <p className="mt-3 text-sm text-muted-foreground leading-relaxed">
+          {T.auth.verification.subtitle} <strong>{registeredEmail}</strong>.
+        </p>
+        <p className="mt-2 text-sm text-muted-foreground">{T.auth.verification.hint}</p>
+        <Link
+          href="/dashboard"
+          className="mt-6 inline-flex items-center rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground"
+        >
+          {T.auth.verification.continue}
+        </Link>
+        <p className="mt-4 text-xs text-muted-foreground">{T.auth.verification.spam}</p>
+      </div>
+    );
+  }
 
   return (
     <div className="w-full max-w-sm">

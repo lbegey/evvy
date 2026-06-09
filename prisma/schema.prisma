@@ -108,14 +108,16 @@ model EventClick {
 }
 
 model Rsvp {
-  id        String   @id @default(cuid())
-  eventId   String
-  name      String
-  email     String?
-  status    String
-  message   String?
-  createdAt DateTime @default(now())
-  event     Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  id               String   @id @default(cuid())
+  eventId          String
+  name             String
+  email            String?
+  status           String
+  message          String?
+  reminderSent24h  Boolean  @default(false)
+  reminderSent7d   Boolean  @default(false)
+  createdAt        DateTime @default(now())
+  event            Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
 }
 
 model Session {

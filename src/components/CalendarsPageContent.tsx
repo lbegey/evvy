@@ -1,16 +1,15 @@
 "use client";
 
-import Link from "next/link";
 import { CalendarsManager, type CalendarRecord } from "@/components/CalendarsManager";
 import { useLanguage } from "@/contexts/LanguageContext";
 
 interface CalendarsPageContentProps {
-  unlocked: boolean;
+  plan: string;
   calendars: CalendarRecord[];
   appUrl: string;
 }
 
-export function CalendarsPageContent({ unlocked, calendars, appUrl }: CalendarsPageContentProps) {
+export function CalendarsPageContent({ plan, calendars, appUrl }: CalendarsPageContentProps) {
   const { T } = useLanguage();
 
   return (
@@ -21,20 +20,7 @@ export function CalendarsPageContent({ unlocked, calendars, appUrl }: CalendarsP
         </h1>
         <p className="mt-1 text-sm text-muted-foreground">{T.calendars.subtitle}</p>
       </div>
-
-      {unlocked ? (
-        <CalendarsManager calendars={calendars} appUrl={appUrl} />
-      ) : (
-        <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-border/60 bg-card p-5">
-          <p className="text-sm text-muted-foreground">{T.calendars.locked}</p>
-          <Link
-            href="/dashboard/billing"
-            className="inline-flex items-center rounded-lg bg-primary px-3 py-1.5 text-xs font-medium text-primary-foreground transition-colors hover:bg-primary/80"
-          >
-            {T.calendars.unlock}
-          </Link>
-        </div>
-      )}
+      <CalendarsManager calendars={calendars} appUrl={appUrl} plan={plan} />
     </section>
   );
 }

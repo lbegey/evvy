@@ -30,6 +30,7 @@ export interface CalendarEvent {
   endAt: string;
   timezone: string;
   calendarId: string | null;
+  slug: string | null;
 }
 
 interface CalendarViewProps {
