@@ -5,6 +5,8 @@ import { ImageIcon, X, Loader2 } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { cn } from "@/lib/utils";
 
+const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5 MB
+
 interface ImageDropzoneProps {
   value: string;
   onChange: (url: string) => void;
@@ -21,14 +23,28 @@ export function ImageDropzone({ value, onChange, hint, previewClassName }: Image
 
   const upload = async (file: File) => {
     setError("");
+    if (file.size > MAX_FILE_SIZE) {
+      setError(T.dropzone.fileTooLarge);
+      return;
+    }
     setUploading(true);
     try {
       const fd = new FormData();
       fd.append("file", file);
       const res = await fetch("/api/upload", { method: "POST", body: fd });
-      const json = await res.json();
-      if (!res.ok) throw new Error(json.error ?? "Upload failed");
-      onChange(json.url);
+      let json: { url?: string; error?: string } | null = null;
+      try {
+        json = await res.json();
+      } catch {
+        json = null;
+      }
+      if (!res.ok || !json) {
+        if (res.status === 413 || /too large/i.test(json?.error ?? "")) {
+          throw new Error(T.dropzone.fileTooLarge);
+        }
+        throw new Error(json?.error ?? T.dropzone.uploadError);
+      }
+      onChange(json.url!);
     } catch (e) {
       setError(e instanceof Error ? e.message : T.dropzone.uploadError);
     } finally {

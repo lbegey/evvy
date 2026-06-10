@@ -25,6 +25,7 @@ export const en = {
     optimalSize: "Optimal size: 1200 × 630 px (16:9 ratio)",
     remove: "Remove image",
     uploadError: "Upload failed",
+    fileTooLarge: "Image is too large (max 5 MB)",
   },
 
   nav: {

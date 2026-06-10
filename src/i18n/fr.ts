@@ -27,6 +27,7 @@ export const fr: Translations = {
     optimalSize: "Taille optimale : 1 200 × 630 px (ratio 16/9)",
     remove: "Supprimer l'image",
     uploadError: "Erreur d'upload",
+    fileTooLarge: "L'image est trop volumineuse (max 5 Mo)",
   },
 
   nav: {

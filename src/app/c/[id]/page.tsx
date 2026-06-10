@@ -172,7 +172,6 @@ export default async function PublicCalendarPage({
         } as CSSProperties : {}),
         ...(brandCardColor ? { "--card": brandCardColor, "--background": brandCardColor } as CSSProperties : {}),
         ...(brandBackgroundColor ? { backgroundColor: brandBackgroundColor } : {}),
-        ...(brandBackgroundImageUrl ? { backgroundImage: `url(${JSON.stringify(brandBackgroundImageUrl)})`, backgroundSize: "cover", backgroundPosition: "center" } : {}),
       }
     : undefined;
 
@@ -256,7 +255,14 @@ export default async function PublicCalendarPage({
           </Link>
         </div>
       )}
-      <div className="flex min-h-screen flex-col justify-center bg-muted/20 py-6 px-4 sm:py-8" style={brandStyle}>
+      <div className="relative flex min-h-screen flex-col justify-center overflow-hidden bg-muted/20 py-6 px-4 sm:py-8" style={brandStyle}>
+      {brandBackgroundImageUrl && (
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-0 -z-10 scale-110 bg-cover bg-center blur-sm"
+          style={{ backgroundImage: `url(${JSON.stringify(brandBackgroundImageUrl)})` }}
+        />
+      )}
       <CalendarLiveRefresh id={calendar.id} signature={liveSignature} />
       <div className="mx-auto w-full max-w-xl space-y-3">
         {brandLogoUrl ? (
