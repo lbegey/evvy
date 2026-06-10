@@ -526,6 +526,7 @@ export const en = {
   },
 
   publicCalendar: {
+    edit: "Edit",
     noEvents: "No events in this calendar yet.",
     addAllToCalendar: {
       text: "Subscribe to add every event from this calendar to your own calendar at once:",

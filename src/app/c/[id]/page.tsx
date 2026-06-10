@@ -1,9 +1,10 @@
 import Link from "next/link";
 import type { CSSProperties } from "react";
 import type { Metadata } from "next";
-import { cookies } from "next/headers";
+import { cookies, headers } from "next/headers";
 import { redirect } from "next/navigation";
-import { CalendarRange, CalendarOff, Clock, MapPin } from "lucide-react";
+import { CalendarRange, CalendarOff, Clock, MapPin, Pencil } from "lucide-react";
+import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { Logo } from "@/components/Logo";
 import { CalendarLiveRefresh } from "@/components/CalendarLiveRefresh";
@@ -61,26 +62,29 @@ export default async function PublicCalendarPage({
   const lang: "fr" | "en" = cookieStore.get("minical_lang")?.value === "fr" ? "fr" : "en";
   const T = lang === "fr" ? fr : en;
 
-  const calendar = await db.calendar.findFirst({
-    where: { OR: [{ id }, { slug: id }] },
-    include: {
-      events: { orderBy: { startAt: "asc" } },
-      user: {
-        select: {
-          plan: true,
-          brandLogoUrl: true,
-          brandLogoSize: true,
-          brandLogoTransparentBg: true,
-          brandLogoRounded: true,
-          brandColor: true,
-          brandTextColor: true,
-          brandCardColor: true,
-          brandBackgroundColor: true,
-          brandBackgroundImageUrl: true,
+  const [calendar, session] = await Promise.all([
+    db.calendar.findFirst({
+      where: { OR: [{ id }, { slug: id }] },
+      include: {
+        events: { orderBy: { startAt: "asc" } },
+        user: {
+          select: {
+            plan: true,
+            brandLogoUrl: true,
+            brandLogoSize: true,
+            brandLogoTransparentBg: true,
+            brandLogoRounded: true,
+            brandColor: true,
+            brandTextColor: true,
+            brandCardColor: true,
+            brandBackgroundColor: true,
+            brandBackgroundImageUrl: true,
+          },
         },
       },
-    },
-  });
+    }),
+    auth.api.getSession({ headers: await headers() }),
+  ]);
 
   if (calendar?.slug && id !== calendar.slug) redirect(`/c/${calendar.slug}`);
 
@@ -103,6 +107,7 @@ export default async function PublicCalendarPage({
     );
   }
 
+  const isCreator = session?.user.id === calendar.userId;
   const isPremiumOrganizer = calendar.user.plan === "premium";
   const useCalendarOverride = isPremiumOrganizer && calendar.brandingEnabled;
   const brandLogoUrl = isPremiumOrganizer
@@ -236,19 +241,30 @@ export default async function PublicCalendarPage({
         )}
 
         <div className="rounded-2xl border border-border/60 bg-background p-5 shadow-sm">
-          <div className="flex items-center gap-2">
-            <span
-              className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full"
-              style={{ backgroundColor: /^#[0-9a-fA-F]{3,8}$/.test(calendar.color ?? "") ? `${calendar.color}26` : undefined }}
-            >
-              <CalendarRange
-                className="h-4 w-4"
-                style={{ color: /^#[0-9a-fA-F]{3,8}$/.test(calendar.color ?? "") ? calendar.color! : undefined }}
-              />
-            </span>
-            <h1 className="text-xl font-bold tracking-tight text-foreground leading-tight">
-              {calendar.name}
-            </h1>
+          <div className="flex items-start justify-between gap-3">
+            <div className="flex items-center gap-2">
+              <span
+                className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full"
+                style={{ backgroundColor: /^#[0-9a-fA-F]{3,8}$/.test(calendar.color ?? "") ? `${calendar.color}26` : undefined }}
+              >
+                <CalendarRange
+                  className="h-4 w-4"
+                  style={{ color: /^#[0-9a-fA-F]{3,8}$/.test(calendar.color ?? "") ? calendar.color! : undefined }}
+                />
+              </span>
+              <h1 className="text-xl font-bold tracking-tight text-foreground leading-tight">
+                {calendar.name}
+              </h1>
+            </div>
+            {isCreator && (
+              <Link
+                href={`/dashboard/calendars/${calendar.id}`}
+                className={cn(buttonVariants({ variant: "outline", size: "sm" }), "shrink-0 gap-1.5")}
+              >
+                <Pencil className="h-3 w-3" />
+                {T.publicCalendar.edit}
+              </Link>
+            )}
           </div>
           {calendar.description && (
             <p className="mt-2 text-sm leading-relaxed text-foreground/70">{calendar.description}</p>

@@ -528,6 +528,7 @@ export const fr: Translations = {
   },
 
   publicCalendar: {
+    edit: "Modifier",
     noEvents: "Aucun événement dans ce calendrier pour l'instant.",
     addAllToCalendar: {
       text: "Abonnez-vous pour ajouter tous les événements de ce calendrier à votre propre calendrier en une seule fois :",

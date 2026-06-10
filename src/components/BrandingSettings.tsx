@@ -100,7 +100,7 @@ export function BrandingSettings({
             value={logoUrl}
             onChange={setLogoUrl}
             hint={T.branding.logoHint}
-            previewClassName="h-20 w-auto max-w-full rounded-lg object-contain border border-border/60 bg-muted/20 p-3"
+            previewClassName={cn("h-20 w-auto max-w-full rounded-lg object-contain p-3", !logoTransparentBg && "border border-border/60 bg-muted/20")}
           />
         </div>
 

@@ -151,7 +151,7 @@ export function CalendarBrandingSection({
             <ImageDropzone
               value={logoUrl}
               onChange={(v) => { setLogoUrl(v); persist({ logoUrl: v }); }}
-              previewClassName="h-16 w-auto max-w-full rounded-lg object-contain border border-border/60 bg-muted/20 p-2"
+              previewClassName={cn("h-16 w-auto max-w-full rounded-lg object-contain p-2", !logoTransparentBg && "border border-border/60 bg-muted/20")}
             />
           </div>
 
