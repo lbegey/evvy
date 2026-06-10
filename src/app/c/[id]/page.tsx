@@ -3,7 +3,7 @@ import type { CSSProperties } from "react";
 import type { Metadata } from "next";
 import { cookies, headers } from "next/headers";
 import { redirect } from "next/navigation";
-import { CalendarRange, CalendarOff, Clock, MapPin, Pencil } from "lucide-react";
+import { CalendarOff, Clock, MapPin, Pencil } from "lucide-react";
 import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { Logo } from "@/components/Logo";
@@ -77,6 +77,7 @@ export default async function PublicCalendarPage({
             brandColor: true,
             brandTextColor: true,
             brandCardColor: true,
+            brandIconBackgroundColor: true,
             brandBackgroundColor: true,
             brandBackgroundImageUrl: true,
           },
@@ -154,6 +155,9 @@ export default async function PublicCalendarPage({
   const brandCardColor = isPremiumOrganizer
     ? (useCalendarOverride ? calendar.brandCardColor : calendar.user.brandCardColor)
     : null;
+  const brandIconBackgroundColor = isPremiumOrganizer
+    ? (useCalendarOverride ? calendar.brandIconBackgroundColor : calendar.user.brandIconBackgroundColor)
+    : null;
   const brandStyle: CSSProperties | undefined = (brandColor || brandBackgroundColor || brandBackgroundImageUrl || brandTextColor || brandCardColor)
     ? {
         ...(brandColor ? { "--primary": brandColor, "--border": brandColor, "--ring": brandColor } as CSSProperties : {}),
@@ -202,7 +206,7 @@ export default async function PublicCalendarPage({
       <Link
         key={event.id}
         href={`/e/${event.id}`}
-        className="flex items-center gap-3 rounded-xl border border-border/60 bg-background p-4 shadow-sm"
+        className="flex items-center gap-3 p-4 transition-colors hover:bg-muted/40"
       >
         <div className="flex w-12 shrink-0 flex-col items-center justify-center rounded-lg bg-muted/50 py-1.5">
           <span className="text-[10px] font-medium uppercase text-muted-foreground">{month}</span>
@@ -235,9 +239,23 @@ export default async function PublicCalendarPage({
     <div className="flex min-h-screen flex-col justify-center bg-muted/20 py-6 px-4 sm:py-8" style={brandStyle}>
       <CalendarLiveRefresh id={calendar.id} signature={liveSignature} />
       <div className="mx-auto w-full max-w-xl space-y-3">
-        {!calendar.published && isCreator && (
-          <div className="rounded-xl border border-amber-300/60 bg-amber-50 px-4 py-2.5 text-center text-xs font-medium text-amber-700 dark:border-amber-900/40 dark:bg-amber-900/20 dark:text-amber-400">
-            {T.publicCalendar.previewBanner}
+        {isCreator && (
+          <div
+            className={cn(
+              "flex items-center justify-between gap-3 rounded-xl border px-4 py-2.5 text-xs font-medium",
+              calendar.published
+                ? "border-border/60 bg-background text-muted-foreground shadow-sm"
+                : "border-amber-300/60 bg-amber-50 text-amber-700 dark:border-amber-900/40 dark:bg-amber-900/20 dark:text-amber-400"
+            )}
+          >
+            <span>{calendar.published ? T.publicCalendar.adminBar : T.publicCalendar.previewBanner}</span>
+            <Link
+              href={`/dashboard/calendars/${calendar.id}`}
+              className={cn(buttonVariants({ variant: "outline", size: "sm" }), "shrink-0 gap-1.5")}
+            >
+              <Pencil className="h-3 w-3" />
+              {T.publicCalendar.edit}
+            </Link>
           </div>
         )}
         {brandLogoUrl ? (
@@ -262,73 +280,54 @@ export default async function PublicCalendarPage({
           )
         )}
 
-        <div className="rounded-2xl border border-border/60 bg-background p-5 shadow-sm">
-          <div className="flex items-start justify-between gap-3">
-            <div className="flex items-center gap-2">
-              <span
-                className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full"
-                style={{ backgroundColor: /^#[0-9a-fA-F]{3,8}$/.test(calendar.color ?? "") ? `${calendar.color}26` : undefined }}
-              >
-                <CalendarRange
-                  className="h-4 w-4"
-                  style={{ color: /^#[0-9a-fA-F]{3,8}$/.test(calendar.color ?? "") ? calendar.color! : undefined }}
-                />
-              </span>
-              <h1 className="text-xl font-bold tracking-tight text-foreground leading-tight">
-                {calendar.name}
-              </h1>
-            </div>
-            {isCreator && (
-              <Link
-                href={`/dashboard/calendars/${calendar.id}`}
-                className={cn(buttonVariants({ variant: "outline", size: "sm" }), "shrink-0 gap-1.5")}
-              >
-                <Pencil className="h-3 w-3" />
-                {T.publicCalendar.edit}
-              </Link>
+        <div className="rounded-2xl border border-border/60 bg-background shadow-sm overflow-hidden">
+          <div className="border-b border-border/60 p-5">
+            <h1 className="text-xl font-bold tracking-tight text-foreground leading-tight">
+              {calendar.name}
+            </h1>
+            {calendar.description && (
+              <p className="mt-2 text-sm leading-relaxed text-foreground/70">{calendar.description}</p>
             )}
           </div>
-          {calendar.description && (
-            <p className="mt-2 text-sm leading-relaxed text-foreground/70">{calendar.description}</p>
-          )}
-        </div>
 
-        {calendar.events.length === 0 ? (
-          <div className="rounded-xl border border-border/60 bg-background px-5 py-8 text-center shadow-sm">
-            <p className="text-sm text-muted-foreground">{T.publicCalendar.noEvents}</p>
-          </div>
-        ) : (
-          <>
-            <div
-              className={cn(
-                "space-y-2",
-                calendar.events.length > 5 && "max-h-[27rem] overflow-y-auto pr-1"
-              )}
-            >
-              {calendar.events.map(renderEventCard)}
+          {calendar.events.length === 0 ? (
+            <div className="px-5 py-8 text-center">
+              <p className="text-sm text-muted-foreground">{T.publicCalendar.noEvents}</p>
             </div>
+          ) : (
+            <>
+              <div
+                className={cn(
+                  "divide-y divide-border/60",
+                  calendar.events.length > 5 && "max-h-[27rem] overflow-y-auto"
+                )}
+              >
+                {calendar.events.map(renderEventCard)}
+              </div>
 
-            <div className="rounded-xl border border-border/60 bg-background px-5 py-4 shadow-sm">
-              <div className="space-y-3">
-                <p className="text-sm leading-relaxed text-muted-foreground">{T.publicCalendar.addAllToCalendar.text}</p>
-                <div className="flex items-center gap-2 sm:gap-3">
-                  {CAL_SERVICES.map((s) => (
-                    <a
-                      key={s.key}
-                      href={subscribeUrls[s.key]}
-                      target={s.key !== "apple" ? "_blank" : undefined}
-                      rel="noopener noreferrer"
-                      title={s.name}
-                      className="cursor-pointer rounded-lg p-1"
-                    >
-                      <img src={s.logo} alt={s.name} width={36} height={36} className="rounded" />
-                    </a>
-                  ))}
+              <div className="border-t border-border/60 px-5 py-4">
+                <div className="space-y-3">
+                  <p className="text-sm leading-relaxed text-muted-foreground">{T.publicCalendar.addAllToCalendar.text}</p>
+                  <div className="flex items-center gap-2 sm:gap-3">
+                    {CAL_SERVICES.map((s) => (
+                      <a
+                        key={s.key}
+                        href={subscribeUrls[s.key]}
+                        target={s.key !== "apple" ? "_blank" : undefined}
+                        rel="noopener noreferrer"
+                        title={s.name}
+                        className="cursor-pointer rounded-lg p-1"
+                        style={brandIconBackgroundColor ? { backgroundColor: brandIconBackgroundColor } : undefined}
+                      >
+                        <img src={s.logo} alt={s.name} width={36} height={36} className="rounded" />
+                      </a>
+                    ))}
+                  </div>
                 </div>
               </div>
-            </div>
-          </>
-        )}
+            </>
+          )}
+        </div>
 
         {!brandLogoUrl && !isPremiumOrganizer && (
           <p className="text-center text-xs text-muted-foreground/60 pb-4">

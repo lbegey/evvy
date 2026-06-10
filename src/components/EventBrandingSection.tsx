@@ -28,6 +28,7 @@ interface EventBrandingSectionProps {
   brandColor: string | null;
   brandTextColor: string | null;
   brandCardColor: string | null;
+  brandIconBackgroundColor: string | null;
   brandBackgroundColor: string | null;
   brandBackgroundImageUrl: string | null;
 }
@@ -35,7 +36,7 @@ interface EventBrandingSectionProps {
 export function EventBrandingSection({
   eventId, plan, brandingEnabled,
   brandLogoUrl, brandLogoSize, brandLogoTransparentBg, brandLogoRounded,
-  brandColor, brandTextColor, brandCardColor, brandBackgroundColor, brandBackgroundImageUrl,
+  brandColor, brandTextColor, brandCardColor, brandIconBackgroundColor, brandBackgroundColor, brandBackgroundImageUrl,
 }: EventBrandingSectionProps) {
   const router = useRouter();
   const { T } = useLanguage();
@@ -47,6 +48,7 @@ export function EventBrandingSection({
   const [color, setColor] = useState(brandColor ?? "");
   const [textColor, setTextColor] = useState(brandTextColor ?? "");
   const [cardColor, setCardColor] = useState(brandCardColor ?? "");
+  const [iconBackgroundColor, setIconBackgroundColor] = useState(brandIconBackgroundColor ?? "");
   const [backgroundColor, setBackgroundColor] = useState(brandBackgroundColor ?? "");
   const [backgroundImageUrl, setBackgroundImageUrl] = useState(brandBackgroundImageUrl ?? "");
 
@@ -57,7 +59,7 @@ export function EventBrandingSection({
   const [isResetting, startReset] = useTransition();
   const isFirstRender = useRef(true);
 
-  const hasCustomBranding = Boolean(logoUrl || color || textColor || cardColor || backgroundColor || backgroundImageUrl);
+  const hasCustomBranding = Boolean(logoUrl || color || textColor || cardColor || iconBackgroundColor || backgroundColor || backgroundImageUrl);
 
   // Debounced auto-save for color fields
   useEffect(() => {
@@ -74,6 +76,7 @@ export function EventBrandingSection({
           brandColor: color || null,
           brandTextColor: textColor || null,
           brandCardColor: cardColor || null,
+          brandIconBackgroundColor: iconBackgroundColor || null,
           brandBackgroundColor: backgroundColor || null,
           brandBackgroundImageUrl: backgroundImageUrl || null,
         });
@@ -82,15 +85,15 @@ export function EventBrandingSection({
     }, COLOR_SAVE_DELAY_MS);
     return () => clearTimeout(timer);
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [color, textColor, cardColor, backgroundColor]);
+  }, [color, textColor, cardColor, iconBackgroundColor, backgroundColor]);
 
   const persist = (overrides: Partial<{
     enabled: boolean; logoUrl: string; logoSize: number;
     logoTransparentBg: boolean; logoRounded: boolean;
-    color: string; textColor: string; cardColor: string;
+    color: string; textColor: string; cardColor: string; iconBackgroundColor: string;
     backgroundColor: string; backgroundImageUrl: string;
   }> = {}) => {
-    const next = { enabled, logoUrl, logoSize, logoTransparentBg, logoRounded, color, textColor, cardColor, backgroundColor, backgroundImageUrl, ...overrides };
+    const next = { enabled, logoUrl, logoSize, logoTransparentBg, logoRounded, color, textColor, cardColor, iconBackgroundColor, backgroundColor, backgroundImageUrl, ...overrides };
     startTransition(async () => {
       await updateEventBranding(eventId, {
         brandingEnabled: next.enabled,
@@ -101,6 +104,7 @@ export function EventBrandingSection({
         brandColor: next.enabled ? (next.color || null) : null,
         brandTextColor: next.enabled ? (next.textColor || null) : null,
         brandCardColor: next.enabled ? (next.cardColor || null) : null,
+        brandIconBackgroundColor: next.enabled ? (next.iconBackgroundColor || null) : null,
         brandBackgroundColor: next.enabled ? (next.backgroundColor || null) : null,
         brandBackgroundImageUrl: next.enabled ? (next.backgroundImageUrl || null) : null,
       });
@@ -111,7 +115,7 @@ export function EventBrandingSection({
   const onReset = () => {
     if (!confirm(T.branding.resetConfirm)) return;
     setLogoUrl(""); setLogoSize(DEFAULT_LOGO_SIZE); setLogoTransparentBg(true); setLogoRounded(false);
-    setColor(""); setTextColor(""); setCardColor(""); setBackgroundColor(""); setBackgroundImageUrl("");
+    setColor(""); setTextColor(""); setCardColor(""); setIconBackgroundColor(""); setBackgroundColor(""); setBackgroundImageUrl("");
     startReset(async () => {
       await updateEventBranding(eventId, {
         brandingEnabled: enabled,
@@ -122,6 +126,7 @@ export function EventBrandingSection({
         brandColor: null,
         brandTextColor: null,
         brandCardColor: null,
+        brandIconBackgroundColor: null,
         brandBackgroundColor: null,
         brandBackgroundImageUrl: null,
       });
@@ -220,6 +225,7 @@ export function EventBrandingSection({
             <BrandingColorField id="evb-text" label={T.eventDetail.branding.textColor} value={textColor} placeholder="#111111" defaultColor="#111111" onChange={setTextColor} onBlur={() => persist({ textColor })} />
             <BrandingColorField id="evb-bg" label={T.eventDetail.branding.backgroundColor} value={backgroundColor} placeholder="#f4f4f5" defaultColor="#f4f4f5" onChange={setBackgroundColor} onBlur={() => persist({ backgroundColor })} />
             <BrandingColorField id="evb-card" label={T.eventDetail.branding.cardColor} value={cardColor} placeholder="#ffffff" defaultColor="#ffffff" onChange={setCardColor} onBlur={() => persist({ cardColor })} />
+            <BrandingColorField id="evb-icon-bg" label={T.eventDetail.branding.iconBackgroundColor} value={iconBackgroundColor} placeholder="#ffffff" defaultColor="#ffffff" onChange={setIconBackgroundColor} onBlur={() => persist({ iconBackgroundColor })} />
           </div>
 
           {/* Background image */}

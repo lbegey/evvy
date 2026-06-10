@@ -55,6 +55,19 @@ export const fr: Translations = {
       ctaEmail: "Inscription par email",
       microText: "Gratuit pour commencer · Aucune carte bancaire requise",
       compatibleWith: "Compatible avec",
+      mockup: {
+        tag: "Conférence Tech · Page publique",
+        eventTitle: "VivaTech Paris 2026",
+        eventDate: "Mer. 3 juin 2026 · 09:00 – 18:00",
+        eventLocation: "Paris, France",
+        addToCalendar: "Ajouter au calendrier",
+        rsvpQuestion: "Tu seras présent ?",
+        yes: "Oui",
+        maybe: "Peut-être",
+        no: "Non",
+        going: "12 confirmés",
+        startsIn: "Dans 3 jours",
+      },
     },
     features: {
       rsvp: {
@@ -402,6 +415,7 @@ export const fr: Translations = {
       color: "Couleur d'accent",
       textColor: "Couleur du texte",
       cardColor: "Fond des cartes",
+      iconBackgroundColor: "Fond des icônes de calendrier",
       backgroundColor: "Fond de page",
       backgroundImage: "Image de fond",
       locked: "La personnalisation est une fonctionnalité Premium.",
@@ -535,6 +549,7 @@ export const fr: Translations = {
       backHome: "Retour à l'accueil",
     },
     previewBanner: "Hors ligne — cette page n'est pas visible publiquement. Vous seul pouvez la voir.",
+    adminBar: "Vous visualisez cette page en tant qu'organisateur.",
     unavailable: {
       title: "Bientôt disponible",
       subtitle: "Cette page n'est pas encore disponible. Repassez plus tard.",
@@ -554,6 +569,7 @@ export const fr: Translations = {
       backHome: "Retour à l'accueil",
     },
     previewBanner: "Hors ligne — cette page n'est pas visible publiquement. Vous seul pouvez la voir.",
+    adminBar: "Vous visualisez cette page en tant qu'organisateur.",
     unavailable: {
       title: "Bientôt disponible",
       subtitle: "Cette page n'est pas encore disponible. Repassez plus tard.",
@@ -667,6 +683,8 @@ export const fr: Translations = {
     textColorHint: "Couleur principale du texte sur vos pages publiques.",
     cardColor: "Fond des cartes",
     cardColorHint: "Couleur de fond des cartes et blocs de contenu.",
+    iconBackgroundColor: "Fond des icônes de calendrier",
+    iconBackgroundColorHint: "Couleur de fond derrière les icônes des fournisseurs « Ajouter au calendrier ».",
     backgroundColor: "Fond de page",
     backgroundColorHint: "Couleur de fond derrière tout le contenu de vos pages publiques.",
     backgroundImage: "Image de fond",

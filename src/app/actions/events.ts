@@ -32,6 +32,7 @@ type EventBrandingData = {
   brandColor: string | null;
   brandTextColor: string | null;
   brandCardColor: string | null;
+  brandIconBackgroundColor: string | null;
   brandBackgroundColor: string | null;
   brandBackgroundImageUrl: string | null;
 };
@@ -153,6 +154,7 @@ export async function updateEventBranding(id: string, data: EventBrandingData): 
       brandColor: data.brandColor,
       brandTextColor: data.brandTextColor,
       brandCardColor: data.brandCardColor,
+      brandIconBackgroundColor: data.brandIconBackgroundColor,
       brandBackgroundColor: data.brandBackgroundColor,
       brandBackgroundImageUrl: data.brandBackgroundImageUrl,
     },

@@ -9,6 +9,8 @@ import {
   Link2,
   Loader2,
   CalendarRange,
+  Clock,
+  Check,
   X,
   MapPin,
   Globe,
@@ -225,6 +227,106 @@ function BrandingMock() {
   );
 }
 
+interface HeroMockupCopy {
+  tag: string;
+  eventTitle: string;
+  eventDate: string;
+  eventLocation: string;
+  addToCalendar: string;
+  rsvpQuestion: string;
+  yes: string;
+  maybe: string;
+  no: string;
+  going: string;
+  startsIn: string;
+}
+
+const RSVP_AVATAR_COLORS = ["#6366f1", "#22c55e", "#f97316", "#ec4899"];
+
+function HeroEventCardMock({ m }: { m: HeroMockupCopy }) {
+  return (
+    <div className="w-full max-w-sm rounded-2xl border border-border/60 bg-card p-5 shadow-xl shadow-black/10 sm:p-6">
+      <p className="text-[11px] font-semibold uppercase tracking-wide text-blue-600">{m.tag}</p>
+      <h3 className="mt-2 text-xl font-bold tracking-tight text-foreground sm:text-2xl">{m.eventTitle}</h3>
+      <div className="mt-3 space-y-1.5">
+        <p className="flex items-center gap-2 text-sm text-muted-foreground">
+          <CalendarRange className="h-4 w-4 shrink-0 text-blue-600" />
+          {m.eventDate}
+        </p>
+        <p className="flex items-center gap-2 text-sm text-muted-foreground">
+          <MapPin className="h-4 w-4 shrink-0 text-blue-600" />
+          {m.eventLocation}
+        </p>
+      </div>
+      <div className="mt-4 border-t border-border/60 pt-4">
+        <p className="text-xs font-medium text-muted-foreground">{m.addToCalendar}</p>
+        <div className="mt-2 flex items-center gap-2">
+          {SHARE_LOGOS.map((s) => (
+            <span key={s.key} className="rounded-lg p-0.5">
+              <img src={s.logo} alt={s.name} width={28} height={28} className="rounded" />
+            </span>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function HeroRsvpCardMock({ m }: { m: HeroMockupCopy }) {
+  return (
+    <div className="w-[210px] rounded-2xl border border-border/60 bg-card p-4 shadow-xl shadow-black/10">
+      <p className="text-sm font-semibold text-foreground">{m.rsvpQuestion}</p>
+      <div className="mt-3 grid grid-cols-3 gap-1.5">
+        <div className="flex h-9 flex-col items-center justify-center gap-0.5 rounded-lg bg-emerald-500/15 text-[10px] font-semibold text-emerald-600 ring-1 ring-emerald-500/30">
+          <Check className="h-3.5 w-3.5" />
+          {m.yes}
+        </div>
+        <div className="flex h-9 flex-col items-center justify-center gap-0.5 rounded-lg border border-border/60 bg-muted/30 text-[10px] font-medium text-muted-foreground">
+          <span className="text-xs leading-none">?</span>
+          {m.maybe}
+        </div>
+        <div className="flex h-9 flex-col items-center justify-center gap-0.5 rounded-lg border border-border/60 bg-muted/30 text-[10px] font-medium text-muted-foreground">
+          <X className="h-3.5 w-3.5" />
+          {m.no}
+        </div>
+      </div>
+      <div className="mt-3 flex items-center gap-2">
+        <div className="flex -space-x-2">
+          {RSVP_AVATAR_COLORS.map((c) => (
+            <span key={c} className="h-6 w-6 rounded-full border-2 border-card" style={{ backgroundColor: c }} />
+          ))}
+        </div>
+        <span className="text-xs text-muted-foreground">{m.going}</span>
+      </div>
+    </div>
+  );
+}
+
+function HeroStartsInBadge({ m }: { m: HeroMockupCopy }) {
+  return (
+    <div className="inline-flex items-center gap-1.5 rounded-full bg-foreground px-4 py-2 text-xs font-medium text-background shadow-lg">
+      <Clock className="h-3.5 w-3.5" />
+      {m.startsIn}
+    </div>
+  );
+}
+
+function HeroMockupComposition({ m }: { m: HeroMockupCopy }) {
+  return (
+    <div className="relative mx-auto max-w-sm lg:mx-0 lg:ml-auto">
+      <div className="absolute -top-6 right-2 z-0 animate-float-card-delayed sm:right-6">
+        <HeroStartsInBadge m={m} />
+      </div>
+      <div className="relative z-10 animate-float-card">
+        <HeroEventCardMock m={m} />
+      </div>
+      <div className="absolute -bottom-8 -left-2 z-20 animate-float-card-delayed sm:-left-8">
+        <HeroRsvpCardMock m={m} />
+      </div>
+    </div>
+  );
+}
+
 function HeroCalendarBackdrop() {
   return (
     <div aria-hidden className="pointer-events-none absolute inset-0 -z-10 overflow-hidden">
@@ -296,53 +398,68 @@ export function LandingContent({ demoCalendar }: LandingContentProps) {
         />
         {/* Calendar backdrop */}
         <HeroCalendarBackdrop />
-        <div className="relative mx-auto max-w-5xl text-center">
-          <h1
-            className="text-4xl font-bold tracking-tight sm:text-6xl lg:text-7xl animate-fade-in-up"
-            style={{ animationDelay: "0.1s" }}
-          >
-            <span className="block">{T.landing.hero.titleStart}</span>
-            <span className="block text-blue-600">{T.landing.hero.titleHighlight}</span>
-          </h1>
-
-          <p
-            className="mx-auto mt-6 max-w-xl text-lg leading-relaxed text-muted-foreground animate-fade-in-up"
-            style={{ animationDelay: "0.2s" }}
-          >
-            {T.landing.hero.subtitle}
-          </p>
-
-          <div
-            className="mt-10 flex flex-col items-center justify-center gap-3 animate-fade-in-up sm:flex-row"
-            style={{ animationDelay: "0.3s" }}
-          >
-            <Button
-              variant="outline"
-              size="lg"
-              disabled={googleLoading}
-              onClick={handleGoogle}
-              className="w-full gap-2.5 rounded-[10px] border-border bg-background px-7 py-6 text-sm shadow-md shadow-black/5 transition-all hover:-translate-y-0.5 hover:shadow-lg hover:shadow-black/10 sm:w-auto"
+        <div className="relative mx-auto grid max-w-6xl items-center gap-16 lg:grid-cols-2 lg:gap-12">
+          <div className="text-center lg:text-left">
+            <div
+              className="inline-flex items-center gap-2 rounded-full border border-border/60 bg-background/80 px-4 py-1.5 text-xs font-medium text-muted-foreground shadow-sm backdrop-blur-sm animate-fade-in-up"
             >
-              {googleLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <GoogleGlyph />}
-              {T.landing.hero.ctaGoogle}
-            </Button>
-            <Button
-              size="lg"
-              nativeButton={false}
-              render={<Link href="/register" />}
-              className="w-full gap-2.5 rounded-[10px] px-7 py-6 text-sm shadow-md shadow-primary/20 transition-all hover:-translate-y-0.5 hover:shadow-lg hover:shadow-primary/30 sm:w-auto"
+              <span className="h-2 w-2 shrink-0 rounded-full bg-emerald-500" />
+              {T.landing.hero.badge}
+            </div>
+
+            <h1
+              className="mt-5 text-4xl font-bold tracking-tight sm:text-6xl lg:text-7xl animate-fade-in-up"
+              style={{ animationDelay: "0.1s" }}
             >
-              <Mail className="h-4 w-4" />
-              {T.landing.hero.ctaEmail}
-            </Button>
+              <span className="block">{T.landing.hero.titleStart}</span>
+              <span className="block bg-gradient-to-r from-blue-600 to-violet-500 bg-clip-text text-transparent">
+                {T.landing.hero.titleHighlight}
+              </span>
+            </h1>
+
+            <p
+              className="mx-auto mt-6 max-w-xl text-lg leading-relaxed text-muted-foreground animate-fade-in-up lg:mx-0"
+              style={{ animationDelay: "0.2s" }}
+            >
+              {T.landing.hero.subtitle}
+            </p>
+
+            <div
+              className="mt-10 flex flex-col items-center justify-center gap-3 animate-fade-in-up sm:flex-row lg:justify-start"
+              style={{ animationDelay: "0.3s" }}
+            >
+              <Button
+                variant="outline"
+                size="lg"
+                disabled={googleLoading}
+                onClick={handleGoogle}
+                className="w-full gap-2.5 rounded-[10px] border-border bg-background px-7 py-6 text-sm shadow-md shadow-black/5 transition-all hover:-translate-y-0.5 hover:shadow-lg hover:shadow-black/10 sm:w-auto"
+              >
+                {googleLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <GoogleGlyph />}
+                {T.landing.hero.ctaGoogle}
+              </Button>
+              <Button
+                size="lg"
+                nativeButton={false}
+                render={<Link href="/register" />}
+                className="w-full gap-2.5 rounded-[10px] px-7 py-6 text-sm shadow-md shadow-primary/20 transition-all hover:-translate-y-0.5 hover:shadow-lg hover:shadow-primary/30 sm:w-auto"
+              >
+                <Mail className="h-4 w-4" />
+                {T.landing.hero.ctaEmail}
+              </Button>
+            </div>
+
+            <p
+              className="mt-5 text-xs text-muted-foreground animate-fade-in-up"
+              style={{ animationDelay: "0.4s" }}
+            >
+              {T.landing.hero.microText}
+            </p>
           </div>
 
-          <p
-            className="mt-5 text-xs text-muted-foreground animate-fade-in-up"
-            style={{ animationDelay: "0.4s" }}
-          >
-            {T.landing.hero.microText}
-          </p>
+          <div className="animate-fade-in-up" style={{ animationDelay: "0.3s" }}>
+            <HeroMockupComposition m={T.landing.hero.mockup} />
+          </div>
         </div>
       </section>
 

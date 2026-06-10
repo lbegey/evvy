@@ -53,6 +53,19 @@ export const en = {
       ctaEmail: "Sign up by email",
       microText: "Free to start · No credit card required",
       compatibleWith: "Works with",
+      mockup: {
+        tag: "Tech conference · Public page",
+        eventTitle: "VivaTech Paris 2026",
+        eventDate: "Wed, Jun 3, 2026 · 09:00 – 18:00",
+        eventLocation: "Paris, France",
+        addToCalendar: "Add to calendar",
+        rsvpQuestion: "Will you attend?",
+        yes: "Yes",
+        maybe: "Maybe",
+        no: "No",
+        going: "12 going",
+        startsIn: "Starts in 3 days",
+      },
     },
     features: {
       rsvp: {
@@ -400,6 +413,7 @@ export const en = {
       color: "Accent color",
       textColor: "Text color",
       cardColor: "Card background",
+      iconBackgroundColor: "Calendar icons background",
       backgroundColor: "Page background",
       backgroundImage: "Background image",
       locked: "Custom branding is a Premium feature.",
@@ -533,6 +547,7 @@ export const en = {
       backHome: "Back to home",
     },
     previewBanner: "Offline — this page is not visible to the public. Only you can see it.",
+    adminBar: "You're viewing this page as its organizer.",
     unavailable: {
       title: "Coming soon",
       subtitle: "This page isn't available yet. Please check back later.",
@@ -552,6 +567,7 @@ export const en = {
       backHome: "Back to home",
     },
     previewBanner: "Offline — this page is not visible to the public. Only you can see it.",
+    adminBar: "You're viewing this page as its organizer.",
     unavailable: {
       title: "Coming soon",
       subtitle: "This page isn't available yet. Please check back later.",
@@ -665,6 +681,8 @@ export const en = {
     textColorHint: "Main text color on your public pages.",
     cardColor: "Card background",
     cardColorHint: "Background color of content cards and blocks.",
+    iconBackgroundColor: "Calendar icons background",
+    iconBackgroundColorHint: "Background color behind the \"Add to calendar\" provider icons.",
     backgroundColor: "Page background",
     backgroundColorHint: "Background color behind all content on your public pages.",
     backgroundImage: "Background image",

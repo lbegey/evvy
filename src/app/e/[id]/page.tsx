@@ -93,6 +93,7 @@ export default async function PublicEventPage({
             brandColor: true,
             brandTextColor: true,
             brandCardColor: true,
+            brandIconBackgroundColor: true,
             brandBackgroundColor: true,
             brandBackgroundImageUrl: true,
           },
@@ -155,6 +156,9 @@ export default async function PublicEventPage({
     : null;
   const brandCardColor = isPremiumOrganizer
     ? (useEventOverride ? event.brandCardColor : event.user.brandCardColor)
+    : null;
+  const brandIconBackgroundColor = isPremiumOrganizer
+    ? (useEventOverride ? event.brandIconBackgroundColor : event.user.brandIconBackgroundColor)
     : null;
   const brandStyle: CSSProperties | undefined = (brandColor || brandBackgroundColor || brandBackgroundImageUrl || brandTextColor || brandCardColor)
     ? {
@@ -255,9 +259,23 @@ export default async function PublicEventPage({
       <EventLiveRefresh id={event.id} updatedAt={event.updatedAt.toISOString()} />
 
       <div className="mx-auto w-full max-w-xl space-y-3">
-        {!event.published && isCreator && (
-          <div className="rounded-xl border border-amber-300/60 bg-amber-50 px-4 py-2.5 text-center text-xs font-medium text-amber-700 dark:border-amber-900/40 dark:bg-amber-900/20 dark:text-amber-400">
-            {T.publicEvent.previewBanner}
+        {isCreator && (
+          <div
+            className={cn(
+              "flex items-center justify-between gap-3 rounded-xl border px-4 py-2.5 text-xs font-medium",
+              event.published
+                ? "border-border/60 bg-background text-muted-foreground shadow-sm"
+                : "border-amber-300/60 bg-amber-50 text-amber-700 dark:border-amber-900/40 dark:bg-amber-900/20 dark:text-amber-400"
+            )}
+          >
+            <span>{event.published ? T.publicEvent.adminBar : T.publicEvent.previewBanner}</span>
+            <Link
+              href={`/dashboard/events/${event.id}`}
+              className={cn(buttonVariants({ variant: "outline", size: "sm" }), "shrink-0 gap-1.5")}
+            >
+              <Pencil className="h-3 w-3" />
+              {T.publicEvent.edit}
+            </Link>
           </div>
         )}
         {brandLogoUrl ? (
@@ -292,20 +310,9 @@ export default async function PublicEventPage({
             />
           )}
           <div className="p-5">
-            <div className="flex items-start justify-between gap-3">
-              <h1 className="text-xl font-bold tracking-tight text-foreground leading-tight">
-                {event.title}
-              </h1>
-              {isCreator && (
-                <Link
-                  href={`/dashboard/events/${event.id}`}
-                  className={cn(buttonVariants({ variant: "outline", size: "sm" }), "shrink-0 gap-1.5")}
-                >
-                  <Pencil className="h-3 w-3" />
-                  {T.publicEvent.edit}
-                </Link>
-              )}
-            </div>
+            <h1 className="text-xl font-bold tracking-tight text-foreground leading-tight">
+              {event.title}
+            </h1>
 
             <div className="mt-3 space-y-1.5">
               <div className="flex flex-wrap items-center gap-2 text-sm text-muted-foreground">
@@ -414,6 +421,7 @@ export default async function PublicEventPage({
                     rel="noopener noreferrer"
                     title={s.name}
                     className="cursor-pointer rounded-lg p-1"
+                    style={brandIconBackgroundColor ? { backgroundColor: brandIconBackgroundColor } : undefined}
                   >
                     <img src={s.logo} alt={s.name} width={36} height={36} className="rounded" />
                   </a>

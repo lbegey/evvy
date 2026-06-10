@@ -24,6 +24,7 @@ type CalendarBrandingData = {
   brandColor: string | null;
   brandTextColor: string | null;
   brandCardColor: string | null;
+  brandIconBackgroundColor: string | null;
   brandBackgroundColor: string | null;
   brandBackgroundImageUrl: string | null;
 };
@@ -121,6 +122,7 @@ export async function updateCalendarBranding(id: string, data: CalendarBrandingD
       brandColor: data.brandColor,
       brandTextColor: data.brandTextColor,
       brandCardColor: data.brandCardColor,
+      brandIconBackgroundColor: data.brandIconBackgroundColor,
       brandBackgroundColor: data.brandBackgroundColor,
       brandBackgroundImageUrl: data.brandBackgroundImageUrl,
     },

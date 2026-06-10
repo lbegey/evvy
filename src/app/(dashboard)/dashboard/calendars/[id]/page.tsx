@@ -45,6 +45,7 @@ export default async function CalendarPage({
         brandColor: calendar.brandColor,
         brandTextColor: calendar.brandTextColor,
         brandCardColor: calendar.brandCardColor,
+        brandIconBackgroundColor: calendar.brandIconBackgroundColor,
         brandBackgroundColor: calendar.brandBackgroundColor,
         brandBackgroundImageUrl: calendar.brandBackgroundImageUrl,
         eventCount: calendar._count.events,

@@ -68,6 +68,7 @@ interface Event {
   brandColor: string | null;
   brandTextColor: string | null;
   brandCardColor: string | null;
+  brandIconBackgroundColor: string | null;
   brandBackgroundColor: string | null;
   brandBackgroundImageUrl: string | null;
   calendarId: string | null;
@@ -600,6 +601,7 @@ export function EventDetail({ event, appUrl, plan, emailVerified, calendars, sta
           brandColor={event.brandColor}
           brandTextColor={event.brandTextColor}
           brandCardColor={event.brandCardColor}
+          brandIconBackgroundColor={event.brandIconBackgroundColor}
           brandBackgroundColor={event.brandBackgroundColor}
           brandBackgroundImageUrl={event.brandBackgroundImageUrl}
         />

@@ -49,6 +49,7 @@ interface CalendarRecord {
   brandColor: string | null;
   brandTextColor: string | null;
   brandCardColor: string | null;
+  brandIconBackgroundColor: string | null;
   brandBackgroundColor: string | null;
   brandBackgroundImageUrl: string | null;
   eventCount: number;
@@ -419,6 +420,7 @@ export function CalendarDetail({ calendar, events, calendars, appUrl, plan, emai
             brandColor={calendar.brandColor}
             brandTextColor={calendar.brandTextColor}
             brandCardColor={calendar.brandCardColor}
+            brandIconBackgroundColor={calendar.brandIconBackgroundColor}
             brandBackgroundColor={calendar.brandBackgroundColor}
             brandBackgroundImageUrl={calendar.brandBackgroundImageUrl}
           />

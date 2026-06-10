@@ -13,13 +13,14 @@ interface BrandingPageContentProps {
   brandColor: string | null;
   brandTextColor: string | null;
   brandCardColor: string | null;
+  brandIconBackgroundColor: string | null;
   brandBackgroundColor: string | null;
   brandBackgroundImageUrl: string | null;
 }
 
 export function BrandingPageContent({
   unlocked, brandLogoUrl, brandLogoSize, brandLogoTransparentBg, brandLogoRounded,
-  brandColor, brandTextColor, brandCardColor, brandBackgroundColor, brandBackgroundImageUrl,
+  brandColor, brandTextColor, brandCardColor, brandIconBackgroundColor, brandBackgroundColor, brandBackgroundImageUrl,
 }: BrandingPageContentProps) {
   const { T } = useLanguage();
 
@@ -41,6 +42,7 @@ export function BrandingPageContent({
           brandColor={brandColor}
           brandTextColor={brandTextColor}
           brandCardColor={brandCardColor}
+          brandIconBackgroundColor={brandIconBackgroundColor}
           brandBackgroundColor={brandBackgroundColor}
           brandBackgroundImageUrl={brandBackgroundImageUrl}
         />

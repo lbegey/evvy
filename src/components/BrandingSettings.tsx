@@ -23,13 +23,14 @@ interface BrandingSettingsProps {
   brandColor: string | null;
   brandTextColor: string | null;
   brandCardColor: string | null;
+  brandIconBackgroundColor: string | null;
   brandBackgroundColor: string | null;
   brandBackgroundImageUrl: string | null;
 }
 
 export function BrandingSettings({
   brandLogoUrl, brandLogoSize, brandLogoTransparentBg, brandLogoRounded,
-  brandColor, brandTextColor, brandCardColor, brandBackgroundColor, brandBackgroundImageUrl,
+  brandColor, brandTextColor, brandCardColor, brandIconBackgroundColor, brandBackgroundColor, brandBackgroundImageUrl,
 }: BrandingSettingsProps) {
   const { T } = useLanguage();
   const [logoUrl, setLogoUrl] = useState(brandLogoUrl ?? "");
@@ -39,6 +40,7 @@ export function BrandingSettings({
   const [color, setColor] = useState(brandColor ?? "");
   const [textColor, setTextColor] = useState(brandTextColor ?? "");
   const [cardColor, setCardColor] = useState(brandCardColor ?? "");
+  const [iconBackgroundColor, setIconBackgroundColor] = useState(brandIconBackgroundColor ?? "");
   const [backgroundColor, setBackgroundColor] = useState(brandBackgroundColor ?? "");
   const [backgroundImageUrl, setBackgroundImageUrl] = useState(brandBackgroundImageUrl ?? "");
   const [saved, setSaved] = useState(false);
@@ -52,7 +54,7 @@ export function BrandingSettings({
   const previewTextColor = /^#[0-9a-fA-F]{3,8}$/.test(textColor) ? textColor : undefined;
   const previewCardColor = /^#[0-9a-fA-F]{3,8}$/.test(cardColor) ? cardColor : undefined;
   const previewBackgroundColor = /^#[0-9a-fA-F]{3,8}$/.test(backgroundColor) ? backgroundColor : undefined;
-  const hasCustomBranding = Boolean(logoUrl || color || textColor || cardColor || backgroundColor || backgroundImageUrl);
+  const hasCustomBranding = Boolean(logoUrl || color || textColor || cardColor || iconBackgroundColor || backgroundColor || backgroundImageUrl);
 
   useEffect(() => {
     if (isFirstRender.current) { isFirstRender.current = false; return; }
@@ -64,6 +66,7 @@ export function BrandingSettings({
           brandLogoUrl: logoUrl, brandLogoSize: logoSize,
           brandLogoTransparentBg: logoTransparentBg, brandLogoRounded: logoRounded,
           brandColor: color, brandTextColor: textColor, brandCardColor: cardColor,
+          brandIconBackgroundColor: iconBackgroundColor,
           brandBackgroundColor: backgroundColor, brandBackgroundImageUrl: backgroundImageUrl,
         });
         setSaved(true);
@@ -72,7 +75,7 @@ export function BrandingSettings({
       });
     }, AUTOSAVE_DELAY_MS);
     return () => clearTimeout(timer);
-  }, [logoUrl, logoSize, logoTransparentBg, logoRounded, color, textColor, cardColor, backgroundColor, backgroundImageUrl]);
+  }, [logoUrl, logoSize, logoTransparentBg, logoRounded, color, textColor, cardColor, iconBackgroundColor, backgroundColor, backgroundImageUrl]);
 
   useEffect(() => {
     return () => { if (savedTimerRef.current) clearTimeout(savedTimerRef.current); };
@@ -85,7 +88,7 @@ export function BrandingSettings({
     startReset(async () => {
       await resetBranding();
       setLogoUrl(""); setLogoSize(DEFAULT_LOGO_SIZE); setLogoTransparentBg(true); setLogoRounded(false);
-      setColor(""); setTextColor(""); setCardColor(""); setBackgroundColor(""); setBackgroundImageUrl("");
+      setColor(""); setTextColor(""); setCardColor(""); setIconBackgroundColor(""); setBackgroundColor(""); setBackgroundImageUrl("");
     });
   };
 
@@ -160,6 +163,7 @@ export function BrandingSettings({
           <BrandingColorField id="bs-text" label={T.branding.textColor} hint={T.branding.textColorHint} value={textColor} placeholder="#111111" defaultColor="#111111" onChange={setTextColor} />
           <BrandingColorField id="bs-bg" label={T.branding.backgroundColor} hint={T.branding.backgroundColorHint} value={backgroundColor} placeholder="#f4f4f5" defaultColor="#f4f4f5" onChange={setBackgroundColor} />
           <BrandingColorField id="bs-card" label={T.branding.cardColor} hint={T.branding.cardColorHint} value={cardColor} placeholder="#ffffff" defaultColor="#ffffff" onChange={setCardColor} />
+          <BrandingColorField id="bs-icon-bg" label={T.branding.iconBackgroundColor} hint={T.branding.iconBackgroundColorHint} value={iconBackgroundColor} placeholder="#ffffff" defaultColor="#ffffff" onChange={setIconBackgroundColor} />
         </div>
       </div>
 

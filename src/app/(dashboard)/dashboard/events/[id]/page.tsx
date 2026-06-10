@@ -80,6 +80,7 @@ export default async function EventPage({
         brandColor: event.brandColor,
         brandTextColor: event.brandTextColor,
         brandCardColor: event.brandCardColor,
+        brandIconBackgroundColor: event.brandIconBackgroundColor,
         brandBackgroundColor: event.brandBackgroundColor,
         brandBackgroundImageUrl: event.brandBackgroundImageUrl,
         calendarId: event.calendarId,

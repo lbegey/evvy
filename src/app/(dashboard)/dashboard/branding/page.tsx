@@ -18,6 +18,7 @@ export default async function BrandingPage() {
       brandColor={user?.brandColor ?? null}
       brandTextColor={user?.brandTextColor ?? null}
       brandCardColor={user?.brandCardColor ?? null}
+      brandIconBackgroundColor={user?.brandIconBackgroundColor ?? null}
       brandBackgroundColor={user?.brandBackgroundColor ?? null}
       brandBackgroundImageUrl={user?.brandBackgroundImageUrl ?? null}
     />

@@ -42,7 +42,7 @@ export async function setUserDashboardView(view: string): Promise<void> {
   });
 }
 
-export async function updateBranding(data: { brandLogoUrl: string; brandLogoSize: number; brandLogoTransparentBg: boolean; brandLogoRounded: boolean; brandColor: string; brandTextColor: string; brandCardColor: string; brandBackgroundColor: string; brandBackgroundImageUrl: string }): Promise<void> {
+export async function updateBranding(data: { brandLogoUrl: string; brandLogoSize: number; brandLogoTransparentBg: boolean; brandLogoRounded: boolean; brandColor: string; brandTextColor: string; brandCardColor: string; brandIconBackgroundColor: string; brandBackgroundColor: string; brandBackgroundImageUrl: string }): Promise<void> {
   const session = await auth.api.getSession({ headers: await headers() });
   if (!session) throw new Error("Unauthorized");
 
@@ -59,6 +59,7 @@ export async function updateBranding(data: { brandLogoUrl: string; brandLogoSize
       brandColor: data.brandColor || null,
       brandTextColor: data.brandTextColor || null,
       brandCardColor: data.brandCardColor || null,
+      brandIconBackgroundColor: data.brandIconBackgroundColor || null,
       brandBackgroundColor: data.brandBackgroundColor || null,
       brandBackgroundImageUrl: data.brandBackgroundImageUrl || null,
     },
@@ -74,6 +75,6 @@ export async function resetBranding(): Promise<void> {
 
   await db.user.update({
     where: { id: session.user.id },
-    data: { brandLogoUrl: null, brandLogoSize: null, brandLogoTransparentBg: true, brandLogoRounded: false, brandColor: null, brandTextColor: null, brandCardColor: null, brandBackgroundColor: null, brandBackgroundImageUrl: null },
+    data: { brandLogoUrl: null, brandLogoSize: null, brandLogoTransparentBg: true, brandLogoRounded: false, brandColor: null, brandTextColor: null, brandCardColor: null, brandIconBackgroundColor: null, brandBackgroundColor: null, brandBackgroundImageUrl: null },
   });
 }

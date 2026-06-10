@@ -25,6 +25,7 @@ model User {
   brandColor             String?
   brandTextColor         String?
   brandCardColor         String?
+  brandIconBackgroundColor String?
   brandBackgroundColor   String?
   brandBackgroundImageUrl String?
   stripeCustomerId       String?   @unique
@@ -65,6 +66,7 @@ model Event {
   brandColor           String?
   brandTextColor       String?
   brandCardColor       String?
+  brandIconBackgroundColor String?
   brandBackgroundColor String?
   brandBackgroundImageUrl String?
   userId         String
@@ -93,6 +95,7 @@ model Calendar {
   brandColor           String?
   brandTextColor       String?
   brandCardColor       String?
+  brandIconBackgroundColor String?
   brandBackgroundColor String?
   brandBackgroundImageUrl String?
   language    String   @default("en")
