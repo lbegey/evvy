@@ -6,6 +6,7 @@ import Link from "next/link";
 import { Plus, Trash2, CalendarRange, Search, ChevronLeft, ChevronRight, Copy, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
 import { CalendarDialog, type CalendarDialogValues } from "@/components/CalendarDialog";
 import { createCalendar, deleteCalendar } from "@/app/actions/calendars";
 import { useLanguage } from "@/contexts/LanguageContext";
@@ -19,6 +20,7 @@ export interface CalendarRecord {
   name: string;
   description: string | null;
   color: string | null;
+  published: boolean;
   eventCount: number;
 }
 
@@ -156,7 +158,15 @@ export function CalendarsManager({ calendars, appUrl, plan }: CalendarsManagerPr
                   style={{ backgroundColor: hasColor ? calendar.color! : "var(--muted-foreground)" }}
                 />
                 <div className="min-w-0 flex-1">
-                  <p className="truncate text-sm font-medium text-foreground">{calendar.name}</p>
+                  <div className="flex items-center gap-1.5">
+                    <p className="truncate text-sm font-medium text-foreground">{calendar.name}</p>
+                    <Badge
+                      variant={calendar.published ? "secondary" : "outline"}
+                      className={cn("shrink-0", !calendar.published && "text-muted-foreground")}
+                    >
+                      {calendar.published ? T.common.online : T.common.offline}
+                    </Badge>
+                  </div>
                   <p className="truncate text-xs text-muted-foreground">
                     {calendar.eventCount} {calendar.eventCount === 1 ? T.calendars.event : T.calendars.events}
                     {calendar.description ? ` · ${calendar.description}` : ""}

@@ -194,6 +194,25 @@ export async function removeEvent(id: string): Promise<{ error: "forbidden" } | 
   return { ok: true };
 }
 
+export async function toggleEventPublished(id: string, published: boolean) {
+  const session = await auth.api.getSession({ headers: await headers() });
+  if (!session) throw new Error("Unauthorized");
+
+  const event = await db.event.findUnique({ where: { id } });
+  if (!event || event.userId !== session.user.id) throw new Error("Forbidden");
+
+  await db.event.update({ where: { id }, data: { published } });
+
+  revalidatePath("/dashboard");
+  revalidatePath(`/dashboard/events/${id}`);
+  revalidatePath(`/e/${id}`);
+  if (event.slug) revalidatePath(`/e/${event.slug}`);
+  if (event.calendarId) {
+    revalidatePath(`/dashboard/calendars/${event.calendarId}`);
+    revalidatePath(`/c/${event.calendarId}`);
+  }
+}
+
 export async function toggleRsvp(id: string, enabled: boolean) {
   const session = await auth.api.getSession({ headers: await headers() });
   if (!session) throw new Error("Unauthorized");

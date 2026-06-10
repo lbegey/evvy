@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -12,7 +12,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select } from "@/components/ui/select";
 import { ImageDropzone } from "@/components/ImageDropzone";
-import { TIMEZONES } from "@/lib/timezones";
+import { getTimezones } from "@/lib/timezones";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { cn } from "@/lib/utils";
 
@@ -110,6 +110,7 @@ export function CreateEventDialog({
   const now = new Date();
   const defaultStart = `${String(now.getHours()).padStart(2, "0")}:00`;
   const [imageUrl, setImageUrl] = useState("");
+  const timezones = useMemo(() => getTimezones(lang), [lang]);
 
   const form = useForm<FormValues>({
     resolver: zodResolver(schema),
@@ -286,7 +287,7 @@ export function CreateEventDialog({
                 <div className="space-y-1.5">
                   <Label htmlFor="ev-tz">{T.eventForm.timezone}</Label>
                   <Select id="ev-tz" {...form.register("timezone")}>
-                    {TIMEZONES.map(({ group, zones }) => (
+                    {timezones.map(({ group, zones }) => (
                       <optgroup key={group} label={group}>
                         {zones.map(({ label, value }) => (
                           <option key={value} value={value}>{label}</option>

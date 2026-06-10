@@ -22,12 +22,14 @@ import {
   Download,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { CalendarDialog, type CalendarDialogValues } from "@/components/CalendarDialog";
 import { CalendarBrandingSection } from "@/components/CalendarBrandingSection";
 import { CalendarSlugSection } from "@/components/CalendarSlugSection";
 import { CreateEventDialog } from "@/components/CreateEventDialog";
-import { updateCalendar, deleteCalendar, assignEventToCalendar } from "@/app/actions/calendars";
+import { updateCalendar, deleteCalendar, assignEventToCalendar, toggleCalendarPublished } from "@/app/actions/calendars";
 import { createEvent, removeEvent } from "@/app/actions/events";
+import { Switch } from "@/components/ui/switch";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { cn } from "@/lib/utils";
 
@@ -38,6 +40,7 @@ interface CalendarRecord {
   color: string | null;
   slug: string | null;
   language: string;
+  published: boolean;
   brandingEnabled: boolean;
   brandLogoUrl: string | null;
   brandLogoSize: number | null;
@@ -58,6 +61,7 @@ interface CalendarEventSummary {
   endAt: string;
   allDay: boolean;
   timezone: string;
+  published: boolean;
 }
 
 interface CalendarDetailProps {
@@ -114,6 +118,8 @@ export function CalendarDetail({ calendar, events, calendars, appUrl, plan }: Ca
   const [deletingEventId, setDeletingEventId] = useState<string | null>(null);
   const [deleteEventError, setDeleteEventError] = useState<string | null>(null);
   const [isDeletingEvent, startDeleteEvent] = useTransition();
+  const [published, setPublished] = useState(calendar.published);
+  const [, startTogglePublished] = useTransition();
   const browserTz = Intl.DateTimeFormat().resolvedOptions().timeZone;
   const locale = lang === "fr" ? "fr-FR" : "en-US";
 
@@ -170,6 +176,14 @@ export function CalendarDetail({ calendar, events, calendars, appUrl, plan }: Ca
         return;
       }
       router.push("/dashboard/calendars");
+      router.refresh();
+    });
+  };
+
+  const handleTogglePublished = (checked: boolean) => {
+    setPublished(checked);
+    startTogglePublished(async () => {
+      await toggleCalendarPublished(calendar.id, checked);
       router.refresh();
     });
   };
@@ -231,6 +245,15 @@ export function CalendarDetail({ calendar, events, calendars, appUrl, plan }: Ca
             <span className="hidden sm:inline">{T.calendarDetail.back}</span>
           </Link>
           <div className="flex items-center gap-2">
+            <label
+              className="flex items-center gap-1.5 rounded-lg border border-border/60 px-2 py-1 text-xs font-medium"
+              title={published ? T.calendarDetail.published.onlineHint : T.calendarDetail.published.offlineHint}
+            >
+              <Switch checked={published} onCheckedChange={handleTogglePublished} />
+              <span className={cn(published ? "text-foreground" : "text-muted-foreground")}>
+                {published ? T.calendarDetail.published.online : T.calendarDetail.published.offline}
+              </span>
+            </label>
             <Button
               size="sm"
               className="gap-1.5"
@@ -420,7 +443,15 @@ export function CalendarDetail({ calendar, events, calendars, appUrl, plan }: Ca
                             <span className="text-base font-bold leading-none text-foreground">{day}</span>
                           </div>
                           <div className="min-w-0 flex-1">
-                            <p className="truncate text-sm font-medium text-foreground">{ev.title}</p>
+                            <div className="flex items-center gap-1.5">
+                              <p className="truncate text-sm font-medium text-foreground">{ev.title}</p>
+                              <Badge
+                                variant={ev.published ? "secondary" : "outline"}
+                                className={cn("shrink-0", !ev.published && "text-muted-foreground")}
+                              >
+                                {ev.published ? T.common.online : T.common.offline}
+                              </Badge>
+                            </div>
                             <p className="hidden truncate text-xs text-muted-foreground sm:block">{dateLabel}</p>
                           </div>
                         </div>

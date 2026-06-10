@@ -31,6 +31,7 @@ export interface CalendarEvent {
   timezone: string;
   calendarId: string | null;
   slug: string | null;
+  published: boolean;
 }
 
 interface CalendarViewProps {

@@ -39,6 +39,7 @@ export default async function DashboardPage({
     timezone: e.timezone,
     calendarId: e.calendarId,
     slug: e.slug,
+    published: e.published,
   }));
 
   const initialYear = year ? parseInt(year) : undefined;

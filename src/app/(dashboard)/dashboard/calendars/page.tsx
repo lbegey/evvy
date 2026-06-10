@@ -11,7 +11,7 @@ export default async function CalendarsPage() {
     db.calendar.findMany({
       where: { userId: session!.user.id },
       include: { _count: { select: { events: true } } },
-      orderBy: { createdAt: "asc" },
+      orderBy: { createdAt: "desc" },
     }),
     getAppUrl(),
   ]);
@@ -25,6 +25,7 @@ export default async function CalendarsPage() {
         name: c.name,
         description: c.description,
         color: c.color,
+        published: c.published,
         eventCount: c._count.events,
       }))}
       appUrl={appUrl}

@@ -16,6 +16,8 @@ export const fr: Translations = {
     yes: "Oui",
     no: "Non",
     maybe: "Peut-être",
+    online: "En ligne",
+    offline: "Hors ligne",
   },
 
   dropzone: {
@@ -359,6 +361,12 @@ export const fr: Translations = {
     deleting: "Suppression…",
     confirmDelete: "Supprimer cet événement ? Cette action est irréversible.",
     deleteForbidden: "Les événements de l'offre gratuite ne peuvent pas être supprimés. Passez en Premium pour gérer vos événements librement.",
+    published: {
+      online: "En ligne",
+      offline: "Hors ligne",
+      onlineHint: "Visible sur sa page publique",
+      offlineHint: "Masqué — sa page publique affiche un message « bientôt disponible »",
+    },
     sidebar: {
       info: "Aperçu",
       stats: "Statistiques",
@@ -525,6 +533,11 @@ export const fr: Translations = {
         "Cet événement n'existe plus ou a été supprimé par son organisateur.",
       backHome: "Retour à l'accueil",
     },
+    previewBanner: "Hors ligne — cette page n'est pas visible publiquement. Vous seul pouvez la voir.",
+    unavailable: {
+      title: "Bientôt disponible",
+      subtitle: "Cette page n'est pas encore disponible. Repassez plus tard.",
+    },
   },
 
   publicCalendar: {
@@ -538,6 +551,11 @@ export const fr: Translations = {
       title: "Calendrier introuvable",
       subtitle: "Ce calendrier n'existe plus ou a été supprimé par son organisateur.",
       backHome: "Retour à l'accueil",
+    },
+    previewBanner: "Hors ligne — cette page n'est pas visible publiquement. Vous seul pouvez la voir.",
+    unavailable: {
+      title: "Bientôt disponible",
+      subtitle: "Cette page n'est pas encore disponible. Repassez plus tard.",
     },
   },
 
@@ -696,6 +714,12 @@ export const fr: Translations = {
 
   calendarDetail: {
     back: "Retour aux calendriers",
+    published: {
+      online: "En ligne",
+      offline: "Hors ligne",
+      onlineHint: "Visible sur sa page publique",
+      offlineHint: "Masqué — sa page publique affiche un message « bientôt disponible »",
+    },
     noEvents: "Ce calendrier ne contient aucun événement pour le moment.",
     confirmDeleteEvent: "Supprimer cet événement ? Cette action est irréversible.",
     deleteEventForbidden: "Les événements du plan gratuit ne peuvent pas être supprimés. Passez à Premium pour gérer vos événements librement.",

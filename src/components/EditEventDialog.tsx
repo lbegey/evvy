@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useTransition } from "react";
+import { useEffect, useMemo, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -13,7 +13,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select } from "@/components/ui/select";
 import { ImageDropzone } from "@/components/ImageDropzone";
-import { TIMEZONES } from "@/lib/timezones";
+import { getTimezones } from "@/lib/timezones";
 import { updateEvent } from "@/app/actions/events";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { cn } from "@/lib/utils";
@@ -103,6 +103,7 @@ export function EditEventDialog({ open, onOpenChange, plan, event }: EditEventDi
   const [isPending, startTransition] = useTransition();
   const [imageUrl, setImageUrl] = useState(event.imageUrl ?? "");
   const { T, lang } = useLanguage();
+  const timezones = useMemo(() => getTimezones(lang), [lang]);
   const startLocal = isoToLocal(event.startAt, event.timezone);
   const endLocal = isoToLocal(event.endAt, event.timezone);
 
@@ -283,7 +284,7 @@ export function EditEventDialog({ open, onOpenChange, plan, event }: EditEventDi
                 <div className="space-y-1.5">
                   <Label htmlFor="ed-tz">{T.eventForm.timezone}</Label>
                   <Select id="ed-tz" {...form.register("timezone")}>
-                    {TIMEZONES.map(({ group, zones }) => (
+                    {timezones.map(({ group, zones }) => (
                       <optgroup key={group} label={group}>
                         {zones.map(({ label, value }) => (
                           <option key={value} value={value}>{label}</option>

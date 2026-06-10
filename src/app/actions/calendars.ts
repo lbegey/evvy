@@ -131,6 +131,21 @@ export async function updateCalendarBranding(id: string, data: CalendarBrandingD
   if (calendar.slug) revalidatePath(`/c/${calendar.slug}`);
 }
 
+export async function toggleCalendarPublished(id: string, published: boolean): Promise<{ error: "forbidden" } | undefined> {
+  const session = await getSession();
+
+  const calendar = await db.calendar.findUnique({ where: { id } });
+  if (!calendar || calendar.userId !== session.user.id) return { error: "forbidden" };
+
+  await db.calendar.update({ where: { id }, data: { published } });
+
+  revalidatePath("/dashboard");
+  revalidatePath("/dashboard/calendars");
+  revalidatePath(`/dashboard/calendars/${id}`);
+  revalidatePath(`/c/${id}`);
+  if (calendar.slug) revalidatePath(`/c/${calendar.slug}`);
+}
+
 export async function deleteCalendar(id: string): Promise<{ error: "forbidden" } | undefined> {
   const session = await getSession();
 

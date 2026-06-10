@@ -67,6 +67,7 @@ export default async function EventPage({
         endAt: event.endAt.toISOString(),
         allDay: event.allDay,
         isOnline: event.isOnline,
+        published: event.published,
         timezone: event.timezone,
         language: event.language,
         rsvpEnabled: event.rsvpEnabled,

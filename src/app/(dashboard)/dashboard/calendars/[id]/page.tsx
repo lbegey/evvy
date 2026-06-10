@@ -18,7 +18,7 @@ export default async function CalendarPage({
       where: { id },
       include: {
         _count: { select: { events: true } },
-        events: { orderBy: { startAt: "asc" }, select: { id: true, title: true, startAt: true, endAt: true, allDay: true, timezone: true } },
+        events: { orderBy: { startAt: "asc" }, select: { id: true, title: true, startAt: true, endAt: true, allDay: true, timezone: true, published: true } },
       },
     }),
     db.user.findUnique({ where: { id: session!.user.id } }),
@@ -36,6 +36,7 @@ export default async function CalendarPage({
         color: calendar.color,
         slug: calendar.slug,
         language: calendar.language,
+        published: calendar.published,
         brandingEnabled: calendar.brandingEnabled,
         brandLogoUrl: calendar.brandLogoUrl,
         brandLogoSize: calendar.brandLogoSize,
@@ -55,6 +56,7 @@ export default async function CalendarPage({
         endAt: e.endAt.toISOString(),
         allDay: e.allDay,
         timezone: e.timezone,
+        published: e.published,
       }))}
       calendars={calendars}
       appUrl={APP_URL}

@@ -14,6 +14,8 @@ export const en = {
     yes: "Yes",
     no: "No",
     maybe: "Maybe",
+    online: "Online",
+    offline: "Offline",
   },
 
   dropzone: {
@@ -357,6 +359,12 @@ export const en = {
     deleting: "Deleting...",
     confirmDelete: "Delete this event? This action is irreversible.",
     deleteForbidden: "Free plan events cannot be deleted. Upgrade to Premium to manage your events freely.",
+    published: {
+      online: "Online",
+      offline: "Offline",
+      onlineHint: "Visible on its public page",
+      offlineHint: "Hidden — its public page shows a \"coming soon\" message",
+    },
     sidebar: {
       info: "Overview",
       stats: "Statistics",
@@ -523,6 +531,11 @@ export const en = {
         "This event no longer exists or has been deleted by its organizer.",
       backHome: "Back to home",
     },
+    previewBanner: "Offline — this page is not visible to the public. Only you can see it.",
+    unavailable: {
+      title: "Coming soon",
+      subtitle: "This page isn't available yet. Please check back later.",
+    },
   },
 
   publicCalendar: {
@@ -536,6 +549,11 @@ export const en = {
       title: "Calendar not found",
       subtitle: "This calendar no longer exists or has been deleted by its organizer.",
       backHome: "Back to home",
+    },
+    previewBanner: "Offline — this page is not visible to the public. Only you can see it.",
+    unavailable: {
+      title: "Coming soon",
+      subtitle: "This page isn't available yet. Please check back later.",
     },
   },
 
@@ -694,6 +712,12 @@ export const en = {
 
   calendarDetail: {
     back: "Back to calendars",
+    published: {
+      online: "Online",
+      offline: "Offline",
+      onlineHint: "Visible on its public page",
+      offlineHint: "Hidden — its public page shows a \"coming soon\" message",
+    },
     noEvents: "This calendar doesn't have any events yet.",
     confirmDeleteEvent: "Delete this event? This action is irreversible.",
     deleteEventForbidden: "Free plan events cannot be deleted. Upgrade to Premium to manage your events freely.",

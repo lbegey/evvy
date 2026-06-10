@@ -250,11 +250,6 @@ function WebhookManagerBody({ plan, initialWebhook }: { plan: string; initialWeb
       {displaySecret && (
         <div className="space-y-1.5 rounded-xl border border-border/60 p-4 sm:p-5">
           <Label>{Tw.secret}</Label>
-          {newSecret && (
-            <p className="rounded-lg bg-amber-50 px-3 py-2 text-xs text-amber-700 dark:bg-amber-900/20 dark:text-amber-400">
-              Save this secret now — it won't be shown again.
-            </p>
-          )}
           <div className="flex items-center gap-2">
             <code className="flex-1 rounded-md border border-border/60 bg-muted/40 px-3 py-2 font-mono text-xs text-foreground break-all">
               {revealedSecret ? displaySecret : "•".repeat(Math.min(displaySecret.length, 40))}

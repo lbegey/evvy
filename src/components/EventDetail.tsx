@@ -38,7 +38,8 @@ import { EventCalendarSection } from "@/components/EventCalendarSection";
 import { EventQuestionsSection, type RsvpQuestion } from "@/components/EventQuestionsSection";
 import { EventSlugSection } from "@/components/EventSlugSection";
 import { assignEventToCalendar } from "@/app/actions/calendars";
-import { createEvent, deleteEvent } from "@/app/actions/events";
+import { createEvent, deleteEvent, toggleEventPublished } from "@/app/actions/events";
+import { Switch } from "@/components/ui/switch";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { markdownToHtml } from "@/lib/markdown";
 import { cn } from "@/lib/utils";
@@ -54,6 +55,7 @@ interface Event {
   endAt: string;
   allDay: boolean;
   isOnline: boolean;
+  published: boolean;
   timezone: string;
   language: string | null;
   rsvpEnabled: boolean;
@@ -210,6 +212,8 @@ export function EventDetail({ event, appUrl, plan, calendars, stats, rsvps, ques
   const [createEventOpen, setCreateEventOpen] = useState(false);
   const [createEventError, setCreateEventError] = useState<string | null>(null);
   const [isCreatingEvent, startCreateEvent] = useTransition();
+  const [published, setPublished] = useState(event.published);
+  const [, startTogglePublished] = useTransition();
   const { T, lang } = useLanguage();
   const searchParams = useSearchParams();
   const fromCalendarId = searchParams.get("calendar");
@@ -302,6 +306,14 @@ export function EventDetail({ event, appUrl, plan, calendars, stats, rsvps, ques
     });
   };
 
+  const handleTogglePublished = (checked: boolean) => {
+    setPublished(checked);
+    startTogglePublished(async () => {
+      await toggleEventPublished(event.id, checked);
+      router.refresh();
+    });
+  };
+
   const handleCreateEvent = async (data: {
     title: string;
     description: string;
@@ -344,6 +356,15 @@ export function EventDetail({ event, appUrl, plan, calendars, stats, rsvps, ques
             <span className="hidden sm:inline">{T.eventDetail.backToCalendar}</span>
           </Link>
           <div className="flex items-center gap-2">
+            <label
+              className="flex items-center gap-1.5 rounded-lg border border-border/60 px-2 py-1 text-xs font-medium"
+              title={published ? T.eventDetail.published.onlineHint : T.eventDetail.published.offlineHint}
+            >
+              <Switch checked={published} onCheckedChange={handleTogglePublished} />
+              <span className={cn(published ? "text-foreground" : "text-muted-foreground")}>
+                {published ? T.eventDetail.published.online : T.eventDetail.published.offline}
+              </span>
+            </label>
             <Button
               size="sm"
               className="gap-1.5"

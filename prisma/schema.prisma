@@ -52,6 +52,7 @@ model Event {
   endAt          DateTime
   allDay         Boolean      @default(false)
   isOnline       Boolean      @default(false)
+  published      Boolean      @default(true)
   timezone       String       @default("UTC")
   language       String?
   rsvpEnabled    Boolean      @default(false)
@@ -83,6 +84,7 @@ model Calendar {
   description          String?
   color                String?
   slug                 String?  @unique
+  published            Boolean  @default(true)
   brandingEnabled      Boolean  @default(false)
   brandLogoUrl         String?
   brandLogoSize        Int?

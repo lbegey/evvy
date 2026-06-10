@@ -175,6 +175,23 @@ export default async function PublicEventPage({
     : undefined;
 
   const isCreator = session?.user.id === event.userId;
+
+  if (!event.published && !isCreator) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-muted/20 px-4">
+        <div className="mx-auto max-w-sm rounded-2xl border border-border/60 bg-background p-8 text-center shadow-sm">
+          <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-muted">
+            <Clock className="h-6 w-6 text-muted-foreground" />
+          </div>
+          <h1 className="text-lg font-semibold text-foreground">{T.publicEvent.unavailable.title}</h1>
+          <p className="mt-2 text-sm text-muted-foreground">
+            {T.publicEvent.unavailable.subtitle}
+          </p>
+        </div>
+      </div>
+    );
+  }
+
   const tz = event.timezone;
   const now = new Date();
   const isPast = event.endAt < now;
@@ -238,6 +255,11 @@ export default async function PublicEventPage({
       <EventLiveRefresh id={event.id} updatedAt={event.updatedAt.toISOString()} />
 
       <div className="mx-auto w-full max-w-xl space-y-3">
+        {!event.published && isCreator && (
+          <div className="rounded-xl border border-amber-300/60 bg-amber-50 px-4 py-2.5 text-center text-xs font-medium text-amber-700 dark:border-amber-900/40 dark:bg-amber-900/20 dark:text-amber-400">
+            {T.publicEvent.previewBanner}
+          </div>
+        )}
         {brandLogoUrl ? (
           <div className="flex justify-center pb-1">
             <span

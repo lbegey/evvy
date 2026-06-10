@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { CalendarX2, Copy, Check, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import type { CalendarEvent } from "@/components/CalendarView";
 import { deleteEvent } from "@/app/actions/events";
 import { useLanguage } from "@/contexts/LanguageContext";
@@ -89,7 +90,15 @@ export function EventListView({ events, emptyMessage, plan }: EventListViewProps
               <span className="text-base font-bold leading-none text-foreground">{day}</span>
             </div>
             <div className="min-w-0 flex-1">
-              <p className="truncate text-sm font-medium text-foreground">{ev.title}</p>
+              <div className="flex items-center gap-1.5">
+                <p className="truncate text-sm font-medium text-foreground">{ev.title}</p>
+                <Badge
+                  variant={ev.published ? "secondary" : "outline"}
+                  className={cn("shrink-0", !ev.published && "text-muted-foreground")}
+                >
+                  {ev.published ? T.common.online : T.common.offline}
+                </Badge>
+              </div>
               <p className="truncate text-xs text-muted-foreground">
                 {rangeLabel}
                 {ev.location ? ` · ${ev.location}` : ""}
