@@ -3,7 +3,7 @@ import type { CSSProperties } from "react";
 import type { Metadata } from "next";
 import { headers, cookies } from "next/headers";
 import { redirect } from "next/navigation";
-import { CalendarDays, CalendarOff, Clock, Globe, MapPin, Mail, Pencil } from "lucide-react";
+import { ArrowLeft, CalendarDays, CalendarOff, Clock, Globe, MapPin, Mail, Pencil } from "lucide-react";
 import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { Logo } from "@/components/Logo";
@@ -99,6 +99,7 @@ export default async function PublicEventPage({
           },
         },
         questions: { orderBy: { order: "asc" } },
+        calendar: { select: { id: true, slug: true, published: true } },
       },
     }),
     auth.api.getSession({ headers: await headers() }),
@@ -320,6 +321,16 @@ export default async function PublicEventPage({
             <h1 className="text-xl font-bold tracking-tight text-foreground leading-tight">
               {event.title}
             </h1>
+
+            {event.calendar && (event.calendar.published || isCreator) && (
+              <Link
+                href={`/c/${event.calendar.slug ?? event.calendar.id}`}
+                className="mt-1.5 inline-flex items-center gap-1.5 text-sm text-muted-foreground transition-colors hover:text-foreground"
+              >
+                <ArrowLeft className="h-3.5 w-3.5 shrink-0" />
+                {T.publicEvent.backToCalendar}
+              </Link>
+            )}
 
             <div className="mt-3 space-y-1.5">
               <div className="flex flex-wrap items-center gap-2 text-sm text-muted-foreground">

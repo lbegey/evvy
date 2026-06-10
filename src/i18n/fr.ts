@@ -535,6 +535,7 @@ export const fr: Translations = {
 
   publicEvent: {
     edit: "Modifier",
+    backToCalendar: "Retour au calendrier",
     timezone: "Fuseau horaire :",
     allDay: "Toute la journée",
     addToCalendar: "Ajouter au calendrier :",

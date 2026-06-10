@@ -533,6 +533,7 @@ export const en = {
 
   publicEvent: {
     edit: "Edit",
+    backToCalendar: "Back to calendar",
     timezone: "Timezone:",
     allDay: "All day",
     addToCalendar: "Add to calendar:",
