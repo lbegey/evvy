@@ -253,31 +253,32 @@ export default async function PublicEventPage({
   };
 
   return (
-    <div className="flex min-h-screen flex-col justify-center bg-muted/20 py-6 px-4 sm:py-8" style={brandStyle}>
+    <>
+      {isCreator && (
+        <div
+          className={cn(
+            "sticky top-0 z-50 flex w-full items-center justify-between gap-3 border-b px-4 py-2.5 text-xs font-medium sm:px-6",
+            event.published
+              ? "border-border/60 bg-background text-muted-foreground shadow-sm"
+              : "border-amber-300/60 bg-amber-50 text-amber-700 dark:border-amber-900/40 dark:bg-amber-900/20 dark:text-amber-400"
+          )}
+        >
+          <span>{event.published ? T.publicEvent.adminBar : T.publicEvent.previewBanner}</span>
+          <Link
+            href={`/dashboard/events/${event.id}`}
+            className={cn(buttonVariants({ variant: "outline", size: "sm" }), "shrink-0 gap-1.5")}
+          >
+            <Pencil className="h-3 w-3" />
+            {T.publicEvent.edit}
+          </Link>
+        </div>
+      )}
+      <div className="flex min-h-screen flex-col justify-center bg-muted/20 py-6 px-4 sm:py-8" style={brandStyle}>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       <PageViewTracker id={event.id} />
       <EventLiveRefresh id={event.id} updatedAt={event.updatedAt.toISOString()} />
 
       <div className="mx-auto w-full max-w-xl space-y-3">
-        {isCreator && (
-          <div
-            className={cn(
-              "flex items-center justify-between gap-3 rounded-xl border px-4 py-2.5 text-xs font-medium",
-              event.published
-                ? "border-border/60 bg-background text-muted-foreground shadow-sm"
-                : "border-amber-300/60 bg-amber-50 text-amber-700 dark:border-amber-900/40 dark:bg-amber-900/20 dark:text-amber-400"
-            )}
-          >
-            <span>{event.published ? T.publicEvent.adminBar : T.publicEvent.previewBanner}</span>
-            <Link
-              href={`/dashboard/events/${event.id}`}
-              className={cn(buttonVariants({ variant: "outline", size: "sm" }), "shrink-0 gap-1.5")}
-            >
-              <Pencil className="h-3 w-3" />
-              {T.publicEvent.edit}
-            </Link>
-          </div>
-        )}
         {brandLogoUrl ? (
           <div className="flex justify-center pb-1">
             <span
@@ -460,6 +461,7 @@ export default async function PublicEventPage({
           </p>
         )}
       </div>
-    </div>
+      </div>
+    </>
   );
 }

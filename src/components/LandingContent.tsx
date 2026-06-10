@@ -314,13 +314,13 @@ function HeroStartsInBadge({ m }: { m: HeroMockupCopy }) {
 function HeroMockupComposition({ m }: { m: HeroMockupCopy }) {
   return (
     <div className="relative mx-auto max-w-sm lg:mx-0 lg:ml-auto">
-      <div className="absolute -top-6 right-2 z-0 animate-float-card-delayed sm:right-6">
+      <div className="absolute -top-12 right-6 z-20 animate-float-card-delayed">
         <HeroStartsInBadge m={m} />
       </div>
       <div className="relative z-10 animate-float-card">
         <HeroEventCardMock m={m} />
       </div>
-      <div className="absolute -bottom-8 -left-2 z-20 animate-float-card-delayed sm:-left-8">
+      <div className="absolute -bottom-12 -left-10 z-20 animate-float-card-delayed">
         <HeroRsvpCardMock m={m} />
       </div>
     </div>
@@ -396,6 +396,18 @@ export function LandingContent({ demoCalendar }: LandingContentProps) {
               "radial-gradient(circle at 18% 22%, oklch(0.09 0 0 / 0.07), transparent 42%), radial-gradient(circle at 82% 18%, oklch(0.3 0 0 / 0.06), transparent 46%), radial-gradient(circle at 50% 92%, oklch(0.09 0 0 / 0.05), transparent 52%)",
           }}
         />
+        {/* Light grid pattern */}
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-0 -z-20"
+          style={{
+            backgroundImage:
+              "linear-gradient(to right, oklch(0.09 0 0 / 0.05) 1px, transparent 1px), linear-gradient(to bottom, oklch(0.09 0 0 / 0.05) 1px, transparent 1px)",
+            backgroundSize: "44px 44px",
+            maskImage: "radial-gradient(ellipse 80% 70% at 50% 30%, black 50%, transparent 100%)",
+            WebkitMaskImage: "radial-gradient(ellipse 80% 70% at 50% 30%, black 50%, transparent 100%)",
+          }}
+        />
         {/* Calendar backdrop */}
         <HeroCalendarBackdrop />
         <div className="relative mx-auto grid max-w-6xl items-center gap-16 lg:grid-cols-2 lg:gap-12">
@@ -408,7 +420,7 @@ export function LandingContent({ demoCalendar }: LandingContentProps) {
             </div>
 
             <h1
-              className="mt-5 text-4xl font-bold tracking-tight sm:text-6xl lg:text-7xl animate-fade-in-up"
+              className="mt-5 text-4xl font-bold tracking-tight sm:text-6xl lg:text-6xl animate-fade-in-up"
               style={{ animationDelay: "0.1s" }}
             >
               <span className="block">{T.landing.hero.titleStart}</span>
@@ -450,14 +462,15 @@ export function LandingContent({ demoCalendar }: LandingContentProps) {
             </div>
 
             <p
-              className="mt-5 text-xs text-muted-foreground animate-fade-in-up"
+              className="mt-5 inline-flex items-center gap-1.5 text-xs font-medium text-emerald-600 animate-fade-in-up"
               style={{ animationDelay: "0.4s" }}
             >
+              <CheckCircle2 className="h-3.5 w-3.5 shrink-0" />
               {T.landing.hero.microText}
             </p>
           </div>
 
-          <div className="animate-fade-in-up" style={{ animationDelay: "0.3s" }}>
+          <div className="hidden animate-fade-in-up lg:block" style={{ animationDelay: "0.3s" }}>
             <HeroMockupComposition m={T.landing.hero.mockup} />
           </div>
         </div>

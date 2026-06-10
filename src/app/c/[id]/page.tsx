@@ -236,28 +236,29 @@ export default async function PublicCalendarPage({
   const liveSignature = `${calendar.updatedAt.toISOString()}|${latestEventUpdatedAt?.toISOString() ?? ""}|${calendar.events.length}`;
 
   return (
-    <div className="flex min-h-screen flex-col justify-center bg-muted/20 py-6 px-4 sm:py-8" style={brandStyle}>
+    <>
+      {isCreator && (
+        <div
+          className={cn(
+            "sticky top-0 z-50 flex w-full items-center justify-between gap-3 border-b px-4 py-2.5 text-xs font-medium sm:px-6",
+            calendar.published
+              ? "border-border/60 bg-background text-muted-foreground shadow-sm"
+              : "border-amber-300/60 bg-amber-50 text-amber-700 dark:border-amber-900/40 dark:bg-amber-900/20 dark:text-amber-400"
+          )}
+        >
+          <span>{calendar.published ? T.publicCalendar.adminBar : T.publicCalendar.previewBanner}</span>
+          <Link
+            href={`/dashboard/calendars/${calendar.id}`}
+            className={cn(buttonVariants({ variant: "outline", size: "sm" }), "shrink-0 gap-1.5")}
+          >
+            <Pencil className="h-3 w-3" />
+            {T.publicCalendar.edit}
+          </Link>
+        </div>
+      )}
+      <div className="flex min-h-screen flex-col justify-center bg-muted/20 py-6 px-4 sm:py-8" style={brandStyle}>
       <CalendarLiveRefresh id={calendar.id} signature={liveSignature} />
       <div className="mx-auto w-full max-w-xl space-y-3">
-        {isCreator && (
-          <div
-            className={cn(
-              "flex items-center justify-between gap-3 rounded-xl border px-4 py-2.5 text-xs font-medium",
-              calendar.published
-                ? "border-border/60 bg-background text-muted-foreground shadow-sm"
-                : "border-amber-300/60 bg-amber-50 text-amber-700 dark:border-amber-900/40 dark:bg-amber-900/20 dark:text-amber-400"
-            )}
-          >
-            <span>{calendar.published ? T.publicCalendar.adminBar : T.publicCalendar.previewBanner}</span>
-            <Link
-              href={`/dashboard/calendars/${calendar.id}`}
-              className={cn(buttonVariants({ variant: "outline", size: "sm" }), "shrink-0 gap-1.5")}
-            >
-              <Pencil className="h-3 w-3" />
-              {T.publicCalendar.edit}
-            </Link>
-          </div>
-        )}
         {brandLogoUrl ? (
           <div className="flex justify-center pb-1">
             <span
@@ -307,7 +308,7 @@ export default async function PublicCalendarPage({
 
               <div className="border-t border-border/60 px-5 py-4">
                 <div className="space-y-3">
-                  <p className="text-sm leading-relaxed text-muted-foreground">{T.publicCalendar.addAllToCalendar.text}</p>
+                  <p className="text-xs leading-relaxed text-muted-foreground">{T.publicCalendar.addAllToCalendar.text}</p>
                   <div className="flex items-center gap-2 sm:gap-3">
                     {CAL_SERVICES.map((s) => (
                       <a
@@ -338,6 +339,7 @@ export default async function PublicCalendarPage({
           </p>
         )}
       </div>
-    </div>
+      </div>
+    </>
   );
 }
