@@ -248,7 +248,7 @@ export default async function PublicEventPage({
                 src={brandLogoUrl}
                 alt=""
                 style={{ maxWidth: brandLogoSize, width: "100%" }}
-                className={cn("h-auto object-contain opacity-90", brandLogoRounded && "rounded-lg")}
+                className={cn("h-auto object-contain", brandLogoRounded && "rounded-lg")}
               />
             </span>
           </div>
