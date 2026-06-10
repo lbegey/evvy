@@ -7,6 +7,7 @@ import { ArrowUpRight } from "lucide-react";
 import { assignEventToCalendar } from "@/app/actions/calendars";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
 
 interface EventCalendarSectionProps {
   eventId: string;
@@ -73,13 +74,16 @@ export function EventCalendarSection({ eventId, plan, calendarId, calendars }: E
       </select>
 
       {selected && (
-        <Link
-          href={`/dashboard/calendars/${selected}`}
-          className="inline-flex items-center gap-1.5 text-xs text-muted-foreground transition-colors hover:text-foreground"
+        <Button
+          size="sm"
+          variant="outline"
+          className="gap-1.5"
+          nativeButton={false}
+          render={<Link href={`/dashboard/calendars/${selected}`} />}
         >
           <ArrowUpRight className="h-3.5 w-3.5" />
           {T.eventDetail.calendar.openCalendar}
-        </Link>
+        </Button>
       )}
     </div>
   );
