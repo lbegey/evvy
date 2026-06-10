@@ -70,6 +70,7 @@ interface CalendarDetailProps {
   calendars: { id: string; name: string }[];
   appUrl: string;
   plan: string;
+  emailVerified: boolean;
 }
 
 const SIDEBAR_SECTIONS = [
@@ -102,7 +103,7 @@ function CopyButton({ value, label, copiedLabel }: { value: string; label: strin
   );
 }
 
-export function CalendarDetail({ calendar, events, calendars, appUrl, plan }: CalendarDetailProps) {
+export function CalendarDetail({ calendar, events, calendars, appUrl, plan, emailVerified }: CalendarDetailProps) {
   const router = useRouter();
   const { T, lang } = useLanguage();
   const [editOpen, setEditOpen] = useState(false);
@@ -181,9 +182,11 @@ export function CalendarDetail({ calendar, events, calendars, appUrl, plan }: Ca
   };
 
   const handleTogglePublished = (checked: boolean) => {
+    if (checked && !emailVerified) return;
     setPublished(checked);
     startTogglePublished(async () => {
-      await toggleCalendarPublished(calendar.id, checked);
+      const result = await toggleCalendarPublished(calendar.id, checked);
+      if (result?.error === "emailNotVerified") setPublished(!checked);
       router.refresh();
     });
   };
@@ -256,10 +259,23 @@ export function CalendarDetail({ calendar, events, calendars, appUrl, plan }: Ca
               <span className="hidden sm:inline">{T.calendars.delete}</span>
             </Button>
             <label
-              className="flex items-center gap-1.5 rounded-lg border border-border/60 px-2 py-1 text-xs font-medium"
-              title={published ? T.calendarDetail.published.onlineHint : T.calendarDetail.published.offlineHint}
+              className={cn(
+                "flex items-center gap-1.5 rounded-lg border border-border/60 px-2 py-1 text-xs font-medium",
+                !published && !emailVerified && "opacity-60"
+              )}
+              title={
+                !published && !emailVerified
+                  ? T.calendarDetail.published.verifyEmailRequired
+                  : published
+                    ? T.calendarDetail.published.onlineHint
+                    : T.calendarDetail.published.offlineHint
+              }
             >
-              <Switch checked={published} onCheckedChange={handleTogglePublished} />
+              <Switch
+                checked={published}
+                onCheckedChange={handleTogglePublished}
+                disabled={!published && !emailVerified}
+              />
               <span className={cn(published ? "text-foreground" : "text-muted-foreground")}>
                 {published ? T.calendarDetail.published.online : T.calendarDetail.published.offline}
               </span>
@@ -314,6 +330,12 @@ export function CalendarDetail({ calendar, events, calendars, appUrl, plan }: Ca
 
       <div className="min-w-0 max-w-4xl flex-1 space-y-6 sm:space-y-8">
         {deleteError && <p className="text-sm text-destructive">{deleteError}</p>}
+
+        {!published && !emailVerified && (
+          <div className="rounded-xl border border-amber-300/60 bg-amber-50 px-4 py-2.5 text-center text-xs font-medium text-amber-700 dark:border-amber-900/40 dark:bg-amber-900/20 dark:text-amber-400">
+            {T.calendarDetail.published.verifyEmailRequired}
+          </div>
+        )}
 
         {/* Info */}
         <div id="info" className="scroll-mt-24">

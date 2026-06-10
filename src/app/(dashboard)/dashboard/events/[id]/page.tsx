@@ -86,6 +86,7 @@ export default async function EventPage({
       }}
       appUrl={APP_URL}
       plan={user?.plan ?? "free"}
+      emailVerified={user?.emailVerified ?? false}
       calendars={calendars}
       stats={stats}
       questions={questions.map((q) => ({

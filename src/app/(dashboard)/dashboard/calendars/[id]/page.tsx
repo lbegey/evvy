@@ -61,6 +61,7 @@ export default async function CalendarPage({
       calendars={calendars}
       appUrl={APP_URL}
       plan={user?.plan ?? "free"}
+      emailVerified={user?.emailVerified ?? false}
     />
   );
 }

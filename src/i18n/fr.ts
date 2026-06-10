@@ -366,6 +366,7 @@ export const fr: Translations = {
       offline: "Hors ligne",
       onlineHint: "Visible sur sa page publique",
       offlineHint: "Masqué — sa page publique affiche un message « bientôt disponible »",
+      verifyEmailRequired: "Vérifiez votre adresse email pour publier cet événement",
     },
     sidebar: {
       info: "Aperçu",
@@ -719,6 +720,7 @@ export const fr: Translations = {
       offline: "Hors ligne",
       onlineHint: "Visible sur sa page publique",
       offlineHint: "Masqué — sa page publique affiche un message « bientôt disponible »",
+      verifyEmailRequired: "Vérifiez votre adresse email pour publier ce calendrier",
     },
     noEvents: "Ce calendrier ne contient aucun événement pour le moment.",
     confirmDeleteEvent: "Supprimer cet événement ? Cette action est irréversible.",

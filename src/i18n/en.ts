@@ -364,6 +364,7 @@ export const en = {
       offline: "Offline",
       onlineHint: "Visible on its public page",
       offlineHint: "Hidden — its public page shows a \"coming soon\" message",
+      verifyEmailRequired: "Verify your email address to publish this event",
     },
     sidebar: {
       info: "Overview",
@@ -717,6 +718,7 @@ export const en = {
       offline: "Offline",
       onlineHint: "Visible on its public page",
       offlineHint: "Hidden — its public page shows a \"coming soon\" message",
+      verifyEmailRequired: "Verify your email address to publish this calendar",
     },
     noEvents: "This calendar doesn't have any events yet.",
     confirmDeleteEvent: "Delete this event? This action is irreversible.",

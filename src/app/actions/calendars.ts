@@ -131,11 +131,16 @@ export async function updateCalendarBranding(id: string, data: CalendarBrandingD
   if (calendar.slug) revalidatePath(`/c/${calendar.slug}`);
 }
 
-export async function toggleCalendarPublished(id: string, published: boolean): Promise<{ error: "forbidden" } | undefined> {
+export async function toggleCalendarPublished(id: string, published: boolean): Promise<{ error: "forbidden" | "emailNotVerified" } | undefined> {
   const session = await getSession();
 
   const calendar = await db.calendar.findUnique({ where: { id } });
   if (!calendar || calendar.userId !== session.user.id) return { error: "forbidden" };
+
+  if (published) {
+    const user = await db.user.findUnique({ where: { id: session.user.id }, select: { emailVerified: true } });
+    if (!user?.emailVerified) return { error: "emailNotVerified" };
+  }
 
   await db.calendar.update({ where: { id }, data: { published } });
 

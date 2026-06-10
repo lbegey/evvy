@@ -194,12 +194,17 @@ export async function removeEvent(id: string): Promise<{ error: "forbidden" } | 
   return { ok: true };
 }
 
-export async function toggleEventPublished(id: string, published: boolean) {
+export async function toggleEventPublished(id: string, published: boolean): Promise<{ error: "emailNotVerified" } | undefined> {
   const session = await auth.api.getSession({ headers: await headers() });
   if (!session) throw new Error("Unauthorized");
 
   const event = await db.event.findUnique({ where: { id } });
   if (!event || event.userId !== session.user.id) throw new Error("Forbidden");
+
+  if (published) {
+    const user = await db.user.findUnique({ where: { id: session.user.id }, select: { emailVerified: true } });
+    if (!user?.emailVerified) return { error: "emailNotVerified" };
+  }
 
   await db.event.update({ where: { id }, data: { published } });
 

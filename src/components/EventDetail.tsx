@@ -87,6 +87,7 @@ interface EventDetailProps {
   event: Event;
   appUrl: string;
   plan: string;
+  emailVerified: boolean;
   calendars: { id: string; name: string; color: string | null }[];
   stats: Stats;
   rsvps: RsvpRecord[];
@@ -200,7 +201,7 @@ ${links}
 </div>`;
 }
 
-export function EventDetail({ event, appUrl, plan, calendars, stats, rsvps, questions }: EventDetailProps) {
+export function EventDetail({ event, appUrl, plan, emailVerified, calendars, stats, rsvps, questions }: EventDetailProps) {
   const router = useRouter();
   const [editOpen, setEditOpen] = useState(false);
   const [rsvpModalOpen, setRsvpModalOpen] = useState(false);
@@ -307,9 +308,11 @@ export function EventDetail({ event, appUrl, plan, calendars, stats, rsvps, ques
   };
 
   const handleTogglePublished = (checked: boolean) => {
+    if (checked && !emailVerified) return;
     setPublished(checked);
     startTogglePublished(async () => {
-      await toggleEventPublished(event.id, checked);
+      const result = await toggleEventPublished(event.id, checked);
+      if (result?.error === "emailNotVerified") setPublished(!checked);
       router.refresh();
     });
   };
@@ -369,10 +372,23 @@ export function EventDetail({ event, appUrl, plan, calendars, stats, rsvps, ques
               </Button>
             )}
             <label
-              className="flex items-center gap-1.5 rounded-lg border border-border/60 px-2 py-1 text-xs font-medium"
-              title={published ? T.eventDetail.published.onlineHint : T.eventDetail.published.offlineHint}
+              className={cn(
+                "flex items-center gap-1.5 rounded-lg border border-border/60 px-2 py-1 text-xs font-medium",
+                !published && !emailVerified && "opacity-60"
+              )}
+              title={
+                !published && !emailVerified
+                  ? T.eventDetail.published.verifyEmailRequired
+                  : published
+                    ? T.eventDetail.published.onlineHint
+                    : T.eventDetail.published.offlineHint
+              }
             >
-              <Switch checked={published} onCheckedChange={handleTogglePublished} />
+              <Switch
+                checked={published}
+                onCheckedChange={handleTogglePublished}
+                disabled={!published && !emailVerified}
+              />
               <span className={cn(published ? "text-foreground" : "text-muted-foreground")}>
                 {published ? T.eventDetail.published.online : T.eventDetail.published.offline}
               </span>
@@ -427,6 +443,12 @@ export function EventDetail({ event, appUrl, plan, calendars, stats, rsvps, ques
 
       <div className="min-w-0 max-w-4xl flex-1 space-y-6 sm:space-y-8">
       {deleteError && <p className="text-sm text-destructive">{deleteError}</p>}
+
+      {!published && !emailVerified && (
+        <div className="rounded-xl border border-amber-300/60 bg-amber-50 px-4 py-2.5 text-center text-xs font-medium text-amber-700 dark:border-amber-900/40 dark:bg-amber-900/20 dark:text-amber-400">
+          {T.eventDetail.published.verifyEmailRequired}
+        </div>
+      )}
 
       {/* Event info */}
       <div id="info" className="scroll-mt-24">
