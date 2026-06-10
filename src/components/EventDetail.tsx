@@ -349,7 +349,7 @@ export function EventDetail({ event, appUrl, plan, emailVerified, calendars, sta
   return (
     <>
       {/* Fixed action bar */}
-      <div className="fixed top-16 left-0 right-0 z-40 border-b border-border/60 bg-background/95 backdrop-blur-sm">
+      <div className={cn("fixed left-0 right-0 z-40 border-b border-border/60 bg-background/95 backdrop-blur-sm", emailVerified ? "top-16" : "top-[6.75rem]")}>
         <div className="mx-auto flex h-12 max-w-6xl items-center justify-between px-4 sm:px-6">
           <Link
             href={backUrl}
@@ -419,9 +419,9 @@ export function EventDetail({ event, appUrl, plan, emailVerified, calendars, sta
         </div>
       </div>
 
-    <div className="mx-auto max-w-6xl px-4 pt-20 pb-6 sm:px-6 sm:pt-24 sm:pb-8 lg:flex lg:items-start lg:gap-8">
+    <div className={cn("mx-auto max-w-6xl px-4 pb-6 sm:px-6 sm:pb-8 lg:flex lg:items-start lg:gap-8", emailVerified ? "pt-20 sm:pt-24" : "pt-[8.75rem] sm:pt-[9.75rem]")}>
       {/* Sidebar navigation */}
-      <aside className="hidden shrink-0 lg:sticky lg:top-28 lg:block lg:w-44">
+      <aside className={cn("hidden shrink-0 lg:sticky lg:block lg:w-44", emailVerified ? "lg:top-28" : "lg:top-[9.75rem]")}>
         <nav className="space-y-0.5">
           {SIDEBAR_SECTIONS.map(({ id, labelKey, icon: Icon }) => (
             <a

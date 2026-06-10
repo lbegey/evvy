@@ -22,8 +22,8 @@ export function VerificationBanner() {
   };
 
   return (
-    <div className="border-b border-amber-200 bg-amber-50 px-4 py-2.5">
-      <div className="mx-auto flex max-w-6xl items-center justify-between gap-3">
+    <div className="sticky top-16 z-40 flex h-11 items-center border-b border-amber-200 bg-amber-50 px-4">
+      <div className="mx-auto flex w-full max-w-6xl items-center justify-between gap-3">
         <div className="flex items-center gap-2 text-sm text-amber-800">
           <MailCheck className="h-4 w-4 shrink-0" />
           <span>{T.auth.verification.banner}</span>
