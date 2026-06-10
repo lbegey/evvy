@@ -635,7 +635,7 @@ export const en = {
     logo: "Logo",
     logoHint: "PNG, JPG, WebP or SVG · max 5 MB",
     logoSize: "Logo size",
-    logoSizeHint: "Height of the logo shown at the top of your public event pages.",
+    logoSizeHint: "Width of the logo shown at the top of your public event pages.",
     logoTransparentBg: "Transparent background",
     logoTransparentBgHint: "Show the logo on its own, with no background fill behind it.",
     logoRounded: "Rounded corners",

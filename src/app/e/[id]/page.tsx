@@ -241,14 +241,14 @@ export default async function PublicEventPage({
         {brandLogoUrl ? (
           <div className="flex justify-center pb-1">
             <span
-              className={cn("inline-flex", !brandLogoTransparentBg && "p-2.5", brandLogoRounded && "rounded-lg overflow-hidden")}
+              className={cn("inline-flex", brandLogoRounded && "rounded-lg overflow-hidden")}
               style={!brandLogoTransparentBg ? { backgroundColor: brandCardColor ?? "#ffffff" } : undefined}
             >
               <img
                 src={brandLogoUrl}
                 alt=""
-                style={{ height: brandLogoSize }}
-                className={cn("w-auto max-w-full object-contain opacity-90", brandLogoRounded && "rounded-lg")}
+                style={{ width: brandLogoSize }}
+                className={cn("h-auto max-w-full object-contain opacity-90", brandLogoRounded && "rounded-lg")}
               />
             </span>
           </div>

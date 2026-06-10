@@ -637,7 +637,7 @@ export const fr: Translations = {
     logo: "Logo",
     logoHint: "PNG, JPG, WebP ou SVG · max 5 Mo",
     logoSize: "Taille du logo",
-    logoSizeHint: "Hauteur du logo affiché en haut de vos pages d'événement publiques.",
+    logoSizeHint: "Largeur du logo affiché en haut de vos pages d'événement publiques.",
     logoTransparentBg: "Fond transparent",
     logoTransparentBgHint: "Afficher le logo seul, sans fond derrière lui.",
     logoRounded: "Coins arrondis",
