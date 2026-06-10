@@ -356,6 +356,18 @@ export function EventDetail({ event, appUrl, plan, calendars, stats, rsvps, ques
             <span className="hidden sm:inline">{T.eventDetail.backToCalendar}</span>
           </Link>
           <div className="flex items-center gap-2">
+            {plan === "premium" && (
+              <Button
+                size="sm"
+                variant="outline"
+                className="gap-1.5 text-destructive hover:text-destructive"
+                onClick={handleDelete}
+                disabled={isDeleting}
+              >
+                <Trash2 className="h-3.5 w-3.5" />
+                <span className="hidden sm:inline">{isDeleting ? T.eventDetail.deleting : T.eventDetail.delete}</span>
+              </Button>
+            )}
             <label
               className="flex items-center gap-1.5 rounded-lg border border-border/60 px-2 py-1 text-xs font-medium"
               title={published ? T.eventDetail.published.onlineHint : T.eventDetail.published.offlineHint}
@@ -365,14 +377,6 @@ export function EventDetail({ event, appUrl, plan, calendars, stats, rsvps, ques
                 {published ? T.eventDetail.published.online : T.eventDetail.published.offline}
               </span>
             </label>
-            <Button
-              size="sm"
-              className="gap-1.5"
-              onClick={() => { setCreateEventError(null); setCreateEventOpen(true); }}
-            >
-              <Plus className="h-3.5 w-3.5" />
-              <span className="hidden sm:inline">{T.calendar.newEvent}</span>
-            </Button>
             <Button
               size="sm"
               variant="outline"
@@ -387,18 +391,14 @@ export function EventDetail({ event, appUrl, plan, calendars, stats, rsvps, ques
               <Pencil className="h-3.5 w-3.5" />
               <span className="hidden sm:inline">{T.eventDetail.edit}</span>
             </Button>
-            {plan === "premium" && (
-              <Button
-                size="sm"
-                variant="outline"
-                className="gap-1.5 text-destructive hover:text-destructive"
-                onClick={handleDelete}
-                disabled={isDeleting}
-              >
-                <Trash2 className="h-3.5 w-3.5" />
-                <span className="hidden sm:inline">{isDeleting ? T.eventDetail.deleting : T.eventDetail.delete}</span>
-              </Button>
-            )}
+            <Button
+              size="sm"
+              className="gap-1.5"
+              onClick={() => { setCreateEventError(null); setCreateEventOpen(true); }}
+            >
+              <Plus className="h-3.5 w-3.5" />
+              <span className="hidden sm:inline">{T.calendar.newEvent}</span>
+            </Button>
           </div>
         </div>
       </div>

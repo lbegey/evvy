@@ -245,6 +245,16 @@ export function CalendarDetail({ calendar, events, calendars, appUrl, plan }: Ca
             <span className="hidden sm:inline">{T.calendarDetail.back}</span>
           </Link>
           <div className="flex items-center gap-2">
+            <Button
+              size="sm"
+              variant="outline"
+              className="gap-1.5 text-destructive hover:text-destructive"
+              onClick={handleDelete}
+              disabled={isDeleting}
+            >
+              <Trash2 className="h-3.5 w-3.5" />
+              <span className="hidden sm:inline">{T.calendars.delete}</span>
+            </Button>
             <label
               className="flex items-center gap-1.5 rounded-lg border border-border/60 px-2 py-1 text-xs font-medium"
               title={published ? T.calendarDetail.published.onlineHint : T.calendarDetail.published.offlineHint}
@@ -254,14 +264,6 @@ export function CalendarDetail({ calendar, events, calendars, appUrl, plan }: Ca
                 {published ? T.calendarDetail.published.online : T.calendarDetail.published.offline}
               </span>
             </label>
-            <Button
-              size="sm"
-              className="gap-1.5"
-              onClick={() => { setCreateEventError(null); setCreateEventOpen(true); }}
-            >
-              <Plus className="h-3.5 w-3.5" />
-              <span className="hidden sm:inline">{T.calendar.newEvent}</span>
-            </Button>
             <Button
               size="sm"
               variant="outline"
@@ -278,13 +280,11 @@ export function CalendarDetail({ calendar, events, calendars, appUrl, plan }: Ca
             </Button>
             <Button
               size="sm"
-              variant="outline"
-              className="gap-1.5 text-destructive hover:text-destructive"
-              onClick={handleDelete}
-              disabled={isDeleting}
+              className="gap-1.5"
+              onClick={() => { setCreateEventError(null); setCreateEventOpen(true); }}
             >
-              <Trash2 className="h-3.5 w-3.5" />
-              <span className="hidden sm:inline">{T.calendars.delete}</span>
+              <Plus className="h-3.5 w-3.5" />
+              <span className="hidden sm:inline">{T.calendar.newEvent}</span>
             </Button>
           </div>
         </div>
