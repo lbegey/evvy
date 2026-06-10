@@ -227,8 +227,8 @@ export default async function PublicCalendarPage({
               <img
                 src={brandLogoUrl}
                 alt=""
-                style={{ width: brandLogoSize }}
-                className={cn("h-auto max-w-full object-contain opacity-90", brandLogoRounded && "rounded-lg")}
+                style={{ maxWidth: brandLogoSize, width: "100%" }}
+                className={cn("h-auto object-contain opacity-90", brandLogoRounded && "rounded-lg")}
               />
             </span>
           </div>
