@@ -273,7 +273,7 @@ export default async function PublicEventPage({
           </Link>
         </div>
       )}
-      <div className="relative flex min-h-screen flex-col justify-center overflow-hidden bg-muted/20 py-6 px-4 sm:py-8" style={brandStyle}>
+      <div className="relative isolate flex min-h-screen flex-col justify-center overflow-hidden bg-muted/20 py-6 px-4 sm:py-8" style={brandStyle}>
       {brandBackgroundImageUrl && (
         <div
           aria-hidden
