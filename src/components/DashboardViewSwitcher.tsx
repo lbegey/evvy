@@ -10,9 +10,10 @@ export function DashboardViewSwitcher() {
   const pathname = usePathname();
   const { T } = useLanguage();
   const isCalendars = pathname?.startsWith("/dashboard/calendars") ?? false;
+  const isEvents = pathname === "/dashboard" || (pathname?.startsWith("/dashboard/events") ?? false);
 
   const ITEMS = [
-    { id: "events", href: "/dashboard", label: T.nav.events, icon: LayoutDashboard, active: !isCalendars },
+    { id: "events", href: "/dashboard", label: T.nav.events, icon: LayoutDashboard, active: isEvents },
     { id: "calendars", href: "/dashboard/calendars", label: T.nav.calendars, icon: CalendarDays, active: isCalendars },
   ] as const;
 
