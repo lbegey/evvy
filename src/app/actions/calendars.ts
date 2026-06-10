@@ -38,7 +38,7 @@ export async function createCalendar(data: CalendarData): Promise<{ id: string }
   const session = await getSession();
   const user = await db.user.findUnique({
     where: { id: session.user.id },
-    select: { plan: true, role: true, _count: { select: { calendars: true } } },
+    select: { plan: true, role: true, emailVerified: true, _count: { select: { calendars: true } } },
   });
   const isPremium = user?.plan === "premium" || user?.role === "super_admin";
 
@@ -50,6 +50,7 @@ export async function createCalendar(data: CalendarData): Promise<{ id: string }
       description: data.description || null,
       color: data.color || null,
       language: data.language || "en",
+      published: !!user?.emailVerified,
       userId: session.user.id,
     },
   });

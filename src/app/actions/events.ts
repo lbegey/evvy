@@ -47,7 +47,7 @@ export async function createEvent(data: EventData): Promise<{ id: string } | { e
 
   const user = await db.user.findUnique({
     where: { id: session.user.id },
-    select: { plan: true, _count: { select: { events: true } } },
+    select: { plan: true, emailVerified: true, _count: { select: { events: true } } },
   });
   const isPremium = user?.plan === "premium";
   if (!isPremium && (user?._count.events ?? 0) >= FREE_EVENT_LIMIT) return { error: "limit" };
@@ -63,6 +63,7 @@ export async function createEvent(data: EventData): Promise<{ id: string } | { e
       endAt: new Date(data.endAt),
       allDay: data.allDay,
       isOnline: data.isOnline,
+      published: !!user?.emailVerified,
       timezone: data.timezone,
       language: data.language,
       rsvpEnabled: data.rsvpEnabled,
