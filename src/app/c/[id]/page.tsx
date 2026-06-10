@@ -222,7 +222,7 @@ export default async function PublicCalendarPage({
           <div className="flex justify-center pb-1">
             <span
               className={cn("inline-flex", !brandLogoTransparentBg && "p-2.5", brandLogoRounded && "rounded-lg overflow-hidden")}
-              style={!brandLogoTransparentBg ? { backgroundColor: brandColor ?? "#000000" } : undefined}
+              style={!brandLogoTransparentBg ? { backgroundColor: brandCardColor ?? "#ffffff" } : undefined}
             >
               <img
                 src={brandLogoUrl}
