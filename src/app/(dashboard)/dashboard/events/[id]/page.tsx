@@ -15,14 +15,9 @@ export default async function EventPage({
   const { id } = await params;
   const APP_URL = await getAppUrl();
   const session = await auth.api.getSession({ headers: await headers() });
-  const [event, user] = await Promise.all([
+  const [event, user, clickRows, rsvps, calendars, questions] = await Promise.all([
     db.event.findUnique({ where: { id } }),
     db.user.findUnique({ where: { id: session!.user.id } }),
-  ]);
-
-  if (!event || event.userId !== session!.user.id) notFound();
-
-  const [clickRows, rsvps, calendars, questions] = await Promise.all([
     db.eventClick.groupBy({
       by: ["service"],
       where: { eventId: id },
@@ -43,6 +38,8 @@ export default async function EventPage({
       orderBy: { order: "asc" },
     }),
   ]);
+
+  if (!event || event.userId !== session!.user.id) notFound();
 
   const count = (service: string) =>
     clickRows.find((r) => r.service === service)?._count ?? 0;

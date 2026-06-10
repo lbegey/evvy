@@ -45,12 +45,12 @@ export async function createEvent(data: EventData): Promise<{ id: string } | { e
 
   if (new Date(data.endAt) < new Date(data.startAt)) throw new Error("End date cannot be before start date");
 
-  const user = await db.user.findUnique({ where: { id: session.user.id } });
+  const user = await db.user.findUnique({
+    where: { id: session.user.id },
+    select: { plan: true, _count: { select: { events: true } } },
+  });
   const isPremium = user?.plan === "premium";
-  if (!isPremium) {
-    const count = await db.event.count({ where: { userId: session.user.id } });
-    if (count >= FREE_EVENT_LIMIT) return { error: "limit" };
-  }
+  if (!isPremium && (user?._count.events ?? 0) >= FREE_EVENT_LIMIT) return { error: "limit" };
 
   const event = await db.event.create({
     data: {
@@ -113,11 +113,10 @@ export async function updateEventSlug(id: string, slug: string | null): Promise<
   const session = await auth.api.getSession({ headers: await headers() });
   if (!session) throw new Error("Unauthorized");
 
-  const event = await db.event.findUnique({ where: { id } });
+  const event = await db.event.findUnique({ where: { id }, include: { user: { select: { plan: true } } } });
   if (!event || event.userId !== session.user.id) throw new Error("Forbidden");
 
-  const user = await db.user.findUnique({ where: { id: session.user.id } });
-  if (user?.plan !== "premium") return { error: "forbidden" };
+  if (event.user.plan !== "premium") return { error: "forbidden" };
 
   if (slug !== null) {
     if (!isValidSlug(slug)) return { error: "invalid" };
@@ -137,11 +136,10 @@ export async function updateEventBranding(id: string, data: EventBrandingData): 
   const session = await auth.api.getSession({ headers: await headers() });
   if (!session) throw new Error("Unauthorized");
 
-  const event = await db.event.findUnique({ where: { id } });
+  const event = await db.event.findUnique({ where: { id }, include: { user: { select: { plan: true } } } });
   if (!event || event.userId !== session.user.id) throw new Error("Forbidden");
 
-  const user = await db.user.findUnique({ where: { id: session.user.id } });
-  if (user?.plan !== "premium") return { error: "forbidden" };
+  if (event.user.plan !== "premium") return { error: "forbidden" };
 
   await db.event.update({
     where: { id },
@@ -168,11 +166,10 @@ export async function deleteEvent(id: string): Promise<{ error: "forbidden" } | 
   const session = await auth.api.getSession({ headers: await headers() });
   if (!session) throw new Error("Unauthorized");
 
-  const event = await db.event.findUnique({ where: { id } });
+  const event = await db.event.findUnique({ where: { id }, include: { user: { select: { plan: true } } } });
   if (!event || event.userId !== session.user.id) throw new Error("Forbidden");
 
-  const user = await db.user.findUnique({ where: { id: session.user.id } });
-  if (user?.plan !== "premium") return { error: "forbidden" };
+  if (event.user.plan !== "premium") return { error: "forbidden" };
 
   await db.event.delete({ where: { id } });
   revalidatePath("/dashboard");
@@ -183,11 +180,10 @@ export async function removeEvent(id: string): Promise<{ error: "forbidden" } | 
   const session = await auth.api.getSession({ headers: await headers() });
   if (!session) throw new Error("Unauthorized");
 
-  const event = await db.event.findUnique({ where: { id } });
+  const event = await db.event.findUnique({ where: { id }, include: { user: { select: { plan: true } } } });
   if (!event || event.userId !== session.user.id) throw new Error("Forbidden");
 
-  const user = await db.user.findUnique({ where: { id: session.user.id } });
-  if (user?.plan !== "premium") return { error: "forbidden" };
+  if (event.user.plan !== "premium") return { error: "forbidden" };
 
   await db.event.delete({ where: { id } });
   revalidatePath("/dashboard");
