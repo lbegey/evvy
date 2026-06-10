@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useTransition } from "react";
 import Link from "next/link";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import {
   ArrowLeft,
   Calendar,
@@ -14,6 +14,7 @@ import {
   ExternalLink,
   Globe,
   Pencil,
+  Plus,
   Trash2,
   BarChart2,
   Download,
@@ -29,13 +30,15 @@ import {
 } from "lucide-react";
 import { Dialog } from "@base-ui/react/dialog";
 import { Button } from "@/components/ui/button";
+import { CreateEventDialog } from "@/components/CreateEventDialog";
 import { EditEventDialog } from "@/components/EditEventDialog";
 import { RsvpSection, type RsvpRecord } from "@/components/RsvpSection";
 import { EventBrandingSection } from "@/components/EventBrandingSection";
 import { EventCalendarSection } from "@/components/EventCalendarSection";
 import { EventQuestionsSection, type RsvpQuestion } from "@/components/EventQuestionsSection";
 import { EventSlugSection } from "@/components/EventSlugSection";
-import { deleteEvent } from "@/app/actions/events";
+import { assignEventToCalendar } from "@/app/actions/calendars";
+import { createEvent, deleteEvent } from "@/app/actions/events";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { markdownToHtml } from "@/lib/markdown";
 import { cn } from "@/lib/utils";
@@ -196,6 +199,7 @@ ${links}
 }
 
 export function EventDetail({ event, appUrl, plan, calendars, stats, rsvps, questions }: EventDetailProps) {
+  const router = useRouter();
   const [editOpen, setEditOpen] = useState(false);
   const [rsvpModalOpen, setRsvpModalOpen] = useState(false);
   const [isDeleting, startDelete] = useTransition();
@@ -203,9 +207,13 @@ export function EventDetail({ event, appUrl, plan, calendars, stats, rsvps, ques
   const [exportFormat, setExportFormat] = useState<"email" | "web" | "tailwind">("email");
   const [exportCentered, setExportCentered] = useState(false);
   const [activeSection, setActiveSection] = useState<string>(SIDEBAR_SECTIONS[0].id);
+  const [createEventOpen, setCreateEventOpen] = useState(false);
+  const [createEventError, setCreateEventError] = useState<string | null>(null);
+  const [isCreatingEvent, startCreateEvent] = useTransition();
   const { T, lang } = useLanguage();
   const searchParams = useSearchParams();
   const fromCalendarId = searchParams.get("calendar");
+  const browserTz = Intl.DateTimeFormat().resolvedOptions().timeZone;
 
   useEffect(() => {
     const sections = SIDEBAR_SECTIONS
@@ -294,6 +302,35 @@ export function EventDetail({ event, appUrl, plan, calendars, stats, rsvps, ques
     });
   };
 
+  const handleCreateEvent = async (data: {
+    title: string;
+    description: string;
+    location: string;
+    organizerEmail: string;
+    startAt: string;
+    endAt: string;
+    allDay: boolean;
+    isOnline: boolean;
+    rsvpEnabled: boolean;
+    timezone: string;
+    language: string;
+    imageUrl: string;
+    calendarId: string | null;
+  }) => {
+    setCreateEventError(null);
+    startCreateEvent(async () => {
+      const result = await createEvent(data);
+      if ("error" in result) {
+        setCreateEventError(T.eventForm.errors.limitReached);
+        return;
+      }
+      if (data.calendarId) {
+        await assignEventToCalendar(result.id, data.calendarId);
+      }
+      router.push(`/dashboard/events/${result.id}${data.calendarId ? `?calendar=${data.calendarId}` : ""}`);
+    });
+  };
+
   return (
     <>
       {/* Fixed action bar */}
@@ -307,6 +344,14 @@ export function EventDetail({ event, appUrl, plan, calendars, stats, rsvps, ques
             <span className="hidden sm:inline">{T.eventDetail.backToCalendar}</span>
           </Link>
           <div className="flex items-center gap-2">
+            <Button
+              size="sm"
+              className="gap-1.5"
+              onClick={() => { setCreateEventError(null); setCreateEventOpen(true); }}
+            >
+              <Plus className="h-3.5 w-3.5" />
+              <span className="hidden sm:inline">{T.calendar.newEvent}</span>
+            </Button>
             <Button
               size="sm"
               variant="outline"
@@ -747,6 +792,18 @@ export function EventDetail({ event, appUrl, plan, calendars, stats, rsvps, ques
           timezone: event.timezone,
           language: event.language,
         }}
+      />
+
+      <CreateEventDialog
+        open={createEventOpen}
+        onOpenChange={setCreateEventOpen}
+        defaultDate={new Date()}
+        defaultTimezone={browserTz}
+        calendars={calendars}
+        defaultCalendarId={event.calendarId}
+        onSubmit={handleCreateEvent}
+        isPending={isCreatingEvent}
+        error={createEventError}
       />
       </div>
     </div>
