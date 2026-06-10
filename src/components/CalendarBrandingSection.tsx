@@ -3,7 +3,7 @@
 import { useState, useTransition, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { Settings2 } from "lucide-react";
+import { Settings2, RotateCcw, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { ImageDropzone } from "@/components/ImageDropzone";
@@ -52,7 +52,10 @@ export function CalendarBrandingSection({
 
   const [isPending, startTransition] = useTransition();
   const [, startColorSave] = useTransition();
+  const [isResetting, startReset] = useTransition();
   const isFirstRender = useRef(true);
+
+  const hasCustomBranding = Boolean(logoUrl || color || textColor || cardColor || backgroundColor || backgroundImageUrl);
 
   useEffect(() => {
     if (isFirstRender.current) { isFirstRender.current = false; return; }
@@ -97,6 +100,27 @@ export function CalendarBrandingSection({
         brandCardColor: next.enabled ? (next.cardColor || null) : null,
         brandBackgroundColor: next.enabled ? (next.backgroundColor || null) : null,
         brandBackgroundImageUrl: next.enabled ? (next.backgroundImageUrl || null) : null,
+      });
+      router.refresh();
+    });
+  };
+
+  const onReset = () => {
+    if (!confirm(T.branding.resetConfirm)) return;
+    setLogoUrl(""); setLogoSize(DEFAULT_LOGO_SIZE); setLogoTransparentBg(true); setLogoRounded(false);
+    setColor(""); setTextColor(""); setCardColor(""); setBackgroundColor(""); setBackgroundImageUrl("");
+    startReset(async () => {
+      await updateCalendarBranding(calendarId, {
+        brandingEnabled: enabled,
+        brandLogoUrl: null,
+        brandLogoSize: null,
+        brandLogoTransparentBg: true,
+        brandLogoRounded: false,
+        brandColor: null,
+        brandTextColor: null,
+        brandCardColor: null,
+        brandBackgroundColor: null,
+        brandBackgroundImageUrl: null,
       });
       router.refresh();
     });
@@ -204,6 +228,11 @@ export function CalendarBrandingSection({
               previewClassName="h-24 w-full rounded-lg object-cover border border-border/60 bg-muted/20"
             />
           </div>
+
+          <Button type="button" variant="outline" size="sm" onClick={onReset} disabled={isPending || isResetting || !hasCustomBranding} className="gap-1.5">
+            {isResetting ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <RotateCcw className="h-3.5 w-3.5" />}
+            {T.branding.reset}
+          </Button>
         </div>
       )}
     </div>
