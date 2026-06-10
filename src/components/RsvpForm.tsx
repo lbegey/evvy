@@ -29,10 +29,12 @@ export function RsvpForm({
   eventId,
   lang,
   questions = [],
+  branded = false,
 }: {
   eventId: string;
   lang: "fr" | "en";
   questions?: RsvpQuestion[];
+  branded?: boolean;
 }) {
   const T = lang === "fr" ? fr : en;
   const [done, setDone] = useState(false);
@@ -216,7 +218,12 @@ export function RsvpForm({
         </div>
       ))}
 
-      <Button type="submit" className="w-full" disabled={isPending}>
+      <Button
+        type="submit"
+        className={cn("w-full", branded && "hover:opacity-90")}
+        style={branded ? { backgroundColor: "var(--foreground)", color: "var(--background)" } : undefined}
+        disabled={isPending}
+      >
         {isPending ? T.rsvpForm.submitting : T.rsvpForm.submit}
       </Button>
 

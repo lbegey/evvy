@@ -464,7 +464,7 @@ export default async function PublicEventPage({
             {isPast ? (
               <p className="py-2 text-center text-sm text-muted-foreground">{T.publicEvent.rsvpClosed}</p>
             ) : (
-              <RsvpForm eventId={event.id} lang={lang} questions={event.questions} />
+              <RsvpForm eventId={event.id} lang={lang} questions={event.questions} branded={!!brandStyle} />
             )}
           </div>
         )}
