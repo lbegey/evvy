@@ -358,15 +358,15 @@ export function CalendarView({ events, calendars, plan, initialYear, initialMont
         </Button>
       </div>
 
-      {/* Row 4: filters — hidden on mobile, visible on sm+ */}
+      {/* Row 4: filters */}
       {(calendars.length > 0 || eventTimezones.length > 0) && (
-        <div className="hidden flex-wrap items-center gap-1.5 sm:flex">
+        <div className="grid grid-cols-2 gap-1.5 sm:flex sm:flex-wrap sm:items-center">
           {calendars.length > 0 && (
             <select
               value={calendarFilter}
               onChange={(e) => setCalendarFilter(e.target.value)}
               className={cn(
-                "cursor-pointer rounded-lg border border-border/60 bg-muted/30 px-2 py-1",
+                "w-full cursor-pointer rounded-lg border border-border/60 bg-muted/30 px-2 py-1 sm:w-auto",
                 "text-xs text-muted-foreground",
                 "focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:border-ring",
                 calendarFilter !== "all" && "border-primary/40 bg-primary/5 text-primary"
@@ -384,7 +384,7 @@ export function CalendarView({ events, calendars, plan, initialYear, initialMont
               value={filterTz}
               onChange={(e) => setFilterTz(e.target.value)}
               className={cn(
-                "cursor-pointer rounded-lg border border-border/60 bg-muted/30 px-2 py-1",
+                "w-full cursor-pointer rounded-lg border border-border/60 bg-muted/30 px-2 py-1 sm:w-auto",
                 "text-xs text-muted-foreground",
                 "focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:border-ring",
                 filterTz !== "all" && "border-primary/40 bg-primary/5 text-primary"
