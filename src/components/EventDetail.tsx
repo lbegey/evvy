@@ -349,7 +349,7 @@ export function EventDetail({ event, appUrl, plan, emailVerified, calendars, sta
   return (
     <>
       {/* Fixed action bar */}
-      <div className={cn("fixed left-0 right-0 z-40 border-b border-border/60 bg-background/95 backdrop-blur-sm", emailVerified ? "top-16" : "top-[6.75rem]")}>
+      <div className="sticky top-16 z-40 border-b border-border/60 bg-background/95 backdrop-blur-sm">
         <div className="mx-auto flex h-12 max-w-6xl items-center justify-between px-4 sm:px-6">
           <Link
             href={backUrl}
@@ -419,9 +419,9 @@ export function EventDetail({ event, appUrl, plan, emailVerified, calendars, sta
         </div>
       </div>
 
-    <div className={cn("mx-auto max-w-6xl px-4 pb-6 sm:px-6 sm:pb-8 lg:flex lg:items-start lg:gap-8", emailVerified ? "pt-20 sm:pt-24" : "pt-[8.75rem] sm:pt-[9.75rem]")}>
+    <div className="mx-auto max-w-6xl px-4 pt-4 pb-6 sm:px-6 sm:pt-6 sm:pb-8 lg:flex lg:items-start lg:gap-8">
       {/* Sidebar navigation */}
-      <aside className={cn("hidden shrink-0 lg:sticky lg:block lg:w-44", emailVerified ? "lg:top-28" : "lg:top-[9.75rem]")}>
+      <aside className="hidden shrink-0 lg:sticky lg:top-28 lg:block lg:w-44">
         <nav className="space-y-0.5">
           {SIDEBAR_SECTIONS.map(({ id, labelKey, icon: Icon }) => (
             <a
@@ -443,12 +443,6 @@ export function EventDetail({ event, appUrl, plan, emailVerified, calendars, sta
 
       <div className="min-w-0 max-w-4xl flex-1 space-y-6 sm:space-y-8">
       {deleteError && <p className="text-sm text-destructive">{deleteError}</p>}
-
-      {!published && !emailVerified && (
-        <div className="rounded-xl border border-amber-300/60 bg-amber-50 px-4 py-2.5 text-center text-xs font-medium text-amber-700 dark:border-amber-900/40 dark:bg-amber-900/20 dark:text-amber-400">
-          {T.eventDetail.published.verifyEmailRequired}
-        </div>
-      )}
 
       {/* Event info */}
       <div id="info" className="scroll-mt-24">
