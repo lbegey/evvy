@@ -26,6 +26,7 @@ import { Badge } from "@/components/ui/badge";
 import { CalendarDialog, type CalendarDialogValues } from "@/components/CalendarDialog";
 import { CalendarBrandingSection } from "@/components/CalendarBrandingSection";
 import { CalendarSlugSection } from "@/components/CalendarSlugSection";
+import { SocialShareLinks } from "@/components/SocialShareLinks";
 import { CreateEventDialog } from "@/components/CreateEventDialog";
 import { updateCalendar, deleteCalendar, assignEventToCalendar, toggleCalendarPublished } from "@/app/actions/calendars";
 import { createEvent, removeEvent } from "@/app/actions/events";
@@ -359,6 +360,11 @@ export function CalendarDetail({ calendar, events, calendars, appUrl, plan, emai
                 {T.common.open}
               </Button>
             </div>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <span className="text-xs text-muted-foreground">{T.eventDetail.publicLink.share}</span>
+            <SocialShareLinks url={publicUrl} title={calendar.name} />
           </div>
 
           <CalendarSlugSection calendarId={calendar.id} plan={plan} appUrl={appUrl} slug={calendar.slug} />

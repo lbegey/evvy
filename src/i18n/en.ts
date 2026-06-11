@@ -436,6 +436,7 @@ export const en = {
     },
     publicLink: {
       title: "Public link",
+      share: "Share",
     },
     slug: {
       title: "Custom URL",

@@ -438,6 +438,7 @@ export const fr: Translations = {
     },
     publicLink: {
       title: "Lien public",
+      share: "Partager",
     },
     slug: {
       title: "URL personnalisée",

@@ -37,6 +37,7 @@ import { EventBrandingSection } from "@/components/EventBrandingSection";
 import { EventCalendarSection } from "@/components/EventCalendarSection";
 import { EventQuestionsSection, type RsvpQuestion } from "@/components/EventQuestionsSection";
 import { EventSlugSection } from "@/components/EventSlugSection";
+import { SocialShareLinks } from "@/components/SocialShareLinks";
 import { assignEventToCalendar } from "@/app/actions/calendars";
 import { createEvent, deleteEvent, toggleEventPublished } from "@/app/actions/events";
 import { Switch } from "@/components/ui/switch";
@@ -519,6 +520,11 @@ export function EventDetail({ event, appUrl, plan, emailVerified, calendars, sta
               {T.common.open}
             </Button>
           </div>
+        </div>
+
+        <div className="flex items-center gap-2">
+          <span className="text-xs text-muted-foreground">{T.eventDetail.publicLink.share}</span>
+          <SocialShareLinks url={publicUrl} title={event.title} />
         </div>
 
         <EventSlugSection eventId={event.id} plan={plan} appUrl={appUrl} slug={event.slug} />
