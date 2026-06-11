@@ -7,6 +7,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { isValidSlug, isSlugTaken } from "@/lib/slug";
 import { fireWebhook } from "@/lib/webhook";
+import { getAppUrl } from "@/lib/url";
 
 type EventData = {
   title: string;
@@ -22,6 +23,38 @@ type EventData = {
   imageUrl?: string;
   rsvpEnabled: boolean;
 };
+
+function buildWebhookEventPayload(
+  event: {
+    id: string;
+    title: string;
+    slug: string | null;
+    startAt: Date;
+    endAt: Date;
+    allDay: boolean;
+    timezone: string;
+    location: string | null;
+    isOnline: boolean;
+    calendar: { id: string; name: string; slug: string | null } | null;
+  },
+  appUrl: string
+) {
+  return {
+    id: event.id,
+    title: event.title,
+    slug: event.slug,
+    url: `${appUrl}/e/${event.slug ?? event.id}`,
+    startAt: event.startAt.toISOString(),
+    endAt: event.endAt.toISOString(),
+    allDay: event.allDay,
+    timezone: event.timezone,
+    location: event.location,
+    isOnline: event.isOnline,
+    calendar: event.calendar
+      ? { id: event.calendar.id, name: event.calendar.name, slug: event.calendar.slug }
+      : null,
+  };
+}
 
 type EventBrandingData = {
   brandingEnabled: boolean;
@@ -237,7 +270,19 @@ export async function deleteRsvp(id: string): Promise<{ error: "forbidden" } | u
   const session = await auth.api.getSession({ headers: await headers() });
   if (!session) throw new Error("Unauthorized");
 
-  const rsvp = await db.rsvp.findUnique({ where: { id }, include: { event: { select: { id: true, userId: true, slug: true, title: true } } } });
+  const rsvp = await db.rsvp.findUnique({
+    where: { id },
+    include: {
+      event: {
+        select: {
+          id: true, userId: true, slug: true, title: true,
+          startAt: true, endAt: true, allDay: true, timezone: true, location: true, isOnline: true,
+          calendar: { select: { id: true, name: true, slug: true } },
+        },
+      },
+      answers: { include: { question: { select: { label: true, type: true } } } },
+    },
+  });
   if (!rsvp || rsvp.event.userId !== session.user.id) return { error: "forbidden" };
 
   await db.rsvp.delete({ where: { id } });
@@ -246,9 +291,18 @@ export async function deleteRsvp(id: string): Promise<{ error: "forbidden" } | u
   revalidatePath(`/e/${rsvp.eventId}`);
   if (rsvp.event.slug) revalidatePath(`/e/${rsvp.event.slug}`);
 
+  const appUrl = await getAppUrl();
   fireWebhook(rsvp.event.userId, "rsvp.deleted", {
-    rsvp: { id: rsvp.id, name: rsvp.name, email: rsvp.email, status: rsvp.status },
-    event: { id: rsvp.event.id, title: rsvp.event.title, slug: rsvp.event.slug },
+    rsvp: {
+      id: rsvp.id,
+      name: rsvp.name,
+      email: rsvp.email,
+      status: rsvp.status,
+      message: rsvp.message,
+      createdAt: rsvp.createdAt.toISOString(),
+      answers: rsvp.answers.map((a) => ({ questionId: a.questionId, label: a.question.label, type: a.question.type, value: a.value })),
+    },
+    event: buildWebhookEventPayload(rsvp.event, appUrl),
   }).catch(() => {});
 }
 
@@ -260,7 +314,14 @@ export async function submitRsvp(data: {
   message: string;
   answers?: { questionId: string; value: string }[];
 }): Promise<{ error: "full" | "closed" | "already" } | undefined> {
-  const event = await db.event.findFirst({ where: { OR: [{ id: data.eventId }, { slug: data.eventId }] }, include: { user: { select: { plan: true, id: true } } } });
+  const event = await db.event.findFirst({
+    where: { OR: [{ id: data.eventId }, { slug: data.eventId }] },
+    include: {
+      user: { select: { plan: true, id: true } },
+      calendar: { select: { id: true, name: true, slug: true } },
+      questions: { select: { id: true, label: true, type: true } },
+    },
+  });
   if (!event || !event.rsvpEnabled || event.endAt < new Date()) return { error: "closed" };
 
   const email = data.email.trim().toLowerCase();
@@ -318,8 +379,20 @@ export async function submitRsvp(data: {
   if (event.slug) revalidatePath(`/e/${event.slug}`);
 
   // Fire webhook (fire-and-forget)
+  const appUrl = await getAppUrl();
   fireWebhook(event.user.id, existing ? "rsvp.updated" : "rsvp.created", {
-    rsvp: { id: rsvpId, name: data.name, email, status: data.status, message: data.message || null },
-    event: { id: event.id, title: event.title, slug: event.slug },
+    rsvp: {
+      id: rsvpId,
+      name: data.name,
+      email,
+      status: data.status,
+      message: data.message || null,
+      createdAt: new Date().toISOString(),
+      answers: answers.map((a) => {
+        const q = event.questions.find((q) => q.id === a.questionId);
+        return { questionId: a.questionId, label: q?.label ?? null, type: q?.type ?? null, value: a.value };
+      }),
+    },
+    event: buildWebhookEventPayload(event, appUrl),
   }).catch(() => {});
 }

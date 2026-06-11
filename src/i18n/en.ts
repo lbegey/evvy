@@ -923,6 +923,11 @@ export const en = {
     deliveries: "Recent deliveries",
     deliveriesEmpty: "No deliveries yet.",
     deliveryTest: "test",
+    payloadTitle: "Payload format",
+    payloadDescription: "Each call is a JSON POST request shaped like this. The \"type\" field tells you which event triggered it, and you can filter or route on any of these fields.",
+    payloadHeaders: "Headers",
+    payloadHeaderSignature: "HMAC-SHA256 signature of the body, signed with your secret.",
+    payloadHeaderEvent: "Same value as the \"type\" field in the body.",
   },
 } as const;
 

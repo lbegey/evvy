@@ -926,5 +926,10 @@ export const fr: Translations = {
     deliveries: "Livraisons récentes",
     deliveriesEmpty: "Aucune livraison pour l'instant.",
     deliveryTest: "test",
+    payloadTitle: "Format du payload",
+    payloadDescription: "Chaque appel est une requête POST JSON structurée comme ceci. Le champ \"type\" indique quel événement l'a déclenché, et vous pouvez filtrer ou router sur n'importe lequel de ces champs.",
+    payloadHeaders: "En-têtes",
+    payloadHeaderSignature: "Signature HMAC-SHA256 du corps de la requête, signée avec votre secret.",
+    payloadHeaderEvent: "Même valeur que le champ \"type\" du corps.",
   },
 };

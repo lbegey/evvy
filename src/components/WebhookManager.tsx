@@ -39,6 +39,35 @@ const EVENT_OPTIONS = [
   { key: "rsvp.deleted", labelKey: "eventRsvpDeleted" as const },
 ];
 
+const PAYLOAD_EXAMPLE = {
+  type: "rsvp.created",
+  timestamp: "2026-06-11T14:32:00.000Z",
+  rsvp: {
+    id: "clx1y2z3a0001",
+    name: "Jane Doe",
+    email: "jane@example.com",
+    status: "yes",
+    message: "Looking forward to it!",
+    createdAt: "2026-06-11T14:32:00.000Z",
+    answers: [
+      { questionId: "clx1y2z3a0099", label: "Dietary restrictions?", type: "text", value: "Vegetarian" },
+    ],
+  },
+  event: {
+    id: "clx1y2z3a0002",
+    title: "Team Offsite 2026",
+    slug: "team-offsite-2026",
+    url: "https://evvycal.app/e/team-offsite-2026",
+    startAt: "2026-07-01T08:00:00.000Z",
+    endAt: "2026-07-01T17:00:00.000Z",
+    allDay: false,
+    timezone: "Europe/Paris",
+    location: "Paris, France",
+    isOnline: false,
+    calendar: { id: "clx1y2z3a0003", name: "Company Events", slug: "company-events" },
+  },
+};
+
 export function WebhookManager({ plan, webhook: initialWebhook }: Props) {
   const { T } = useLanguage();
   const Tw = T.webhooks;
@@ -329,6 +358,28 @@ function WebhookManagerBody({ plan, initialWebhook }: { plan: string; initialWeb
       {!webhook && !initialWebhook && (
         <p className="text-xs text-muted-foreground">{Tw.noWebhookHint}</p>
       )}
+
+      {/* Payload format reference */}
+      <div className="space-y-3 rounded-xl border border-border/60 p-4 sm:p-5">
+        <div>
+          <h3 className="text-sm font-semibold text-foreground">{Tw.payloadTitle}</h3>
+          <p className="mt-1 text-xs text-muted-foreground">{Tw.payloadDescription}</p>
+        </div>
+        <pre className="overflow-x-auto rounded-md border border-border/60 bg-muted/40 p-3 font-mono text-xs text-foreground">
+          {JSON.stringify(PAYLOAD_EXAMPLE, null, 2)}
+        </pre>
+        <div className="space-y-1">
+          <h4 className="text-xs font-semibold text-foreground">{Tw.payloadHeaders}</h4>
+          <ul className="space-y-1 text-xs text-muted-foreground">
+            <li>
+              <code className="rounded bg-muted/40 px-1 py-0.5 font-mono text-foreground">X-Evvy-Signature</code> — {Tw.payloadHeaderSignature}
+            </li>
+            <li>
+              <code className="rounded bg-muted/40 px-1 py-0.5 font-mono text-foreground">X-Evvy-Event</code> — {Tw.payloadHeaderEvent}
+            </li>
+          </ul>
+        </div>
+      </div>
     </div>
   );
 }

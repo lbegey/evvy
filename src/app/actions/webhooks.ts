@@ -73,24 +73,39 @@ export async function testWebhook(): Promise<{ ok: boolean; statusCode?: number 
   const webhook = await db.webhook.findUnique({ where: { userId: session.user.id } });
   if (!webhook) return { ok: false, error: "no_webhook" };
 
+  const now = new Date().toISOString();
   const testPayload = {
+    type: "rsvp.created",
+    timestamp: now,
     rsvp: {
       id: "test_rsvp_id",
       name: "Jane Doe",
       email: "jane@example.com",
       status: "yes",
       message: "Looking forward to it!",
-      createdAt: new Date().toISOString(),
+      createdAt: now,
+      answers: [
+        { questionId: "test_question_id", label: "Dietary restrictions?", type: "text", value: "Vegetarian" },
+      ],
     },
     event: {
       id: "test_event_id",
       title: "Test Event",
+      slug: "test-event",
+      url: "https://evvycal.app/e/test-event",
+      startAt: now,
+      endAt: now,
+      allDay: false,
+      timezone: "Europe/Paris",
+      location: "Paris, France",
+      isOnline: false,
+      calendar: { id: "test_calendar_id", name: "Test Calendar", slug: "test-calendar" },
     },
     test: true,
   };
 
   // Force-fire regardless of subscribed events list for test
-  const body = JSON.stringify({ ...testPayload, event: "rsvp.created", timestamp: new Date().toISOString() });
+  const body = JSON.stringify(testPayload);
   const { createHmac } = await import("crypto");
   const signature = createHmac("sha256", webhook.secret).update(body).digest("hex");
 

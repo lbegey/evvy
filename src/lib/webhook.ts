@@ -25,7 +25,7 @@ export async function fireWebhook(
   }
   if (!subscribedEvents.includes(eventType)) return;
 
-  const body = JSON.stringify({ event: eventType, ...payload, timestamp: new Date().toISOString() });
+  const body = JSON.stringify({ type: eventType, timestamp: new Date().toISOString(), ...payload });
   const signature = createHmac("sha256", webhook.secret).update(body).digest("hex");
 
   let statusCode: number | null = null;
