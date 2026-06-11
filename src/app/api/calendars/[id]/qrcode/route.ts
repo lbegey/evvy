@@ -22,6 +22,7 @@ export async function GET(
       headers: {
         "Content-Type": "image/svg+xml",
         "Content-Disposition": `attachment; filename="calendar-${id}-qrcode.svg"`,
+        "Cache-Control": "public, max-age=3600",
       },
     });
   }
@@ -31,6 +32,7 @@ export async function GET(
     headers: {
       "Content-Type": "image/png",
       "Content-Disposition": `attachment; filename="calendar-${id}-qrcode.png"`,
+      "Cache-Control": "public, max-age=3600",
     },
   });
 }

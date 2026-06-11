@@ -22,7 +22,7 @@ import {
   Users,
   Link2,
   QrCode,
-  ListChecks,
+  AppWindow,
   Code2,
   Palette,
   HelpCircle,
@@ -35,6 +35,7 @@ import { CreateEventDialog } from "@/components/CreateEventDialog";
 import { EditEventDialog } from "@/components/EditEventDialog";
 import { RsvpSection, type RsvpRecord } from "@/components/RsvpSection";
 import { EventBrandingSection } from "@/components/EventBrandingSection";
+import { type BrandingPreset } from "@/app/actions/brandingPresets";
 import { EventCalendarSection } from "@/components/EventCalendarSection";
 import { EventAttachmentSection } from "@/components/EventAttachmentSection";
 import { EventQuestionsSection, type RsvpQuestion } from "@/components/EventQuestionsSection";
@@ -98,6 +99,7 @@ interface EventDetailProps {
   plan: string;
   emailVerified: boolean;
   calendars: { id: string; name: string; color: string | null }[];
+  brandingPresets: BrandingPreset[];
   stats: Stats;
   rsvps: RsvpRecord[];
   questions: RsvpQuestion[];
@@ -127,12 +129,12 @@ const SIDEBAR_SECTIONS = [
   { id: "info", labelKey: "info", icon: Info },
   { id: "public-link", labelKey: "publicLink", icon: Link2 },
   { id: "calendar", labelKey: "calendar", icon: CalendarRange },
-  { id: "rsvp", labelKey: "rsvp", icon: Users },
-  { id: "branding", labelKey: "branding", icon: Palette },
-  { id: "attachment", labelKey: "attachment", icon: Paperclip },
   { id: "qr-code", labelKey: "qrCode", icon: QrCode },
-  { id: "links", labelKey: "links", icon: ListChecks },
+  { id: "branding", labelKey: "branding", icon: Palette },
+  { id: "rsvp", labelKey: "rsvp", icon: Users },
+  { id: "attachment", labelKey: "attachment", icon: Paperclip },
   { id: "integration", labelKey: "integration", icon: Code2 },
+  { id: "embed", labelKey: "embed", icon: AppWindow },
   { id: "stats", labelKey: "stats", icon: BarChart2 },
 ] as const;
 
@@ -211,13 +213,13 @@ ${links}
 </div>`;
 }
 
-export function EventDetail({ event, appUrl, plan, emailVerified, calendars, stats, rsvps, questions }: EventDetailProps) {
+export function EventDetail({ event, appUrl, plan, emailVerified, calendars, brandingPresets, stats, rsvps, questions }: EventDetailProps) {
   const router = useRouter();
   const [editOpen, setEditOpen] = useState(false);
   const [rsvpModalOpen, setRsvpModalOpen] = useState(false);
   const [isDeleting, startDelete] = useTransition();
   const [deleteError, setDeleteError] = useState<string | null>(null);
-  const [exportFormat, setExportFormat] = useState<"email" | "web" | "tailwind">("email");
+  const [exportFormat, setExportFormat] = useState<"email" | "web" | "tailwind" | "links">("email");
   const [exportCentered, setExportCentered] = useState(false);
   const [activeSection, setActiveSection] = useState<string>(SIDEBAR_SECTIONS[0].id);
   const [createEventOpen, setCreateEventOpen] = useState(false);
@@ -305,7 +307,7 @@ export function EventDetail({ event, appUrl, plan, emailVerified, calendars, sta
     web: buildWebHTML(event, appUrl, addToCalendarText, exportCentered),
     tailwind: buildTailwindHTML(event, appUrl, addToCalendarText, exportCentered),
   } as const;
-  const exportCode = exportSources[exportFormat];
+  const exportCode = exportFormat === "links" ? "" : exportSources[exportFormat];
   const embedUrl = `${appUrl}/e/${event.slug || event.id}/embed`;
   const iframeCode = `<iframe src="${embedUrl}" width="100%" height="80" style="border:0;" loading="lazy"></iframe>`;
   const totalCalendarClicks = stats.google + stats.apple + stats.outlook + stats.office365 + stats.yahoo;
@@ -432,6 +434,25 @@ export function EventDetail({ event, appUrl, plan, emailVerified, calendars, sta
       </div>
 
     <div className="mx-auto max-w-6xl px-4 pt-4 pb-6 sm:px-6 sm:pt-6 sm:pb-8 lg:flex lg:items-start lg:gap-8">
+      {/* Mobile section navigation */}
+      <nav className="sticky top-28 z-30 -mx-4 mb-4 flex gap-1 overflow-x-auto border-b border-border/60 bg-background/95 px-4 pb-2 backdrop-blur-sm lg:hidden">
+        {SIDEBAR_SECTIONS.map(({ id, labelKey, icon: Icon }) => (
+          <a
+            key={id}
+            href={`#${id}`}
+            className={cn(
+              "flex shrink-0 items-center gap-1.5 whitespace-nowrap rounded-lg px-3 py-1.5 text-xs transition-colors",
+              activeSection === id
+                ? "bg-primary/10 text-primary font-medium"
+                : "text-muted-foreground hover:bg-muted hover:text-foreground"
+            )}
+          >
+            <Icon className="h-3.5 w-3.5 shrink-0" />
+            {T.dashboardDetail.sidebar[labelKey]}
+          </a>
+        ))}
+      </nav>
+
       {/* Sidebar navigation */}
       <aside className="hidden shrink-0 lg:sticky lg:top-28 lg:block lg:w-44">
         <nav className="space-y-0.5">
@@ -447,7 +468,7 @@ export function EventDetail({ event, appUrl, plan, emailVerified, calendars, sta
               )}
             >
               <Icon className="h-4 w-4 shrink-0" />
-              {T.eventDetail.sidebar[labelKey]}
+              {T.dashboardDetail.sidebar[labelKey]}
             </a>
           ))}
         </nav>
@@ -553,102 +574,6 @@ export function EventDetail({ event, appUrl, plan, emailVerified, calendars, sta
         />
       </section>
 
-      {/* RSVP + Questions */}
-      <div id="rsvp" className="scroll-mt-24 space-y-4">
-        <RsvpSection
-          eventId={event.id}
-          rsvpEnabled={event.rsvpEnabled}
-          rsvpLimit={event.rsvpLimit}
-          rsvpDeadline={event.rsvpDeadline}
-          timezone={event.timezone}
-          rsvps={rsvps}
-          questions={questions}
-          onExpand={() => setRsvpModalOpen(true)}
-        />
-
-        {event.rsvpEnabled && (
-          <section className="space-y-3 rounded-xl border border-border/60 p-4 sm:p-5">
-            <div className="flex items-center gap-2">
-              <HelpCircle className="h-4 w-4 text-muted-foreground" />
-              <h2 className="text-sm font-semibold text-foreground">{T.eventDetail.sidebar.questions}</h2>
-            </div>
-            <EventQuestionsSection eventId={event.id} plan={plan} questions={questions} />
-          </section>
-        )}
-      </div>
-
-      <Dialog.Root open={rsvpModalOpen} onOpenChange={setRsvpModalOpen}>
-        <Dialog.Portal>
-          <Dialog.Backdrop className={cn(
-            "fixed inset-0 z-50 bg-black/40 backdrop-blur-[2px] transition-opacity duration-200",
-            "data-[starting-style]:opacity-0 data-[ending-style]:opacity-0"
-          )} />
-          <Dialog.Popup className={cn(
-            "fixed left-1/2 top-1/2 z-50 w-[95vw] max-w-4xl -translate-x-1/2 -translate-y-1/2",
-            "border border-border/60 bg-background p-6 shadow-xl",
-            "transition-[transform,opacity] duration-200 overflow-y-auto max-h-[88vh]",
-            "data-[starting-style]:opacity-0 data-[starting-style]:scale-95",
-            "data-[ending-style]:opacity-0 data-[ending-style]:scale-95"
-          )}>
-            <div className="mb-5 flex items-center justify-between">
-              <Dialog.Title className="text-lg font-semibold text-foreground">
-                {T.rsvpSection.expandedTitle}
-              </Dialog.Title>
-              <Dialog.Close className="cursor-pointer rounded-lg p-1.5 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-ring/50">
-                <X className="h-4 w-4" />
-              </Dialog.Close>
-            </div>
-            <RsvpSection
-              eventId={event.id}
-              rsvpEnabled={event.rsvpEnabled}
-              rsvpLimit={event.rsvpLimit}
-              rsvpDeadline={event.rsvpDeadline}
-              timezone={event.timezone}
-              rsvps={rsvps}
-              questions={questions}
-              expanded
-            />
-          </Dialog.Popup>
-        </Dialog.Portal>
-      </Dialog.Root>
-
-      {/* Branding */}
-      <section id="branding" className="scroll-mt-24 space-y-3 rounded-xl border border-border/60 p-4 sm:p-5">
-        <div className="flex items-center gap-2">
-          <Palette className="h-4 w-4 text-muted-foreground" />
-          <h2 className="text-sm font-semibold text-foreground">{T.eventDetail.branding.title}</h2>
-        </div>
-        <EventBrandingSection
-          eventId={event.id}
-          plan={plan}
-          brandingEnabled={event.brandingEnabled}
-          brandLogoUrl={event.brandLogoUrl}
-          brandLogoSize={event.brandLogoSize}
-          brandLogoTransparentBg={event.brandLogoTransparentBg}
-          brandLogoRounded={event.brandLogoRounded}
-          brandColor={event.brandColor}
-          brandTextColor={event.brandTextColor}
-          brandCardColor={event.brandCardColor}
-          brandIconBackgroundColor={event.brandIconBackgroundColor}
-          brandBackgroundColor={event.brandBackgroundColor}
-          brandBackgroundImageUrl={event.brandBackgroundImageUrl}
-        />
-      </section>
-
-      {/* Attachment */}
-      <section id="attachment" className="scroll-mt-24 space-y-3 rounded-xl border border-border/60 p-4 sm:p-5">
-        <div className="flex items-center gap-2">
-          <Paperclip className="h-4 w-4 text-muted-foreground" />
-          <h2 className="text-sm font-semibold text-foreground">{T.eventForm.attachment}</h2>
-        </div>
-        <EventAttachmentSection
-          eventId={event.id}
-          attachmentUrl={event.attachmentUrl}
-          attachmentName={event.attachmentName}
-          attachmentButtonLabel={event.attachmentButtonLabel}
-        />
-      </section>
-
       {/* QR code */}
       <section id="qr-code" className="scroll-mt-24 space-y-3 rounded-xl border border-border/60 p-4 sm:p-5">
         <div>
@@ -688,42 +613,103 @@ export function EventDetail({ event, appUrl, plan, emailVerified, calendars, sta
         </div>
       </section>
 
-      {/* Individual calendar links */}
-      <section id="links" className="scroll-mt-24 space-y-3 rounded-xl border border-border/60 p-4 sm:p-5">
-        <div>
-          <h2 className="text-sm font-semibold text-foreground">{T.eventDetail.individualLinks.title}</h2>
-          <p className="text-xs text-muted-foreground">{T.eventDetail.individualLinks.subtitle}</p>
+      {/* Branding */}
+      <section id="branding" className="scroll-mt-24 space-y-3 rounded-xl border border-border/60 p-4 sm:p-5">
+        <div className="flex items-center gap-2">
+          <Palette className="h-4 w-4 text-muted-foreground" />
+          <h2 className="text-sm font-semibold text-foreground">{T.eventDetail.branding.title}</h2>
         </div>
-        <div className="space-y-2">
-          {CALENDAR_SERVICES.map((s) => {
-            const trackUrl = `${trackBase}?service=${s.key}`;
-            return (
-              <div
-                key={s.key}
-                className="flex flex-wrap items-center gap-3 rounded-lg border border-border/40 bg-muted/20 px-3 py-2.5 sm:px-4 sm:py-3"
-              >
-                <img src={s.logo} alt={s.name} width={32} height={32} className="shrink-0 rounded" />
-                <span className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-foreground">{s.name}</p>
-                  <p className="truncate text-xs text-muted-foreground">{trackUrl}</p>
-                </span>
-                <div className="flex items-center gap-1.5 shrink-0">
-                  <CopyButton value={trackUrl} label={T.common.copy} copiedLabel={T.common.copied} />
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="gap-1"
-                    nativeButton={false}
-                    render={<a href={trackUrl} target="_blank" rel="noopener noreferrer" />}
-                  >
-                    <ExternalLink className="h-3 w-3" />
-                    <span className="hidden sm:inline">{T.eventDetail.individualLinks.open}</span>
-                  </Button>
-                </div>
-              </div>
-            );
-          })}
+        <EventBrandingSection
+          eventId={event.id}
+          plan={plan}
+          brandingEnabled={event.brandingEnabled}
+          brandLogoUrl={event.brandLogoUrl}
+          brandLogoSize={event.brandLogoSize}
+          brandLogoTransparentBg={event.brandLogoTransparentBg}
+          brandLogoRounded={event.brandLogoRounded}
+          brandColor={event.brandColor}
+          brandTextColor={event.brandTextColor}
+          brandCardColor={event.brandCardColor}
+          brandIconBackgroundColor={event.brandIconBackgroundColor}
+          brandBackgroundColor={event.brandBackgroundColor}
+          brandBackgroundImageUrl={event.brandBackgroundImageUrl}
+          initialPresets={brandingPresets}
+        />
+      </section>
+
+      {/* RSVP + Questions */}
+      <div id="rsvp" className="scroll-mt-24 space-y-4">
+        <RsvpSection
+          eventId={event.id}
+          rsvpEnabled={event.rsvpEnabled}
+          rsvpLimit={event.rsvpLimit}
+          rsvpDeadline={event.rsvpDeadline}
+          timezone={event.timezone}
+          rsvps={rsvps}
+          questions={questions}
+          onExpand={() => setRsvpModalOpen(true)}
+        />
+
+        {event.rsvpEnabled && (
+          <section className="space-y-3 rounded-xl border border-border/60 p-4 sm:p-5">
+            <div className="flex items-center gap-2">
+              <HelpCircle className="h-4 w-4 text-muted-foreground" />
+              <h2 className="text-sm font-semibold text-foreground">{T.dashboardDetail.sidebar.questions}</h2>
+            </div>
+            <EventQuestionsSection eventId={event.id} plan={plan} questions={questions} />
+          </section>
+        )}
+      </div>
+
+      <Dialog.Root open={rsvpModalOpen} onOpenChange={setRsvpModalOpen}>
+        <Dialog.Portal>
+          <Dialog.Backdrop className={cn(
+            "fixed inset-0 z-50 bg-black/40 backdrop-blur-[2px] transition-opacity duration-200",
+            "data-[starting-style]:opacity-0 data-[ending-style]:opacity-0"
+          )} />
+          <Dialog.Popup className={cn(
+            "fixed left-1/2 top-1/2 z-50 w-[95vw] max-w-4xl -translate-x-1/2 -translate-y-1/2",
+            "border border-border/60 bg-background p-6 shadow-xl",
+            "transition-[transform,opacity] duration-200 overflow-y-auto max-h-[88vh]",
+            "data-[starting-style]:opacity-0 data-[starting-style]:scale-95",
+            "data-[ending-style]:opacity-0 data-[ending-style]:scale-95"
+          )}>
+            <div className="mb-5 flex items-center justify-between">
+              <Dialog.Title className="text-lg font-semibold text-foreground">
+                {T.rsvpSection.expandedTitle}
+              </Dialog.Title>
+              <Dialog.Close className="cursor-pointer rounded-lg p-1.5 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-ring/50">
+                <X className="h-4 w-4" />
+              </Dialog.Close>
+            </div>
+            {rsvpModalOpen && (
+              <RsvpSection
+                eventId={event.id}
+                rsvpEnabled={event.rsvpEnabled}
+                rsvpLimit={event.rsvpLimit}
+                rsvpDeadline={event.rsvpDeadline}
+                timezone={event.timezone}
+                rsvps={rsvps}
+                questions={questions}
+                expanded
+              />
+            )}
+          </Dialog.Popup>
+        </Dialog.Portal>
+      </Dialog.Root>
+
+      {/* Attachment */}
+      <section id="attachment" className="scroll-mt-24 space-y-3 rounded-xl border border-border/60 p-4 sm:p-5">
+        <div className="flex items-center gap-2">
+          <Paperclip className="h-4 w-4 text-muted-foreground" />
+          <h2 className="text-sm font-semibold text-foreground">{T.eventForm.attachment}</h2>
         </div>
+        <EventAttachmentSection
+          eventId={event.id}
+          attachmentUrl={event.attachmentUrl}
+          attachmentName={event.attachmentName}
+          attachmentButtonLabel={event.attachmentButtonLabel}
+        />
       </section>
 
       {/* Integration / export */}
@@ -735,11 +721,13 @@ export function EventDetail({ event, appUrl, plan, emailVerified, calendars, sta
               {T.eventDetail.integration.subtitle}
             </p>
           </div>
-          <CopyButton value={exportCode} label={T.eventDetail.integration.copy} copiedLabel={T.common.copied} />
+          {exportFormat !== "links" && (
+            <CopyButton value={exportCode} label={T.eventDetail.integration.copy} copiedLabel={T.common.copied} />
+          )}
         </div>
 
         <div className="inline-flex items-center gap-0.5 rounded-lg border border-border/60 bg-muted/20 p-0.5">
-          {(["email", "web", "tailwind"] as const).map((id) => (
+          {(["email", "web", "tailwind", "links"] as const).map((id) => (
             <button
               key={id}
               type="button"
@@ -756,65 +744,100 @@ export function EventDetail({ event, appUrl, plan, emailVerified, calendars, sta
           ))}
         </div>
 
-        <div className="flex items-center justify-between gap-3 rounded-lg border border-border/60 bg-muted/10 px-3 py-2.5">
-          <div>
-            <p className="text-xs font-medium text-foreground">{T.eventDetail.integration.centered}</p>
-            <p className="mt-0.5 text-xs text-muted-foreground">{T.eventDetail.integration.centeredHint}</p>
+        {exportFormat === "links" ? (
+          <div className="space-y-2">
+            {CALENDAR_SERVICES.map((s) => {
+              const trackUrl = `${trackBase}?service=${s.key}`;
+              return (
+                <div
+                  key={s.key}
+                  className="flex flex-wrap items-center gap-3 rounded-lg border border-border/40 bg-muted/20 px-3 py-2.5 sm:px-4 sm:py-3"
+                >
+                  <img src={s.logo} alt={s.name} width={32} height={32} className="shrink-0 rounded" />
+                  <span className="flex-1 min-w-0">
+                    <p className="text-sm font-medium text-foreground">{s.name}</p>
+                    <p className="truncate text-xs text-muted-foreground">{trackUrl}</p>
+                  </span>
+                  <div className="flex items-center gap-1.5 shrink-0">
+                    <CopyButton value={trackUrl} label={T.common.copy} copiedLabel={T.common.copied} />
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="gap-1"
+                      nativeButton={false}
+                      render={<a href={trackUrl} target="_blank" rel="noopener noreferrer" />}
+                    >
+                      <ExternalLink className="h-3 w-3" />
+                      <span className="hidden sm:inline">{T.eventDetail.individualLinks.open}</span>
+                    </Button>
+                  </div>
+                </div>
+              );
+            })}
           </div>
-          <button
-            type="button"
-            role="switch"
-            aria-checked={exportCentered}
-            onClick={() => setExportCentered((c) => !c)}
-            className={cn(
-              "relative inline-flex h-5 w-9 shrink-0 cursor-pointer items-center rounded-full transition-colors",
-              "focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-ring/50",
-              exportCentered ? "bg-primary" : "bg-muted-foreground/30"
-            )}
-          >
-            <span
-              className={cn(
-                "inline-block h-3.5 w-3.5 rounded-full bg-background shadow transition-transform",
-                exportCentered ? "translate-x-4.5" : "translate-x-0.5"
-              )}
-            />
-          </button>
+        ) : (
+          <>
+            <div className="flex items-center justify-between gap-3 rounded-lg border border-border/60 bg-muted/10 px-3 py-2.5">
+              <div>
+                <p className="text-xs font-medium text-foreground">{T.eventDetail.integration.centered}</p>
+                <p className="mt-0.5 text-xs text-muted-foreground">{T.eventDetail.integration.centeredHint}</p>
+              </div>
+              <button
+                type="button"
+                role="switch"
+                aria-checked={exportCentered}
+                onClick={() => setExportCentered((c) => !c)}
+                className={cn(
+                  "relative inline-flex h-5 w-9 shrink-0 cursor-pointer items-center rounded-full transition-colors",
+                  "focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-ring/50",
+                  exportCentered ? "bg-primary" : "bg-muted-foreground/30"
+                )}
+              >
+                <span
+                  className={cn(
+                    "inline-block h-3.5 w-3.5 rounded-full bg-background shadow transition-transform",
+                    exportCentered ? "translate-x-4.5" : "translate-x-0.5"
+                  )}
+                />
+              </button>
+            </div>
+
+            <div className="overflow-auto rounded-lg border border-border/40 bg-white p-4 pointer-events-none">
+              <div dangerouslySetInnerHTML={{ __html: exportCode }} />
+            </div>
+
+            <div className="relative">
+              <pre className="max-h-72 overflow-auto rounded-lg border border-border/40 bg-muted/30 p-4 pr-24 text-xs leading-relaxed text-foreground/80">
+                <code>{exportCode}</code>
+              </pre>
+              <div className="absolute right-2 top-2">
+                <CopyButton value={exportCode} label={T.common.copy} copiedLabel={T.common.copied} />
+              </div>
+            </div>
+          </>
+        )}
+      </section>
+
+      {/* Embed */}
+      <section id="embed" className="scroll-mt-24 space-y-3 rounded-xl border border-border/60 p-4 sm:p-5">
+        <div>
+          <h2 className="text-sm font-semibold text-foreground">{T.eventDetail.integration.iframe.title}</h2>
+          <p className="text-xs text-muted-foreground mt-0.5">{T.eventDetail.integration.iframe.subtitle}</p>
         </div>
 
-        <div className="overflow-auto rounded-lg border border-border/40 bg-white p-4 pointer-events-none">
-          <div dangerouslySetInnerHTML={{ __html: exportCode }} />
+        <div className="flex flex-wrap items-center gap-2">
+          <code className="flex-1 min-w-0 truncate rounded-md border border-border/60 bg-muted/40 px-3 py-1.5 text-xs">
+            {embedUrl}
+          </code>
+          <CopyButton value={embedUrl} label={T.common.copy} copiedLabel={T.common.copied} />
         </div>
 
         <div className="relative">
           <pre className="max-h-72 overflow-auto rounded-lg border border-border/40 bg-muted/30 p-4 pr-24 text-xs leading-relaxed text-foreground/80">
-            <code>{exportCode}</code>
+            <code>{iframeCode}</code>
           </pre>
           <div className="absolute right-2 top-2">
-            <CopyButton value={exportCode} label={T.common.copy} copiedLabel={T.common.copied} />
-          </div>
-        </div>
-
-        {/* Iframe embed */}
-        <div className="space-y-3 border-t border-border/40 pt-4">
-          <div>
-            <h3 className="text-sm font-semibold text-foreground">{T.eventDetail.integration.iframe.title}</h3>
-            <p className="text-xs text-muted-foreground mt-0.5">{T.eventDetail.integration.iframe.subtitle}</p>
-          </div>
-
-          <div className="flex flex-wrap items-center gap-2">
-            <code className="flex-1 min-w-0 truncate rounded-md border border-border/60 bg-muted/40 px-3 py-1.5 text-xs">
-              {embedUrl}
-            </code>
-            <CopyButton value={embedUrl} label={T.common.copy} copiedLabel={T.common.copied} />
-          </div>
-
-          <div className="relative">
-            <pre className="max-h-72 overflow-auto rounded-lg border border-border/40 bg-muted/30 p-4 pr-24 text-xs leading-relaxed text-foreground/80">
-              <code>{iframeCode}</code>
-            </pre>
-            <div className="absolute right-2 top-2">
-              <CopyButton value={iframeCode} label={T.common.copy} copiedLabel={T.common.copied} />
-            </div>
+            <CopyButton value={iframeCode} label={T.common.copy} copiedLabel={T.common.copied} />
           </div>
         </div>
       </section>

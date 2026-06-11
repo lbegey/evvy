@@ -402,20 +402,7 @@ export const en = {
     },
   },
 
-  eventDetail: {
-    backToCalendar: "Back to calendar",
-    edit: "Edit",
-    delete: "Delete",
-    deleting: "Deleting...",
-    confirmDelete: "Delete this event? This action is irreversible.",
-    deleteForbidden: "Free plan events cannot be deleted. Upgrade to Premium to manage your events freely.",
-    published: {
-      online: "Online",
-      offline: "Offline",
-      onlineHint: "Visible on its public page",
-      offlineHint: "Hidden — its public page shows a \"coming soon\" message",
-      verifyEmailRequired: "Verify your email address to publish this event",
-    },
+  dashboardDetail: {
     sidebar: {
       info: "Overview",
       stats: "Statistics",
@@ -429,6 +416,23 @@ export const en = {
       qrCode: "QR code",
       links: "Individual links",
       integration: "Integration",
+      embed: "Embed",
+    },
+  },
+
+  eventDetail: {
+    backToCalendar: "Back to calendar",
+    edit: "Edit",
+    delete: "Delete",
+    deleting: "Deleting...",
+    confirmDelete: "Delete this event? This action is irreversible.",
+    deleteForbidden: "Free plan events cannot be deleted. Upgrade to Premium to manage your events freely.",
+    published: {
+      online: "Online",
+      offline: "Offline",
+      onlineHint: "Visible on its public page",
+      offlineHint: "Hidden — its public page shows a \"coming soon\" message",
+      verifyEmailRequired: "Verify your email address to publish this event",
     },
     stats: {
       title: "Statistics",
@@ -501,6 +505,7 @@ export const en = {
         email: "Email (HTML table)",
         web: "Web (HTML5)",
         tailwind: "Tailwind",
+        links: "Links",
       },
       copy: "Copy code",
       addToCalendar: "Add to calendar:",

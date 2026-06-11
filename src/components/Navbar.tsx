@@ -1,7 +1,5 @@
 import Link from "next/link";
-import { headers } from "next/headers";
-import { auth } from "@/lib/auth";
-import { db } from "@/lib/db";
+import { getCurrentUser } from "@/lib/session";
 import { Logo } from "@/components/Logo";
 import { NavbarAuth } from "@/components/NavbarAuth";
 import { LanguageSelector } from "@/components/LanguageSelector";
@@ -10,11 +8,10 @@ import { NavbarBrandingLink } from "@/components/NavbarBrandingLink";
 import { NavbarMarketingNav } from "@/components/NavbarMarketingNav";
 
 export async function Navbar() {
-  const session = await auth.api.getSession({ headers: await headers() });
+  const current = await getCurrentUser();
+  const session = current?.session ?? null;
   const logoHref = session ? "/dashboard" : "/";
-  const isSuperAdmin = session
-    ? (await db.user.findUnique({ where: { id: session.user.id }, select: { role: true } }))?.role === "super_admin"
-    : false;
+  const isSuperAdmin = current?.user?.role === "super_admin";
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border/60 bg-background/80 backdrop-blur-md">

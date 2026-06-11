@@ -1,11 +1,11 @@
 import { notFound } from "next/navigation";
-import { headers } from "next/headers";
-import { auth } from "@/lib/auth";
-
-export const dynamic = "force-dynamic";
 import { db } from "@/lib/db";
 import { getAppUrl } from "@/lib/url";
+import { getCurrentUser } from "@/lib/session";
+import { listBrandingPresets } from "@/app/actions/brandingPresets";
 import { EventDetail } from "@/components/EventDetail";
+
+const RSVP_QUERY_LIMIT = 500;
 
 export default async function EventPage({
   params,
@@ -14,10 +14,11 @@ export default async function EventPage({
 }) {
   const { id } = await params;
   const APP_URL = await getAppUrl();
-  const session = await auth.api.getSession({ headers: await headers() });
-  const [event, user, clickRows, rsvps, calendars, questions] = await Promise.all([
+  const current = await getCurrentUser();
+  const session = current!.session;
+  const user = current!.user;
+  const [event, clickRows, rsvps, calendars, questions, brandingPresets] = await Promise.all([
     db.event.findUnique({ where: { id } }),
-    db.user.findUnique({ where: { id: session!.user.id } }),
     db.eventClick.groupBy({
       by: ["service"],
       where: { eventId: id },
@@ -26,10 +27,11 @@ export default async function EventPage({
     db.rsvp.findMany({
       where: { eventId: id },
       orderBy: { createdAt: "desc" },
+      take: RSVP_QUERY_LIMIT,
       include: { answers: { select: { questionId: true, value: true } } },
     }),
     db.calendar.findMany({
-      where: { userId: session!.user.id },
+      where: { userId: session.user.id },
       select: { id: true, name: true, color: true },
       orderBy: { createdAt: "asc" },
     }),
@@ -37,9 +39,10 @@ export default async function EventPage({
       where: { eventId: id },
       orderBy: { order: "asc" },
     }),
+    listBrandingPresets(),
   ]);
 
-  if (!event || event.userId !== session!.user.id) notFound();
+  if (!event || event.userId !== session.user.id) notFound();
 
   const count = (service: string) =>
     clickRows.find((r) => r.service === service)?._count ?? 0;
@@ -94,6 +97,7 @@ export default async function EventPage({
       plan={user?.plan ?? "free"}
       emailVerified={user?.emailVerified ?? false}
       calendars={calendars}
+      brandingPresets={brandingPresets}
       stats={stats}
       questions={questions.map((q) => ({
         id: q.id,

@@ -1,8 +1,8 @@
 import { notFound } from "next/navigation";
-import { headers } from "next/headers";
-import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { getAppUrl } from "@/lib/url";
+import { getCurrentUser } from "@/lib/session";
+import { listBrandingPresets } from "@/app/actions/brandingPresets";
 import { CalendarDetail } from "@/components/CalendarDetail";
 
 export default async function CalendarPage({
@@ -12,8 +12,9 @@ export default async function CalendarPage({
 }) {
   const { id } = await params;
   const APP_URL = await getAppUrl();
-  const session = await auth.api.getSession({ headers: await headers() });
-  const [calendar, calendars] = await Promise.all([
+  const current = await getCurrentUser();
+  const session = current!.session;
+  const [calendar, calendars, brandingPresets] = await Promise.all([
     db.calendar.findUnique({
       where: { id },
       include: {
@@ -23,6 +24,7 @@ export default async function CalendarPage({
       },
     }),
     db.calendar.findMany({ where: { userId: session!.user.id }, select: { id: true, name: true }, orderBy: { createdAt: "asc" } }),
+    listBrandingPresets(),
   ]);
 
   if (!calendar || calendar.userId !== session!.user.id) notFound();
@@ -63,6 +65,7 @@ export default async function CalendarPage({
       appUrl={APP_URL}
       plan={calendar.user.plan}
       emailVerified={calendar.user.emailVerified}
+      brandingPresets={brandingPresets}
     />
   );
 }

@@ -25,6 +25,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { CalendarDialog, type CalendarDialogValues } from "@/components/CalendarDialog";
 import { CalendarBrandingSection } from "@/components/CalendarBrandingSection";
+import { type BrandingPreset } from "@/app/actions/brandingPresets";
 import { CalendarSlugSection } from "@/components/CalendarSlugSection";
 import { SocialShareLinks } from "@/components/SocialShareLinks";
 import { CreateEventDialog } from "@/components/CreateEventDialog";
@@ -73,6 +74,7 @@ interface CalendarDetailProps {
   appUrl: string;
   plan: string;
   emailVerified: boolean;
+  brandingPresets: BrandingPreset[];
 }
 
 const SIDEBAR_SECTIONS = [
@@ -105,7 +107,7 @@ function CopyButton({ value, label, copiedLabel }: { value: string; label: strin
   );
 }
 
-export function CalendarDetail({ calendar, events, calendars, appUrl, plan, emailVerified }: CalendarDetailProps) {
+export function CalendarDetail({ calendar, events, calendars, appUrl, plan, emailVerified, brandingPresets }: CalendarDetailProps) {
   const router = useRouter();
   const { T, lang } = useLanguage();
   const [editOpen, setEditOpen] = useState(false);
@@ -309,6 +311,25 @@ export function CalendarDetail({ calendar, events, calendars, appUrl, plan, emai
       </div>
 
     <div className="mx-auto max-w-6xl px-4 pt-4 pb-6 sm:px-6 sm:pt-6 sm:pb-8 lg:flex lg:items-start lg:gap-8">
+      {/* Mobile section navigation */}
+      <nav className="sticky top-28 z-30 -mx-4 mb-4 flex gap-1 overflow-x-auto border-b border-border/60 bg-background/95 px-4 pb-2 backdrop-blur-sm lg:hidden">
+        {SIDEBAR_SECTIONS.map(({ id, labelKey, icon: Icon }) => (
+          <a
+            key={id}
+            href={`#${id}`}
+            className={cn(
+              "flex shrink-0 items-center gap-1.5 whitespace-nowrap rounded-lg px-3 py-1.5 text-xs transition-colors",
+              activeSection === id
+                ? "bg-primary/10 text-primary font-medium"
+                : "text-muted-foreground hover:bg-muted hover:text-foreground"
+            )}
+          >
+            <Icon className="h-3.5 w-3.5 shrink-0" />
+            {T.dashboardDetail.sidebar[labelKey]}
+          </a>
+        ))}
+      </nav>
+
       {/* Sidebar navigation */}
       <aside className="hidden shrink-0 lg:sticky lg:top-28 lg:block lg:w-44">
         <nav className="space-y-0.5">
@@ -324,7 +345,7 @@ export function CalendarDetail({ calendar, events, calendars, appUrl, plan, emai
               )}
             >
               <Icon className="h-4 w-4 shrink-0" />
-              {T.eventDetail.sidebar[labelKey]}
+              {T.dashboardDetail.sidebar[labelKey]}
             </a>
           ))}
         </nav>
@@ -429,6 +450,7 @@ export function CalendarDetail({ calendar, events, calendars, appUrl, plan, emai
             brandIconBackgroundColor={calendar.brandIconBackgroundColor}
             brandBackgroundColor={calendar.brandBackgroundColor}
             brandBackgroundImageUrl={calendar.brandBackgroundImageUrl}
+            initialPresets={brandingPresets}
           />
         </section>
 
@@ -436,7 +458,7 @@ export function CalendarDetail({ calendar, events, calendars, appUrl, plan, emai
         <section id="events" className="scroll-mt-24 space-y-3 rounded-xl border border-border/60 p-4 sm:p-5">
           <div className="flex items-center gap-2">
             <CalendarRange className="h-4 w-4 text-muted-foreground" />
-            <h2 className="text-sm font-semibold text-foreground">{T.eventDetail.sidebar.events}</h2>
+            <h2 className="text-sm font-semibold text-foreground">{T.dashboardDetail.sidebar.events}</h2>
           </div>
           {deleteEventError && <p className="text-sm text-destructive">{deleteEventError}</p>}
           {events.length === 0 ? (

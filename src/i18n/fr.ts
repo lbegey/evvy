@@ -404,20 +404,7 @@ export const fr: Translations = {
     },
   },
 
-  eventDetail: {
-    backToCalendar: "Retour au calendrier",
-    edit: "Modifier",
-    delete: "Supprimer",
-    deleting: "Suppression…",
-    confirmDelete: "Supprimer cet événement ? Cette action est irréversible.",
-    deleteForbidden: "Les événements de l'offre gratuite ne peuvent pas être supprimés. Passez en Premium pour gérer vos événements librement.",
-    published: {
-      online: "En ligne",
-      offline: "Hors ligne",
-      onlineHint: "Visible sur sa page publique",
-      offlineHint: "Masqué — sa page publique affiche un message « bientôt disponible »",
-      verifyEmailRequired: "Vérifiez votre adresse email pour publier cet événement",
-    },
+  dashboardDetail: {
     sidebar: {
       info: "Aperçu",
       stats: "Statistiques",
@@ -431,6 +418,23 @@ export const fr: Translations = {
       qrCode: "QR code",
       links: "Liens individuels",
       integration: "Intégration",
+      embed: "Iframe",
+    },
+  },
+
+  eventDetail: {
+    backToCalendar: "Retour au calendrier",
+    edit: "Modifier",
+    delete: "Supprimer",
+    deleting: "Suppression…",
+    confirmDelete: "Supprimer cet événement ? Cette action est irréversible.",
+    deleteForbidden: "Les événements de l'offre gratuite ne peuvent pas être supprimés. Passez en Premium pour gérer vos événements librement.",
+    published: {
+      online: "En ligne",
+      offline: "Hors ligne",
+      onlineHint: "Visible sur sa page publique",
+      offlineHint: "Masqué — sa page publique affiche un message « bientôt disponible »",
+      verifyEmailRequired: "Vérifiez votre adresse email pour publier cet événement",
     },
     stats: {
       title: "Statistiques",
@@ -503,6 +507,7 @@ export const fr: Translations = {
         email: "E-mail (table HTML)",
         web: "Web (HTML5)",
         tailwind: "Tailwind",
+        links: "Liens",
       },
       copy: "Copier le code",
       addToCalendar: "Ajouter au calendrier :",
