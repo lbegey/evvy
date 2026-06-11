@@ -115,6 +115,7 @@ export function AdminUsersManager({ currentUserId, users }: AdminUsersManagerPro
 
   const handleTogglePlan = (user: AdminUserRecord) => {
     const nextPlan = user.plan === "premium" ? "free" : "premium";
+    if (nextPlan === "premium" && !user.emailVerified) return;
     if (!confirm(T.admin.confirmPlanChange(user.name, T.admin.plans[nextPlan]))) return;
     setPendingId(user.id);
     startTransition(async () => {
@@ -255,7 +256,7 @@ export function AdminUsersManager({ currentUserId, users }: AdminUsersManagerPro
                     </dl>
 
                     <div className="flex flex-wrap items-center gap-2">
-                      {!(isSuperAdmin && user.plan === "premium") && (
+                      {!(isSuperAdmin && user.plan === "premium") && (user.plan === "premium" || user.emailVerified) && (
                         <Button
                           variant="outline"
                           size="sm"
@@ -266,6 +267,9 @@ export function AdminUsersManager({ currentUserId, users }: AdminUsersManagerPro
                           <Users className="h-3.5 w-3.5" />
                           {user.plan === "premium" ? T.admin.downgradeToFree : T.admin.makePremium}
                         </Button>
+                      )}
+                      {user.plan === "free" && !user.emailVerified && (
+                        <p className="text-xs text-muted-foreground">{T.admin.emailNotVerifiedHint}</p>
                       )}
                       {isSuperAdmin && !isSelf && (
                         <Button

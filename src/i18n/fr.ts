@@ -117,6 +117,7 @@ export const fr: Translations = {
         bullets: [
           "Une URL publique personnalisée par événement",
           "Un extrait HTML à intégrer en une ligne",
+          "Une iframe à intégrer directement sur votre site",
           "Compatible Google, Apple, Outlook, Office 365 et Yahoo",
         ],
         cta: "Voir les intégrations →",
@@ -131,6 +132,7 @@ export const fr: Translations = {
       bullets: [
         "Import de logo en quelques secondes",
         "Couleurs principale et secondaire personnalisées",
+        "Gérez votre branding une fois et copiez/collez-le sur tous vos événements",
         "Suppression de la mention « Powered by »",
       ],
       cta: "Personnaliser mon événement →",
@@ -881,6 +883,7 @@ export const fr: Translations = {
     cannotChangeOwnRole: "Vous ne pouvez pas modifier votre propre rôle.",
     makePremium: "Passer en premium",
     downgradeToFree: "Repasser en gratuit",
+    emailNotVerifiedHint: "Impossible de passer en premium tant que l'email n'est pas vérifié.",
     confirmPlanChange: (name: string, plan: string) => `Changer le plan de ${name} en « ${plan} » ?`,
     sendResetEmail: "Envoyer un email de réinitialisation",
     confirmSendReset: (email: string) => `Envoyer un email de réinitialisation du mot de passe à ${email} ?`,

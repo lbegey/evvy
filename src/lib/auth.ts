@@ -16,12 +16,13 @@ export const auth = betterAuth({
   emailAndPassword: {
     enabled: true,
     sendResetPassword: async ({ user, url }) => {
-      await resend.emails.send({
+      const { error } = await resend.emails.send({
         from: "Evvy <noreply@evvycal.app>",
         to: user.email,
         subject: "Reset your Evvy password",
         html: buildPasswordResetEmail(url),
       });
+      if (error) console.error("[auth] Failed to send password reset email:", error);
     },
   },
   emailVerification: {
@@ -31,12 +32,13 @@ export const auth = betterAuth({
       const dbUser = await db.user.findUnique({ where: { id: user.id }, select: { language: true } });
       const lang = dbUser?.language === "fr" ? "fr" : "en";
       const isFr = lang === "fr";
-      await resend.emails.send({
+      const { error } = await resend.emails.send({
         from: "Evvy <noreply@evvycal.app>",
         to: user.email,
         subject: isFr ? "Vérifiez votre adresse email – Evvy" : "Verify your email address – Evvy",
         html: buildVerificationEmail(url, user.name, lang),
       });
+      if (error) console.error("[auth] Failed to send verification email:", error);
     },
   },
   socialProviders: {

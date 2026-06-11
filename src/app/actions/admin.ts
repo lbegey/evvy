@@ -23,12 +23,15 @@ export async function removeSuperAdmin(userId: string): Promise<{ error: "self" 
   return { ok: true };
 }
 
-export async function setUserPlan(userId: string, plan: "free" | "premium"): Promise<{ error: "superAdmin" } | { ok: true }> {
+export async function setUserPlan(userId: string, plan: "free" | "premium"): Promise<{ error: "superAdmin" | "emailNotVerified" } | { ok: true }> {
   await requireSuperAdmin();
 
   if (plan === "free") {
     const target = await db.user.findUnique({ where: { id: userId }, select: { role: true } });
     if (target?.role === "super_admin") return { error: "superAdmin" };
+  } else {
+    const target = await db.user.findUnique({ where: { id: userId }, select: { emailVerified: true } });
+    if (!target?.emailVerified) return { error: "emailNotVerified" };
   }
 
   await db.user.update({ where: { id: userId }, data: { plan } });

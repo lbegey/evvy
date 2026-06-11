@@ -115,6 +115,7 @@ export const en = {
         bullets: [
           "A custom public URL for every event",
           "A one-line HTML snippet to embed anywhere",
+          "An embeddable iframe for your own website",
           "Compatible with Google, Apple, Outlook, Office 365 and Yahoo",
         ],
         cta: "See the integrations →",
@@ -129,6 +130,7 @@ export const en = {
       bullets: [
         "Upload your logo in seconds",
         "Custom primary and secondary colors",
+        "Manage branding once and copy/paste it across events",
         "Remove the \"Powered by\" footer",
       ],
       cta: "Customize my event →",
@@ -879,6 +881,7 @@ export const en = {
     cannotChangeOwnRole: "You cannot change your own role.",
     makePremium: "Make premium",
     downgradeToFree: "Downgrade to free",
+    emailNotVerifiedHint: "Cannot upgrade to Premium until the email is verified.",
     confirmPlanChange: (name: string, plan: string) => `Change ${name}'s plan to "${plan}"?`,
     sendResetEmail: "Send password reset email",
     confirmSendReset: (email: string) => `Send a password reset email to ${email}?`,

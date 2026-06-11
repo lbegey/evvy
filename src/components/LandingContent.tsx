@@ -25,6 +25,8 @@ import {
   Code2,
   ImageUp,
   EyeOff,
+  PanelTop,
+  Copy,
   type LucideIcon,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -350,21 +352,31 @@ function HeroCalendarBackdrop() {
 
 const RSVP_BULLET_ICONS: LucideIcon[] = [ListChecks, Download, BellRing, HelpCircle, Webhook];
 const CALENDARS_BULLET_ICONS: LucideIcon[] = [Palette, Link2, CalendarPlus];
-const SHARING_BULLET_ICONS: LucideIcon[] = [Link2, Code2, CalendarRange];
-const BRANDING_BULLET_ICONS: LucideIcon[] = [ImageUp, Palette, EyeOff];
+const SHARING_BULLET_ICONS: LucideIcon[] = [Link2, Code2, PanelTop, CalendarRange];
+const BRANDING_BULLET_ICONS: LucideIcon[] = [ImageUp, Palette, Copy, EyeOff];
+
+function FeatureBadge({ children }: { children: string }) {
+  return (
+    <span className="inline-flex items-center rounded-full border border-primary/20 bg-primary/5 px-3 py-1 text-xs font-medium text-primary">
+      {children}
+    </span>
+  );
+}
 
 function FeatureBullets({ bullets, icons }: { bullets: readonly string[]; icons: LucideIcon[] }) {
   return (
-    <div className="mt-6 grid gap-2.5 sm:grid-cols-2">
+    <div className="mt-6 grid gap-3 sm:grid-cols-2">
       {bullets.map((b, i) => {
         const Icon = icons[i] ?? CheckCircle2;
         return (
           <div
             key={b}
-            className="flex items-start gap-2.5 rounded-lg border border-border/60 px-3 py-2.5 text-sm text-foreground"
+            className="group flex items-start gap-3 rounded-xl border border-border/60 bg-background/60 p-3.5 text-sm text-foreground transition-all duration-200 hover:-translate-y-0.5 hover:border-primary/30 hover:shadow-md hover:shadow-primary/5"
           >
-            <Icon className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
-            {b}
+            <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary transition-colors duration-200 group-hover:bg-primary group-hover:text-primary-foreground">
+              <Icon className="h-4 w-4" />
+            </span>
+            <span className="pt-1.5 leading-snug">{b}</span>
           </div>
         );
       })}
@@ -528,7 +540,8 @@ export function LandingContent({ demoCalendar }: LandingContentProps) {
           {featureSections.map((f, i) => (
             <div key={f.title} className="grid items-center gap-10 lg:grid-cols-2 lg:gap-16">
               <div className={cn("animate-fade-in-up", f.reverse && "lg:order-2")} style={{ animationDelay: `${0.05 * i}s` }}>
-                <h3 className="text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
+                <FeatureBadge>{f.badge}</FeatureBadge>
+                <h3 className="mt-3 text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
                   <HighlightedTitle title={f.title} highlight={f.titleHighlight} />
                 </h3>
                 <p className="mt-3 leading-relaxed text-muted-foreground">{f.description}</p>
@@ -553,7 +566,8 @@ export function LandingContent({ demoCalendar }: LandingContentProps) {
             </div>
           </div>
           <div className="lg:order-2">
-            <h3 className="text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
+            <FeatureBadge>{T.landing.branding.badge}</FeatureBadge>
+            <h3 className="mt-3 text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
               <HighlightedTitle title={T.landing.branding.title} highlight={T.landing.branding.titleHighlight} />
             </h3>
             <p className="mt-3 leading-relaxed text-muted-foreground">{T.landing.branding.description}</p>
