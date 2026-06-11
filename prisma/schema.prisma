@@ -40,6 +40,28 @@ model User {
   calendars              Calendar[]
   webhook                Webhook?
   emailChangeRequests    EmailChangeRequest[]
+  brandingPresets        BrandingPreset[]
+}
+
+model BrandingPreset {
+  id                       String   @id @default(cuid())
+  name                     String
+  brandLogoUrl             String?
+  brandLogoSize            Int?
+  brandLogoTransparentBg   Boolean  @default(true)
+  brandLogoRounded         Boolean  @default(false)
+  brandColor               String?
+  brandTextColor           String?
+  brandCardColor           String?
+  brandIconBackgroundColor String?
+  brandBackgroundColor     String?
+  brandBackgroundImageUrl  String?
+  userId                   String
+  user                     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt                DateTime @default(now())
+  updatedAt                DateTime @updatedAt
+
+  @@index([userId])
 }
 
 model Event {

@@ -8,7 +8,9 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { ImageDropzone } from "@/components/ImageDropzone";
 import { BrandingColorField } from "@/components/BrandingColorField";
+import { BrandingPresetBar } from "@/components/BrandingPresetBar";
 import { updateEventBranding } from "@/app/actions/events";
+import { applyBrandingPresetToEvent, type BrandingPreset } from "@/app/actions/brandingPresets";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { cn } from "@/lib/utils";
 
@@ -112,6 +114,22 @@ export function EventBrandingSection({
     });
   };
 
+  const onApplyPreset = async (preset: BrandingPreset) => {
+    setEnabled(true);
+    setLogoUrl(preset.brandLogoUrl ?? "");
+    setLogoSize(preset.brandLogoSize ?? DEFAULT_LOGO_SIZE);
+    setLogoTransparentBg(preset.brandLogoTransparentBg);
+    setLogoRounded(preset.brandLogoRounded);
+    setColor(preset.brandColor ?? "");
+    setTextColor(preset.brandTextColor ?? "");
+    setCardColor(preset.brandCardColor ?? "");
+    setIconBackgroundColor(preset.brandIconBackgroundColor ?? "");
+    setBackgroundColor(preset.brandBackgroundColor ?? "");
+    setBackgroundImageUrl(preset.brandBackgroundImageUrl ?? "");
+    await applyBrandingPresetToEvent(eventId, preset.id);
+    router.refresh();
+  };
+
   const onReset = () => {
     if (!confirm(T.branding.resetConfirm)) return;
     setLogoUrl(""); setLogoSize(DEFAULT_LOGO_SIZE); setLogoTransparentBg(true); setLogoRounded(false);
@@ -174,6 +192,22 @@ export function EventBrandingSection({
         <Settings2 className="h-3.5 w-3.5" />
         {T.eventDetail.branding.accountBranding}
       </Button>
+
+      <BrandingPresetBar
+        currentData={{
+          brandLogoUrl: logoUrl || null,
+          brandLogoSize: logoSize,
+          brandLogoTransparentBg: logoTransparentBg,
+          brandLogoRounded: logoRounded,
+          brandColor: color || null,
+          brandTextColor: textColor || null,
+          brandCardColor: cardColor || null,
+          brandIconBackgroundColor: iconBackgroundColor || null,
+          brandBackgroundColor: backgroundColor || null,
+          brandBackgroundImageUrl: backgroundImageUrl || null,
+        }}
+        onApply={onApplyPreset}
+      />
 
       {enabled && (
         <div className="space-y-4 border-t border-border/60 pt-4">

@@ -725,6 +725,20 @@ export const en = {
     reset: "Reset to default",
     resetConfirm: "Remove your logo and brand color and go back to the default look?",
     resetDone: "Branding reset",
+    presets: {
+      title: "Branding presets",
+      subtitle: "Save a branding configuration and reapply it to any event or calendar in one click.",
+      save: "Save as preset",
+      saveDialogTitle: "Save branding preset",
+      name: "Name",
+      namePlaceholder: "e.g. Summer campaign",
+      nameRequired: "Please enter a name",
+      empty: "No presets yet. Configure your branding above and save it as a preset.",
+      apply: "Apply",
+      applyPlaceholder: "Apply a saved preset…",
+      delete: "Delete",
+      deleteConfirm: "Delete this branding preset? This cannot be undone.",
+    },
   },
 
   calendars: {

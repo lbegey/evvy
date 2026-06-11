@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { BrandingSettings } from "@/components/BrandingSettings";
+import { BrandingPresetsManager } from "@/components/BrandingPresetsManager";
 import { useLanguage } from "@/contexts/LanguageContext";
 
 interface BrandingPageContentProps {
@@ -34,18 +35,34 @@ export function BrandingPageContent({
       </div>
 
       {unlocked ? (
-        <BrandingSettings
-          brandLogoUrl={brandLogoUrl}
-          brandLogoSize={brandLogoSize}
-          brandLogoTransparentBg={brandLogoTransparentBg}
-          brandLogoRounded={brandLogoRounded}
-          brandColor={brandColor}
-          brandTextColor={brandTextColor}
-          brandCardColor={brandCardColor}
-          brandIconBackgroundColor={brandIconBackgroundColor}
-          brandBackgroundColor={brandBackgroundColor}
-          brandBackgroundImageUrl={brandBackgroundImageUrl}
-        />
+        <>
+          <BrandingSettings
+            brandLogoUrl={brandLogoUrl}
+            brandLogoSize={brandLogoSize}
+            brandLogoTransparentBg={brandLogoTransparentBg}
+            brandLogoRounded={brandLogoRounded}
+            brandColor={brandColor}
+            brandTextColor={brandTextColor}
+            brandCardColor={brandCardColor}
+            brandIconBackgroundColor={brandIconBackgroundColor}
+            brandBackgroundColor={brandBackgroundColor}
+            brandBackgroundImageUrl={brandBackgroundImageUrl}
+          />
+          <BrandingPresetsManager
+            currentData={{
+              brandLogoUrl,
+              brandLogoSize,
+              brandLogoTransparentBg,
+              brandLogoRounded,
+              brandColor,
+              brandTextColor,
+              brandCardColor,
+              brandIconBackgroundColor,
+              brandBackgroundColor,
+              brandBackgroundImageUrl,
+            }}
+          />
+        </>
       ) : (
         <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-border/60 bg-card p-5">
           <p className="text-sm text-muted-foreground">{T.branding.locked}</p>

@@ -727,6 +727,20 @@ export const fr: Translations = {
     reset: "Réinitialiser",
     resetConfirm: "Supprimer votre logo et votre couleur de marque et revenir à l'apparence par défaut ?",
     resetDone: "Personnalisation réinitialisée",
+    presets: {
+      title: "Préréglages de personnalisation",
+      subtitle: "Enregistrez une configuration de personnalisation et réappliquez-la à n'importe quel événement ou calendrier en un clic.",
+      save: "Enregistrer comme préréglage",
+      saveDialogTitle: "Enregistrer le préréglage",
+      name: "Nom",
+      namePlaceholder: "ex. Campagne d'été",
+      nameRequired: "Veuillez saisir un nom",
+      empty: "Aucun préréglage pour le moment. Configurez votre personnalisation ci-dessus et enregistrez-la.",
+      apply: "Appliquer",
+      applyPlaceholder: "Appliquer un préréglage…",
+      delete: "Supprimer",
+      deleteConfirm: "Supprimer ce préréglage de personnalisation ? Cette action est irréversible.",
+    },
   },
 
   calendars: {
