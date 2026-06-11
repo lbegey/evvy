@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useTransition } from "react";
+import { useEffect, useRef, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import {
@@ -116,6 +116,7 @@ export function CalendarDetail({ calendar, events, calendars, appUrl, plan, emai
   const [isDeleting, startDelete] = useTransition();
   const [deleteError, setDeleteError] = useState<string | null>(null);
   const [activeSection, setActiveSection] = useState<string>(SIDEBAR_SECTIONS[0].id);
+  const mobileNavRef = useRef<HTMLElement>(null);
   const [createEventOpen, setCreateEventOpen] = useState(false);
   const [createEventError, setCreateEventError] = useState<string | null>(null);
   const [isCreatingEvent, startCreateEvent] = useTransition();
@@ -155,6 +156,12 @@ export function CalendarDetail({ calendar, events, calendars, appUrl, plan, emai
 
     return () => observer.disconnect();
   }, []);
+
+  useEffect(() => {
+    const nav = mobileNavRef.current;
+    const activeLink = nav?.querySelector<HTMLAnchorElement>(`a[href="#${activeSection}"]`);
+    activeLink?.scrollIntoView({ behavior: "smooth", inline: "center", block: "nearest" });
+  }, [activeSection]);
 
   const publicUrl = `${appUrl}/c/${calendar.slug || calendar.id}`;
 
@@ -308,28 +315,28 @@ export function CalendarDetail({ calendar, events, calendars, appUrl, plan, emai
             </Button>
           </div>
         </div>
+
+        {/* Mobile section navigation */}
+        <nav ref={mobileNavRef} className="flex gap-1 overflow-x-auto px-4 pb-2 sm:px-6 lg:hidden">
+          {SIDEBAR_SECTIONS.map(({ id, labelKey, icon: Icon }) => (
+            <a
+              key={id}
+              href={`#${id}`}
+              className={cn(
+                "flex shrink-0 items-center gap-1.5 whitespace-nowrap rounded-lg px-3 py-1.5 text-xs transition-colors",
+                activeSection === id
+                  ? "bg-primary/10 text-primary font-medium"
+                  : "text-muted-foreground hover:bg-muted hover:text-foreground"
+              )}
+            >
+              <Icon className="h-3.5 w-3.5 shrink-0" />
+              {T.dashboardDetail.sidebar[labelKey]}
+            </a>
+          ))}
+        </nav>
       </div>
 
     <div className="mx-auto max-w-6xl px-4 pt-4 pb-6 sm:px-6 sm:pt-6 sm:pb-8 lg:flex lg:items-start lg:gap-8">
-      {/* Mobile section navigation */}
-      <nav className="sticky top-28 z-30 -mx-4 mb-4 flex gap-1 overflow-x-auto border-b border-border/60 bg-background/95 px-4 pb-2 backdrop-blur-sm lg:hidden">
-        {SIDEBAR_SECTIONS.map(({ id, labelKey, icon: Icon }) => (
-          <a
-            key={id}
-            href={`#${id}`}
-            className={cn(
-              "flex shrink-0 items-center gap-1.5 whitespace-nowrap rounded-lg px-3 py-1.5 text-xs transition-colors",
-              activeSection === id
-                ? "bg-primary/10 text-primary font-medium"
-                : "text-muted-foreground hover:bg-muted hover:text-foreground"
-            )}
-          >
-            <Icon className="h-3.5 w-3.5 shrink-0" />
-            {T.dashboardDetail.sidebar[labelKey]}
-          </a>
-        ))}
-      </nav>
-
       {/* Sidebar navigation */}
       <aside className="hidden shrink-0 lg:sticky lg:top-28 lg:block lg:w-44">
         <nav className="space-y-0.5">
