@@ -22,6 +22,9 @@ type EventData = {
   language: string;
   imageUrl?: string;
   rsvpEnabled: boolean;
+  attachmentUrl?: string;
+  attachmentName?: string;
+  attachmentButtonLabel?: string;
 };
 
 function buildWebhookEventPayload(
@@ -136,6 +139,9 @@ export async function updateEvent(id: string, data: EventData) {
       timezone: data.timezone,
       language: data.language,
       rsvpEnabled: data.rsvpEnabled,
+      attachmentUrl: data.attachmentUrl !== undefined ? (data.attachmentUrl || null) : undefined,
+      attachmentName: data.attachmentUrl !== undefined ? (data.attachmentUrl ? (data.attachmentName || null) : null) : undefined,
+      attachmentButtonLabel: data.attachmentButtonLabel !== undefined ? (data.attachmentButtonLabel || null) : undefined,
     },
   });
 

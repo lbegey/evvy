@@ -30,6 +30,15 @@ export const fr: Translations = {
     fileTooLarge: "L'image est trop volumineuse (max 5 Mo)",
   },
 
+  fileDropzone: {
+    prompt: "Glisser un fichier ou",
+    browse: "parcourir",
+    hint: "Tous types de fichiers · max 8 Mo",
+    remove: "Supprimer le fichier",
+    uploadError: "Erreur d'upload",
+    fileTooLarge: "Le fichier est trop volumineux (max 8 Mo)",
+  },
+
   nav: {
     signIn: "Se connecter",
     getStarted: "Commencer gratuitement",
@@ -376,6 +385,10 @@ export const fr: Translations = {
     emailPlaceholder: "contact@exemple.com",
     description: "Description",
     descriptionPlaceholder: "Notes ou informations supplémentaires…",
+    attachment: "Fichier joint",
+    attachmentHint: "Ajoutez un fichier (PDF, image, document…) que les participants pourront télécharger depuis la page de l'événement.",
+    attachmentButtonLabel: "Texte du bouton",
+    attachmentButtonLabelPlaceholder: "Ex : Télécharger le programme",
     create: "Créer",
     save: "Enregistrer",
     cancel: "Annuler",
@@ -575,6 +588,7 @@ export const fr: Translations = {
     noSpotsLeft: "Complet",
     organizedWith: "Organisé avec",
     poweredBy: "Propulsé par",
+    attachmentDefaultLabel: "Télécharger le fichier joint",
     notFound: {
       title: "Événement introuvable",
       subtitle:

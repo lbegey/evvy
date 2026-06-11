@@ -62,6 +62,9 @@ interface Event {
   rsvpEnabled: boolean;
   rsvpLimit: number | null;
   rsvpDeadline: string | null;
+  attachmentUrl: string | null;
+  attachmentName: string | null;
+  attachmentButtonLabel: string | null;
   slug: string | null;
   brandingEnabled: boolean;
   brandLogoUrl: string | null;
@@ -876,6 +879,9 @@ export function EventDetail({ event, appUrl, plan, emailVerified, calendars, sta
           rsvpEnabled: event.rsvpEnabled,
           timezone: event.timezone,
           language: event.language,
+          attachmentUrl: event.attachmentUrl,
+          attachmentName: event.attachmentName,
+          attachmentButtonLabel: event.attachmentButtonLabel,
         }}
       />
 

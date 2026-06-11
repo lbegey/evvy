@@ -81,6 +81,9 @@ model Event {
   rsvpEnabled    Boolean      @default(false)
   rsvpLimit      Int?
   rsvpDeadline   DateTime?
+  attachmentUrl        String?
+  attachmentName       String?
+  attachmentButtonLabel String?
   slug           String?      @unique
   brandingEnabled      Boolean  @default(true)
   brandLogoUrl         String?

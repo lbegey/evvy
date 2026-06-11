@@ -28,6 +28,15 @@ export const en = {
     fileTooLarge: "Image is too large (max 5 MB)",
   },
 
+  fileDropzone: {
+    prompt: "Drag a file or",
+    browse: "browse",
+    hint: "Any file type · max 8 MB",
+    remove: "Remove file",
+    uploadError: "Upload failed",
+    fileTooLarge: "File is too large (max 8 MB)",
+  },
+
   nav: {
     signIn: "Sign in",
     getStarted: "Get started free",
@@ -374,6 +383,10 @@ export const en = {
     emailPlaceholder: "contact@example.com",
     description: "Description",
     descriptionPlaceholder: "Notes or additional information...",
+    attachment: "File attachment",
+    attachmentHint: "Add a file (PDF, image, document...) attendees can download from the event page.",
+    attachmentButtonLabel: "Button label",
+    attachmentButtonLabelPlaceholder: "e.g. Download the program",
     create: "Create",
     save: "Save",
     cancel: "Cancel",
@@ -573,6 +586,7 @@ export const en = {
     noSpotsLeft: "Full",
     organizedWith: "Organized with",
     poweredBy: "Powered by",
+    attachmentDefaultLabel: "Download attachment",
     notFound: {
       title: "Event not found",
       subtitle:

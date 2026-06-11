@@ -425,6 +425,19 @@ export default async function PublicEventPage({
                 dangerouslySetInnerHTML={{ __html: markdownToHtml(event.description) }}
               />
             )}
+
+            {event.attachmentUrl && (
+              <a
+                href={event.attachmentUrl}
+                download={event.attachmentName ?? undefined}
+                target="_blank"
+                rel="noopener noreferrer"
+                className={cn(buttonVariants(), "mt-3 w-full", !!brandStyle && "hover:opacity-90")}
+                style={brandStyle ? { backgroundColor: "var(--foreground)", color: "var(--background)" } : undefined}
+              >
+                {event.attachmentButtonLabel || T.publicEvent.attachmentDefaultLabel}
+              </a>
+            )}
           </div>
         </div>
 
