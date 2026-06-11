@@ -476,8 +476,7 @@ export const fr: Translations = {
       centeredHint: "Affiche le bloc centré au lieu d'aligné à gauche — le code généré se met à jour instantanément.",
       iframe: {
         title: "Intégration via iframe",
-        subtitle: "Intégrez la page de l'événement sur n'importe quel site (WordPress, Notion, etc.) via une iframe.",
-        height: "Hauteur (px)",
+        subtitle: "Intégrez un widget « Ajouter au calendrier » (avec les icônes des fournisseurs) sur n'importe quel site — WordPress, Notion, etc.",
       },
     },
   },

@@ -474,8 +474,7 @@ export const en = {
       centeredHint: "Lay the block out centered instead of left-aligned — the generated code updates instantly.",
       iframe: {
         title: "Embed via iframe",
-        subtitle: "Embed this event page on any site (WordPress, Notion, etc.) using an iframe.",
-        height: "Height (px)",
+        subtitle: "Embed an \"Add to calendar\" widget (with provider icons) on any site — WordPress, Notion, etc.",
       },
     },
   },

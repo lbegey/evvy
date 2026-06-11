@@ -41,8 +41,6 @@ import { SocialShareLinks } from "@/components/SocialShareLinks";
 import { assignEventToCalendar } from "@/app/actions/calendars";
 import { createEvent, deleteEvent, toggleEventPublished } from "@/app/actions/events";
 import { Switch } from "@/components/ui/switch";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { markdownToHtml } from "@/lib/markdown";
 import { cn } from "@/lib/utils";
@@ -215,7 +213,6 @@ export function EventDetail({ event, appUrl, plan, emailVerified, calendars, sta
   const [deleteError, setDeleteError] = useState<string | null>(null);
   const [exportFormat, setExportFormat] = useState<"email" | "web" | "tailwind">("email");
   const [exportCentered, setExportCentered] = useState(false);
-  const [iframeHeight, setIframeHeight] = useState(700);
   const [activeSection, setActiveSection] = useState<string>(SIDEBAR_SECTIONS[0].id);
   const [createEventOpen, setCreateEventOpen] = useState(false);
   const [createEventError, setCreateEventError] = useState<string | null>(null);
@@ -303,7 +300,8 @@ export function EventDetail({ event, appUrl, plan, emailVerified, calendars, sta
     tailwind: buildTailwindHTML(event, appUrl, addToCalendarText, exportCentered),
   } as const;
   const exportCode = exportSources[exportFormat];
-  const iframeCode = `<iframe src="${publicUrl}" width="100%" height="${iframeHeight}" style="border:0;" loading="lazy"></iframe>`;
+  const embedUrl = `${appUrl}/e/${event.slug || event.id}/embed`;
+  const iframeCode = `<iframe src="${embedUrl}" width="100%" height="80" style="border:0;" loading="lazy"></iframe>`;
   const totalCalendarClicks = stats.google + stats.apple + stats.outlook + stats.office365 + stats.yahoo;
 
   const handleDelete = () => {
@@ -783,19 +781,11 @@ export function EventDetail({ event, appUrl, plan, emailVerified, calendars, sta
             <p className="text-xs text-muted-foreground mt-0.5">{T.eventDetail.integration.iframe.subtitle}</p>
           </div>
 
-          <div className="flex items-center gap-2">
-            <Label htmlFor={`iframe-height-${event.id}`} className="text-xs text-muted-foreground">
-              {T.eventDetail.integration.iframe.height}
-            </Label>
-            <Input
-              id={`iframe-height-${event.id}`}
-              type="number"
-              min={300}
-              step={50}
-              value={iframeHeight}
-              onChange={(e) => setIframeHeight(Math.max(0, parseInt(e.target.value, 10) || 0))}
-              className="h-7 w-24 text-xs"
-            />
+          <div className="flex flex-wrap items-center gap-2">
+            <code className="flex-1 min-w-0 truncate rounded-md border border-border/60 bg-muted/40 px-3 py-1.5 text-xs">
+              {embedUrl}
+            </code>
+            <CopyButton value={embedUrl} label={T.common.copy} copiedLabel={T.common.copied} />
           </div>
 
           <div className="relative">
