@@ -26,6 +26,8 @@ const schema = z
     allDay: z.boolean(),
     isOnline: z.boolean(),
     rsvpEnabled: z.boolean(),
+    rsvpLimit: z.string().optional(),
+    rsvpDeadlineDate: z.string().optional(),
     timezone: z.string().min(1),
     language: z.enum(["fr", "en"]),
     organizerEmail: z.string().email().or(z.literal("")).optional(),
@@ -61,6 +63,8 @@ interface CreateEventDialogProps {
     allDay: boolean;
     isOnline: boolean;
     rsvpEnabled: boolean;
+    rsvpLimit: number | null;
+    rsvpDeadline: string | null;
     timezone: string;
     language: string;
     imageUrl: string;
@@ -117,13 +121,15 @@ export function CreateEventDialog({
     defaultValues: {
       title: "", startDate: toDateInput(defaultDate), endDate: toDateInput(defaultDate),
       startTime: defaultStart, endTime: addHour(defaultStart), allDay: false, isOnline: false,
-      rsvpEnabled: false, timezone: defaultTimezone, language: lang, organizerEmail: "", location: "", description: "",
+      rsvpEnabled: false, rsvpLimit: "", rsvpDeadlineDate: "",
+      timezone: defaultTimezone, language: lang, organizerEmail: "", location: "", description: "",
       calendarId: defaultCalendarId ?? "",
     },
   });
 
   const allDay = form.watch("allDay");
   const isOnline = form.watch("isOnline");
+  const rsvpEnabled = form.watch("rsvpEnabled");
   const startDate = form.watch("startDate");
   const startTime = form.watch("startTime");
 
@@ -147,7 +153,8 @@ export function CreateEventDialog({
       form.reset({
         title: "", startDate: toDateInput(defaultDate), endDate: toDateInput(defaultDate),
         startTime: defaultStart, endTime: addHour(defaultStart), allDay: false, isOnline: false,
-        rsvpEnabled: false, timezone: defaultTimezone, language: lang, organizerEmail: "", location: "", description: "",
+        rsvpEnabled: false, rsvpLimit: "", rsvpDeadlineDate: "",
+        timezone: defaultTimezone, language: lang, organizerEmail: "", location: "", description: "",
         calendarId: defaultCalendarId ?? "",
       });
       setImageUrl("");
@@ -172,6 +179,8 @@ export function CreateEventDialog({
       allDay: values.allDay,
       isOnline: values.isOnline,
       rsvpEnabled: values.rsvpEnabled,
+      rsvpLimit: values.rsvpLimit && values.rsvpLimit.trim() !== "" ? parseInt(values.rsvpLimit, 10) : null,
+      rsvpDeadline: values.rsvpDeadlineDate ? naiveToUTC(values.rsvpDeadlineDate, "23:59", values.timezone) : null,
       timezone: values.timezone,
       language: values.language,
       imageUrl,
@@ -241,6 +250,26 @@ export function CreateEventDialog({
                   <Label htmlFor="ev-rsvp" className="cursor-pointer font-normal">{T.eventForm.enableRsvp}</Label>
                 </div>
               </div>
+
+              {rsvpEnabled && (
+                <div className="grid gap-4 sm:grid-cols-2">
+                  <div className="space-y-1.5">
+                    <Label htmlFor="ev-rsvp-limit">{T.eventForm.rsvpLimit}</Label>
+                    <Input
+                      id="ev-rsvp-limit"
+                      type="number"
+                      min={0}
+                      placeholder={T.eventForm.rsvpLimitPlaceholder}
+                      {...form.register("rsvpLimit")}
+                    />
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label htmlFor="ev-rsvp-deadline">{T.eventForm.rsvpDeadline}</Label>
+                    <Input id="ev-rsvp-deadline" type="date" {...form.register("rsvpDeadlineDate")} />
+                    <p className="text-xs text-muted-foreground">{T.eventForm.rsvpDeadlineHint}</p>
+                  </div>
+                </div>
+              )}
 
               <div className="space-y-2.5 rounded-xl border border-border/60 bg-muted/10 p-3">
                 <div className="space-y-1.5">

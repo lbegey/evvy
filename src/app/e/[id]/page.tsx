@@ -225,6 +225,10 @@ export default async function PublicEventPage({
     ? await db.rsvp.count({ where: { eventId: id, status: "yes" } })
     : 0;
 
+  const spotsRemaining = event.rsvpLimit != null ? Math.max(0, event.rsvpLimit - yesCount) : null;
+  const rsvpFull = spotsRemaining !== null && spotsRemaining <= 0;
+  const rsvpDeadlinePassed = !!event.rsvpDeadline && event.rsvpDeadline < now;
+
   const mapsUrl = event.location
     ? `https://maps.google.com/?q=${encodeURIComponent(event.location)}`
     : null;
@@ -454,15 +458,25 @@ export default async function PublicEventPage({
           <div className="rounded-xl border border-border/60 bg-background px-5 py-4 shadow-sm">
             <div className="flex items-center justify-between mb-3">
               <h2 className="text-sm font-semibold text-foreground">RSVP</h2>
-              {yesCount > 0 && (
-                <span className="text-xs text-green-600 font-medium">
-                  {yesCount}{" "}
-                  {yesCount > 1 ? T.publicEvent.participantsPlural : T.publicEvent.participants}
+              {spotsRemaining !== null ? (
+                <span className={cn("text-xs font-medium", rsvpFull ? "text-destructive" : "text-green-600")}>
+                  {rsvpFull ? T.publicEvent.noSpotsLeft : T.publicEvent.spotsLeft(spotsRemaining)}
                 </span>
+              ) : (
+                yesCount > 0 && (
+                  <span className="text-xs text-green-600 font-medium">
+                    {yesCount}{" "}
+                    {yesCount > 1 ? T.publicEvent.participantsPlural : T.publicEvent.participants}
+                  </span>
+                )
               )}
             </div>
             {isPast ? (
               <p className="py-2 text-center text-sm text-muted-foreground">{T.publicEvent.rsvpClosed}</p>
+            ) : rsvpDeadlinePassed ? (
+              <p className="py-2 text-center text-sm text-muted-foreground">{T.publicEvent.rsvpDeadlinePassed}</p>
+            ) : rsvpFull ? (
+              <p className="py-2 text-center text-sm text-muted-foreground">{T.rsvpForm.full}</p>
             ) : (
               <RsvpForm eventId={event.id} lang={lang} questions={event.questions} branded={!!brandStyle} />
             )}

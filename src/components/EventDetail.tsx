@@ -59,6 +59,8 @@ interface Event {
   timezone: string;
   language: string | null;
   rsvpEnabled: boolean;
+  rsvpLimit: number | null;
+  rsvpDeadline: string | null;
   slug: string | null;
   brandingEnabled: boolean;
   brandLogoUrl: string | null;
@@ -328,6 +330,8 @@ export function EventDetail({ event, appUrl, plan, emailVerified, calendars, sta
     allDay: boolean;
     isOnline: boolean;
     rsvpEnabled: boolean;
+    rsvpLimit: number | null;
+    rsvpDeadline: string | null;
     timezone: string;
     language: string;
     imageUrl: string;
@@ -828,6 +832,8 @@ export function EventDetail({ event, appUrl, plan, emailVerified, calendars, sta
           allDay: event.allDay,
           isOnline: event.isOnline,
           rsvpEnabled: event.rsvpEnabled,
+          rsvpLimit: event.rsvpLimit,
+          rsvpDeadline: event.rsvpDeadline,
           timezone: event.timezone,
           language: event.language,
         }}

@@ -218,6 +218,8 @@ export function CalendarDetail({ calendar, events, calendars, appUrl, plan, emai
     allDay: boolean;
     isOnline: boolean;
     rsvpEnabled: boolean;
+    rsvpLimit: number | null;
+    rsvpDeadline: string | null;
     timezone: string;
     language: string;
     imageUrl: string;

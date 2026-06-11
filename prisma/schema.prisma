@@ -57,6 +57,8 @@ model Event {
   timezone       String       @default("UTC")
   language       String?
   rsvpEnabled    Boolean      @default(false)
+  rsvpLimit      Int?
+  rsvpDeadline   DateTime?
   slug           String?      @unique
   brandingEnabled      Boolean  @default(true)
   brandLogoUrl         String?

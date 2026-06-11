@@ -22,6 +22,8 @@ type EventData = {
   language: string;
   imageUrl?: string;
   rsvpEnabled: boolean;
+  rsvpLimit?: number | null;
+  rsvpDeadline?: string | null;
 };
 
 function buildWebhookEventPayload(
@@ -101,6 +103,8 @@ export async function createEvent(data: EventData): Promise<{ id: string } | { e
       timezone: data.timezone,
       language: data.language,
       rsvpEnabled: data.rsvpEnabled,
+      rsvpLimit: data.rsvpLimit ?? null,
+      rsvpDeadline: data.rsvpDeadline ? new Date(data.rsvpDeadline) : null,
       brandingEnabled: false,
       userId: session.user.id,
     },
@@ -136,6 +140,8 @@ export async function updateEvent(id: string, data: EventData) {
       timezone: data.timezone,
       language: data.language,
       rsvpEnabled: data.rsvpEnabled,
+      rsvpLimit: data.rsvpLimit ?? null,
+      rsvpDeadline: data.rsvpDeadline ? new Date(data.rsvpDeadline) : null,
     },
   });
 
@@ -323,6 +329,7 @@ export async function submitRsvp(data: {
     },
   });
   if (!event || !event.rsvpEnabled || event.endAt < new Date()) return { error: "closed" };
+  if (event.rsvpDeadline && event.rsvpDeadline < new Date()) return { error: "closed" };
 
   const email = data.email.trim().toLowerCase();
   if (!email) return { error: "closed" };
@@ -336,6 +343,11 @@ export async function submitRsvp(data: {
   if (!existing && event.user.plan !== "premium") {
     const count = await db.rsvp.count({ where: { eventId: event.id } });
     if (count >= FREE_RSVP_LIMIT) return { error: "full" };
+  }
+
+  if (event.rsvpLimit != null && data.status === "yes" && existing?.status !== "yes") {
+    const yesCount = await db.rsvp.count({ where: { eventId: event.id, status: "yes" } });
+    if (yesCount >= event.rsvpLimit) return { error: "full" };
   }
 
   const answers = data.answers ?? [];

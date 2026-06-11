@@ -71,6 +71,8 @@ export default async function EventPage({
         timezone: event.timezone,
         language: event.language,
         rsvpEnabled: event.rsvpEnabled,
+        rsvpLimit: event.rsvpLimit,
+        rsvpDeadline: event.rsvpDeadline ? event.rsvpDeadline.toISOString() : null,
         slug: event.slug,
         brandingEnabled: event.brandingEnabled,
         brandLogoUrl: event.brandLogoUrl,
