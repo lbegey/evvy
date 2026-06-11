@@ -228,6 +228,11 @@ export default async function PublicEventPage({
   const spotsRemaining = event.rsvpLimit != null ? Math.max(0, event.rsvpLimit - yesCount) : null;
   const rsvpFull = spotsRemaining !== null && spotsRemaining <= 0;
   const rsvpDeadlinePassed = !!event.rsvpDeadline && event.rsvpDeadline < now;
+  const rsvpDeadlineDate = event.rsvpDeadline
+    ? new Intl.DateTimeFormat(lang === "fr" ? "fr-FR" : "en-US", {
+        timeZone: tz, day: "numeric", month: "short", year: "numeric",
+      }).format(event.rsvpDeadline)
+    : null;
 
   const mapsUrl = event.location
     ? `https://maps.google.com/?q=${encodeURIComponent(event.location)}`
@@ -478,7 +483,14 @@ export default async function PublicEventPage({
             ) : rsvpFull ? (
               <p className="py-2 text-center text-sm text-muted-foreground">{T.rsvpForm.full}</p>
             ) : (
-              <RsvpForm eventId={event.id} lang={lang} questions={event.questions} branded={!!brandStyle} />
+              <>
+                <RsvpForm eventId={event.id} lang={lang} questions={event.questions} branded={!!brandStyle} />
+                {rsvpDeadlineDate && (
+                  <p className="mt-2 text-center text-xs text-muted-foreground">
+                    {T.publicEvent.rsvpDeadlineUntil(rsvpDeadlineDate)}
+                  </p>
+                )}
+              </>
             )}
           </div>
         )}

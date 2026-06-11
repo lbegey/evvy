@@ -546,6 +546,7 @@ export const fr: Translations = {
     eventEnded: "Cet événement est terminé.",
     rsvpClosed: "Le RSVP est fermé — cet événement a déjà eu lieu.",
     rsvpDeadlinePassed: "La date limite pour les RSVP est dépassée.",
+    rsvpDeadlineUntil: (date: string) => `RSVP avant le ${date}`,
     participants: "participant",
     participantsPlural: "participants",
     spotsLeft: (n: number) => `${n} place${n === 1 ? "" : "s"} restante${n === 1 ? "" : "s"}`,

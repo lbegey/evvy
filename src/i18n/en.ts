@@ -544,6 +544,7 @@ export const en = {
     eventEnded: "This event has ended.",
     rsvpClosed: "RSVP is closed — this event has already taken place.",
     rsvpDeadlinePassed: "The RSVP deadline has passed.",
+    rsvpDeadlineUntil: (date: string) => `RSVP by ${date}`,
     participants: "attendee",
     participantsPlural: "attendees",
     spotsLeft: (n: number) => `${n} spot${n === 1 ? "" : "s"} left`,
