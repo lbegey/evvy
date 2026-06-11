@@ -958,6 +958,7 @@ export const fr: Translations = {
     confirmDelete: "Supprimer cette question ? Les réponses existantes seront également supprimées.",
     save: "Enregistrer",
     cancel: "Annuler",
+    saveOrder: "Enregistrer l'ordre",
     locked: "Les questions personnalisées sont une fonctionnalité Premium.",
     unlock: "Passer en Premium",
   },

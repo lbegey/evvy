@@ -53,6 +53,7 @@ export function EventQuestionsSection({ eventId, plan, questions: initialQuestio
   const [isPending, startTransition] = useTransition();
   const [draggedId, setDraggedId] = useState<string | null>(null);
   const [dragOverId, setDragOverId] = useState<string | null>(null);
+  const [orderDirty, setOrderDirty] = useState(false);
   const rowRefs = useRef<Map<string, HTMLDivElement>>(new Map());
 
   if (plan !== "premium") {
@@ -152,18 +153,22 @@ export function EventQuestionsSection({ eventId, plan, questions: initialQuestio
       const next = [...prev];
       const [moved] = next.splice(fromIdx, 1);
       next.splice(toIdx, 0, moved);
-      const reordered = next.map((q, i) => ({ ...q, order: i }));
-      startTransition(async () => {
-        await reorderRsvpQuestions(eventId, reordered.map((q) => q.id));
-        router.refresh();
-      });
-      return reordered;
+      return next.map((q, i) => ({ ...q, order: i }));
     });
+    setOrderDirty(true);
   };
 
   const handleDragEnd = () => {
     setDraggedId(null);
     setDragOverId(null);
+  };
+
+  const handleSaveOrder = () => {
+    startTransition(async () => {
+      await reorderRsvpQuestions(eventId, questions.map((q) => q.id));
+      setOrderDirty(false);
+      router.refresh();
+    });
   };
 
   const TYPE_LABELS: Record<string, string> = {
@@ -259,10 +264,17 @@ export function EventQuestionsSection({ eventId, plan, questions: initialQuestio
       )}
 
       {editing === null && (
-        <Button variant="outline" size="sm" className="gap-1.5" onClick={openNew} disabled={isPending}>
-          <Plus className="h-3.5 w-3.5" />
-          {T.rsvpQuestions.add}
-        </Button>
+        <div className="flex items-center gap-2">
+          <Button variant="outline" size="sm" className="gap-1.5" onClick={openNew} disabled={isPending}>
+            <Plus className="h-3.5 w-3.5" />
+            {T.rsvpQuestions.add}
+          </Button>
+          {orderDirty && (
+            <Button size="sm" className="gap-1.5" onClick={handleSaveOrder} disabled={isPending}>
+              {T.rsvpQuestions.saveOrder}
+            </Button>
+          )}
+        </div>
       )}
     </div>
   );

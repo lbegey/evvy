@@ -955,6 +955,7 @@ export const en = {
     confirmDelete: "Delete this question? Existing answers will also be deleted.",
     save: "Save",
     cancel: "Cancel",
+    saveOrder: "Save order",
     locked: "Custom RSVP questions are a Premium feature.",
     unlock: "Upgrade to Premium",
   },
