@@ -46,6 +46,7 @@ export function AdminUsersManager({ currentUserId, users }: AdminUsersManagerPro
   const { T, lang } = useLanguage();
   const locale = lang === "fr" ? "fr-FR" : "en-US";
   const [search, setSearch] = useState("");
+  const [planFilter, setPlanFilter] = useState<"all" | "free" | "premium">("all");
   const [page, setPage] = useState(1);
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [roleError, setRoleError] = useState<Record<string, string | null>>({});
@@ -70,18 +71,32 @@ export function AdminUsersManager({ currentUserId, users }: AdminUsersManagerPro
 
   const filteredUsers = useMemo(() => {
     const query = search.trim().toLowerCase();
-    if (!query) return users;
-    return users.filter(
-      (u) => u.name.toLowerCase().includes(query) || u.email.toLowerCase().includes(query)
-    );
-  }, [users, search]);
+    return users.filter((u) => {
+      if (planFilter !== "all" && u.plan !== planFilter) return false;
+      if (!query) return true;
+      return u.name.toLowerCase().includes(query) || u.email.toLowerCase().includes(query);
+    });
+  }, [users, search, planFilter]);
 
   const pageCount = Math.max(1, Math.ceil(filteredUsers.length / USERS_PER_PAGE));
   const currentPage = Math.min(page, pageCount);
   const pagedUsers = filteredUsers.slice((currentPage - 1) * USERS_PER_PAGE, currentPage * USERS_PER_PAGE);
 
+  const hasActiveFilters = search.trim() !== "" || planFilter !== "all";
+
   const handleSearchChange = (value: string) => {
     setSearch(value);
+    setPage(1);
+  };
+
+  const handlePlanFilterChange = (value: "all" | "free" | "premium") => {
+    setPlanFilter(value);
+    setPage(1);
+  };
+
+  const handleResetFilters = () => {
+    setSearch("");
+    setPlanFilter("all");
     setPage(1);
   };
 
@@ -134,14 +149,30 @@ export function AdminUsersManager({ currentUserId, users }: AdminUsersManagerPro
       </div>
 
       {users.length > 0 && (
-        <div className="relative min-w-0 sm:max-w-xs">
-          <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-          <Input
-            value={search}
-            onChange={(e) => handleSearchChange(e.target.value)}
-            placeholder={T.admin.searchPlaceholder}
-            className="pl-9"
-          />
+        <div className="flex flex-wrap items-center gap-2">
+          <div className="relative min-w-0 flex-1 sm:max-w-xs">
+            <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+            <Input
+              value={search}
+              onChange={(e) => handleSearchChange(e.target.value)}
+              placeholder={T.admin.searchPlaceholder}
+              className="pl-9"
+            />
+          </div>
+          <select
+            value={planFilter}
+            onChange={(e) => handlePlanFilterChange(e.target.value as "all" | "free" | "premium")}
+            className="h-8 cursor-pointer rounded-lg border border-input bg-transparent px-2.5 text-sm outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
+          >
+            <option value="all">{T.admin.allPlans}</option>
+            <option value="free">{T.admin.plans.free}</option>
+            <option value="premium">{T.admin.plans.premium}</option>
+          </select>
+          {hasActiveFilters && (
+            <Button variant="ghost" size="sm" onClick={handleResetFilters}>
+              {T.admin.resetFilters}
+            </Button>
+          )}
         </div>
       )}
 

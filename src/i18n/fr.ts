@@ -845,6 +845,8 @@ export const fr: Translations = {
     },
     searchPlaceholder: "Rechercher un utilisateur par nom ou email…",
     noResults: "Aucun utilisateur ne correspond à votre recherche.",
+    allPlans: "Tous les plans",
+    resetFilters: "Réinitialiser les filtres",
     deletedAccounts: {
       title: "Comptes supprimés",
       subtitle: "Adresses email des comptes supprimés. Elles ne peuvent plus être utilisées pour s'inscrire.",

@@ -843,6 +843,8 @@ export const en = {
     },
     searchPlaceholder: "Search users by name or email…",
     noResults: "No users match your search.",
+    allPlans: "All plans",
+    resetFilters: "Reset filters",
     deletedAccounts: {
       title: "Deleted accounts",
       subtitle: "Email addresses of accounts that were deleted. They cannot be used to register again.",
