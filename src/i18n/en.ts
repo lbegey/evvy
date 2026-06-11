@@ -333,7 +333,6 @@ export const en = {
     rsvpLimit: "Limit number of spots",
     rsvpLimitPlaceholder: "Unlimited",
     rsvpDeadline: "RSVP deadline",
-    rsvpDeadlineHint: "No new RSVPs are accepted after this date.",
     date: "Date",
     from: "From",
     to: "To",

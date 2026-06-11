@@ -335,7 +335,6 @@ export const fr: Translations = {
     rsvpLimit: "Limiter le nombre de places",
     rsvpLimitPlaceholder: "Illimité",
     rsvpDeadline: "Date limite pour les RSVP",
-    rsvpDeadlineHint: "Aucun nouveau RSVP n'est accepté après cette date.",
     date: "Date",
     from: "Du",
     to: "Au",

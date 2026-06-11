@@ -169,33 +169,30 @@ export function RsvpSection({ eventId, rsvpEnabled, rsvpLimit = null, rsvpDeadli
 
       {rsvpEnabled && (
         <>
-          <div className="space-y-2 rounded-lg border border-border/40 p-3">
-            <div className="flex flex-col gap-3 sm:flex-row sm:items-end">
-              <div className="flex-1 space-y-1.5">
-                <Label htmlFor={`rsvp-limit-${eventId}`}>{T.eventForm.rsvpLimit}</Label>
-                <Input
-                  id={`rsvp-limit-${eventId}`}
-                  type="number"
-                  min={0}
-                  placeholder={T.eventForm.rsvpLimitPlaceholder}
-                  value={limitInput}
-                  onChange={(e) => setLimitInput(e.target.value)}
-                />
-              </div>
-              <div className="flex-1 space-y-1.5">
-                <Label htmlFor={`rsvp-deadline-${eventId}`}>{T.eventForm.rsvpDeadline}</Label>
-                <Input
-                  id={`rsvp-deadline-${eventId}`}
-                  type="date"
-                  value={deadlineInput}
-                  onChange={(e) => setDeadlineInput(e.target.value)}
-                />
-              </div>
-              <Button type="button" size="sm" disabled={isSavingSettings} onClick={handleSaveSettings}>
-                {T.eventForm.save}
-              </Button>
+          <div className="flex flex-col gap-3 rounded-lg border border-border/40 p-3 sm:flex-row sm:items-end">
+            <div className="flex-1 space-y-1.5">
+              <Label htmlFor={`rsvp-limit-${eventId}`}>{T.eventForm.rsvpLimit}</Label>
+              <Input
+                id={`rsvp-limit-${eventId}`}
+                type="number"
+                min={0}
+                placeholder={T.eventForm.rsvpLimitPlaceholder}
+                value={limitInput}
+                onChange={(e) => setLimitInput(e.target.value)}
+              />
             </div>
-            <p className="text-xs text-muted-foreground">{T.eventForm.rsvpDeadlineHint}</p>
+            <div className="flex-1 space-y-1.5">
+              <Label htmlFor={`rsvp-deadline-${eventId}`}>{T.eventForm.rsvpDeadline}</Label>
+              <Input
+                id={`rsvp-deadline-${eventId}`}
+                type="date"
+                value={deadlineInput}
+                onChange={(e) => setDeadlineInput(e.target.value)}
+              />
+            </div>
+            <Button type="button" size="sm" disabled={isSavingSettings} onClick={handleSaveSettings}>
+              {T.eventForm.save}
+            </Button>
           </div>
 
           <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
