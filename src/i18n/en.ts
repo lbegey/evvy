@@ -472,6 +472,11 @@ export const en = {
       addToCalendar: "Add to calendar:",
       centered: "Center the buttons",
       centeredHint: "Lay the block out centered instead of left-aligned — the generated code updates instantly.",
+      iframe: {
+        title: "Embed via iframe",
+        subtitle: "Embed this event page on any site (WordPress, Notion, etc.) using an iframe.",
+        height: "Height (px)",
+      },
     },
   },
 
