@@ -741,6 +741,9 @@ export const fr: Translations = {
       applyPlaceholder: "Appliquer un préréglage…",
       delete: "Supprimer",
       deleteConfirm: "Supprimer ce préréglage de personnalisation ? Cette action est irréversible.",
+      manage: "Gérer les préréglages",
+      manageSubtitle: "Supprimez les préréglages de personnalisation enregistrés sur votre compte.",
+      backToBranding: "Retour à la personnalisation",
     },
   },
 

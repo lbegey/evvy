@@ -9,8 +9,10 @@ import { Label } from "@/components/ui/label";
 import { ImageDropzone } from "@/components/ImageDropzone";
 import { BrandingColorField } from "@/components/BrandingColorField";
 import { BrandingPresetBar } from "@/components/BrandingPresetBar";
+import { SaveBrandingPresetButton } from "@/components/SaveBrandingPresetButton";
 import { updateCalendarBranding } from "@/app/actions/calendars";
 import { applyBrandingPresetToCalendar, type BrandingPreset } from "@/app/actions/brandingPresets";
+import { useBrandingPresets } from "@/hooks/useBrandingPresets";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { cn } from "@/lib/utils";
 
@@ -58,8 +60,22 @@ export function CalendarBrandingSection({
   const [, startColorSave] = useTransition();
   const [isResetting, startReset] = useTransition();
   const isFirstRender = useRef(true);
+  const { presets, refresh: refreshPresets } = useBrandingPresets();
 
   const hasCustomBranding = Boolean(logoUrl || color || textColor || cardColor || iconBackgroundColor || backgroundColor || backgroundImageUrl);
+
+  const currentPresetData = {
+    brandLogoUrl: logoUrl || null,
+    brandLogoSize: logoSize,
+    brandLogoTransparentBg: logoTransparentBg,
+    brandLogoRounded: logoRounded,
+    brandColor: color || null,
+    brandTextColor: textColor || null,
+    brandCardColor: cardColor || null,
+    brandIconBackgroundColor: iconBackgroundColor || null,
+    brandBackgroundColor: backgroundColor || null,
+    brandBackgroundImageUrl: backgroundImageUrl || null,
+  };
 
   useEffect(() => {
     if (isFirstRender.current) { isFirstRender.current = false; return; }
@@ -190,21 +206,7 @@ export function CalendarBrandingSection({
         {T.eventDetail.branding.accountBranding}
       </Button>
 
-      <BrandingPresetBar
-        currentData={{
-          brandLogoUrl: logoUrl || null,
-          brandLogoSize: logoSize,
-          brandLogoTransparentBg: logoTransparentBg,
-          brandLogoRounded: logoRounded,
-          brandColor: color || null,
-          brandTextColor: textColor || null,
-          brandCardColor: cardColor || null,
-          brandIconBackgroundColor: iconBackgroundColor || null,
-          brandBackgroundColor: backgroundColor || null,
-          brandBackgroundImageUrl: backgroundImageUrl || null,
-        }}
-        onApply={onApplyPreset}
-      />
+      <BrandingPresetBar presets={presets} onApply={onApplyPreset} />
 
       {enabled && (
         <div className="space-y-4 border-t border-border/60 pt-4">
@@ -269,10 +271,13 @@ export function CalendarBrandingSection({
             />
           </div>
 
-          <Button type="button" variant="outline" size="sm" onClick={onReset} disabled={isPending || isResetting || !hasCustomBranding} className="gap-1.5">
-            {isResetting ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <RotateCcw className="h-3.5 w-3.5" />}
-            {T.branding.reset}
-          </Button>
+          <div className="flex flex-wrap items-center gap-2">
+            <Button type="button" variant="outline" size="sm" onClick={onReset} disabled={isPending || isResetting || !hasCustomBranding} className="gap-1.5">
+              {isResetting ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <RotateCcw className="h-3.5 w-3.5" />}
+              {T.branding.reset}
+            </Button>
+            <SaveBrandingPresetButton currentData={currentPresetData} onSaved={refreshPresets} size="sm" />
+          </div>
         </div>
       )}
     </div>

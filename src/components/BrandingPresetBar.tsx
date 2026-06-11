@@ -1,43 +1,27 @@
 "use client";
 
-import { useState, useEffect, useTransition } from "react";
-import { Plus, Sparkles, Loader2 } from "lucide-react";
+import { useState, useTransition } from "react";
+import Link from "next/link";
+import { Sparkles, Settings2, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Select } from "@/components/ui/select";
-import { SaveBrandingPresetDialog } from "@/components/SaveBrandingPresetDialog";
-import {
-  listBrandingPresets,
-  createBrandingPreset,
-  type BrandingPreset,
-  type BrandingPresetData,
-} from "@/app/actions/brandingPresets";
+import { type BrandingPreset } from "@/app/actions/brandingPresets";
 import { useLanguage } from "@/contexts/LanguageContext";
 
 interface BrandingPresetBarProps {
-  currentData: BrandingPresetData;
+  presets: BrandingPreset[];
   onApply: (preset: BrandingPreset) => Promise<void> | void;
 }
 
-export function BrandingPresetBar({ currentData, onApply }: BrandingPresetBarProps) {
+export function BrandingPresetBar({ presets, onApply }: BrandingPresetBarProps) {
   const { T } = useLanguage();
-  const [presets, setPresets] = useState<BrandingPreset[]>([]);
   const [selectedId, setSelectedId] = useState("");
-  const [dialogOpen, setDialogOpen] = useState(false);
   const [isApplying, startApply] = useTransition();
-
-  useEffect(() => {
-    listBrandingPresets().then(setPresets);
-  }, []);
 
   const handleApply = () => {
     const preset = presets.find((p) => p.id === selectedId);
     if (!preset) return;
     startApply(async () => { await onApply(preset); });
-  };
-
-  const handleSave = async (name: string) => {
-    await createBrandingPreset(name, currentData);
-    setPresets(await listBrandingPresets());
   };
 
   return (
@@ -57,12 +41,10 @@ export function BrandingPresetBar({ currentData, onApply }: BrandingPresetBarPro
       ) : (
         <p className="flex-1 text-xs text-muted-foreground">{T.branding.presets.empty}</p>
       )}
-      <Button type="button" size="sm" variant="ghost" onClick={() => setDialogOpen(true)} className="gap-1.5">
-        <Plus className="h-3.5 w-3.5" />
-        {T.branding.presets.save}
+      <Button type="button" size="sm" variant="ghost" nativeButton={false} render={<Link href="/dashboard/branding/presets" />} className="gap-1.5">
+        <Settings2 className="h-3.5 w-3.5" />
+        {T.branding.presets.manage}
       </Button>
-
-      <SaveBrandingPresetDialog open={dialogOpen} onOpenChange={setDialogOpen} onSubmit={handleSave} />
     </div>
   );
 }

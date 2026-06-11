@@ -6,7 +6,11 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { ImageDropzone } from "@/components/ImageDropzone";
 import { BrandingColorField } from "@/components/BrandingColorField";
+import { BrandingPresetBar } from "@/components/BrandingPresetBar";
+import { SaveBrandingPresetButton } from "@/components/SaveBrandingPresetButton";
 import { updateBranding, resetBranding } from "@/app/actions/user";
+import { applyBrandingPresetToUser, type BrandingPreset } from "@/app/actions/brandingPresets";
+import { useBrandingPresets } from "@/hooks/useBrandingPresets";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { cn } from "@/lib/utils";
 
@@ -49,12 +53,26 @@ export function BrandingSettings({
   const isFirstRender = useRef(true);
   const savedTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const skipNextSave = useRef(false);
+  const { presets, refresh: refreshPresets } = useBrandingPresets();
 
   const previewColor = /^#[0-9a-fA-F]{3,8}$/.test(color) ? color : undefined;
   const previewTextColor = /^#[0-9a-fA-F]{3,8}$/.test(textColor) ? textColor : undefined;
   const previewCardColor = /^#[0-9a-fA-F]{3,8}$/.test(cardColor) ? cardColor : undefined;
   const previewBackgroundColor = /^#[0-9a-fA-F]{3,8}$/.test(backgroundColor) ? backgroundColor : undefined;
   const hasCustomBranding = Boolean(logoUrl || color || textColor || cardColor || iconBackgroundColor || backgroundColor || backgroundImageUrl);
+
+  const currentPresetData = {
+    brandLogoUrl: logoUrl || null,
+    brandLogoSize: logoSize,
+    brandLogoTransparentBg: logoTransparentBg,
+    brandLogoRounded: logoRounded,
+    brandColor: color || null,
+    brandTextColor: textColor || null,
+    brandCardColor: cardColor || null,
+    brandIconBackgroundColor: iconBackgroundColor || null,
+    brandBackgroundColor: backgroundColor || null,
+    brandBackgroundImageUrl: backgroundImageUrl || null,
+  };
 
   useEffect(() => {
     if (isFirstRender.current) { isFirstRender.current = false; return; }
@@ -92,8 +110,31 @@ export function BrandingSettings({
     });
   };
 
+  const onApplyPreset = (preset: BrandingPreset) => {
+    setSaved(false);
+    skipNextSave.current = true;
+    setLogoUrl(preset.brandLogoUrl ?? "");
+    setLogoSize(preset.brandLogoSize ?? DEFAULT_LOGO_SIZE);
+    setLogoTransparentBg(preset.brandLogoTransparentBg);
+    setLogoRounded(preset.brandLogoRounded);
+    setColor(preset.brandColor ?? "");
+    setTextColor(preset.brandTextColor ?? "");
+    setCardColor(preset.brandCardColor ?? "");
+    setIconBackgroundColor(preset.brandIconBackgroundColor ?? "");
+    setBackgroundColor(preset.brandBackgroundColor ?? "");
+    setBackgroundImageUrl(preset.brandBackgroundImageUrl ?? "");
+    startTransition(async () => {
+      await applyBrandingPresetToUser(preset.id);
+      setSaved(true);
+      if (savedTimerRef.current) clearTimeout(savedTimerRef.current);
+      savedTimerRef.current = setTimeout(() => setSaved(false), 2000);
+    });
+  };
+
   return (
     <div className="space-y-6">
+      <BrandingPresetBar presets={presets} onApply={onApplyPreset} />
+
       {/* Logo */}
       <div className="rounded-xl border border-border/60 bg-card p-5 space-y-4">
         <h2 className="text-sm font-semibold text-foreground">{T.branding.logo}</h2>
@@ -226,6 +267,7 @@ export function BrandingSettings({
           {isResetting ? <Loader2 className="h-4 w-4 animate-spin" /> : <RotateCcw className="h-4 w-4" />}
           {T.branding.reset}
         </Button>
+        <SaveBrandingPresetButton currentData={currentPresetData} onSaved={refreshPresets} />
         {isPending && (
           <p className="flex items-center gap-1.5 text-xs text-muted-foreground">
             <Loader2 className="h-3 w-3 animate-spin" />{T.branding.saving}

@@ -111,6 +111,31 @@ export async function applyBrandingPresetToEvent(eventId: string, presetId: stri
   if (event.slug) revalidatePath(`/e/${event.slug}`);
 }
 
+export async function applyBrandingPresetToUser(presetId: string): Promise<{ error: "forbidden" } | undefined> {
+  const user = await requireUser();
+
+  const preset = await db.brandingPreset.findUnique({ where: { id: presetId } });
+  if (!preset || preset.userId !== user.id) return { error: "forbidden" };
+
+  await db.user.update({
+    where: { id: user.id },
+    data: {
+      brandLogoUrl: preset.brandLogoUrl,
+      brandLogoSize: preset.brandLogoSize,
+      brandLogoTransparentBg: preset.brandLogoTransparentBg,
+      brandLogoRounded: preset.brandLogoRounded,
+      brandColor: preset.brandColor,
+      brandTextColor: preset.brandTextColor,
+      brandCardColor: preset.brandCardColor,
+      brandIconBackgroundColor: preset.brandIconBackgroundColor,
+      brandBackgroundColor: preset.brandBackgroundColor,
+      brandBackgroundImageUrl: preset.brandBackgroundImageUrl,
+    },
+  });
+
+  revalidatePath("/dashboard/branding");
+}
+
 export async function applyBrandingPresetToCalendar(calendarId: string, presetId: string): Promise<{ error: "forbidden" } | undefined> {
   const user = await requireUser();
 

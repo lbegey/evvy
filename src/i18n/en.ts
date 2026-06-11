@@ -739,6 +739,9 @@ export const en = {
       applyPlaceholder: "Apply a saved preset…",
       delete: "Delete",
       deleteConfirm: "Delete this branding preset? This cannot be undone.",
+      manage: "Manage presets",
+      manageSubtitle: "Delete the branding presets saved on your account.",
+      backToBranding: "Back to branding",
     },
   },
 
