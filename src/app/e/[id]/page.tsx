@@ -222,7 +222,7 @@ export default async function PublicEventPage({
   const endDateTime = fullDateTimeFmt.format(event.endAt);
 
   const yesCount = event.rsvpEnabled
-    ? await db.rsvp.count({ where: { eventId: id, status: "yes" } })
+    ? await db.rsvp.count({ where: { eventId: event.id, status: "yes" } })
     : 0;
 
   const spotsRemaining = event.rsvpLimit != null ? Math.max(0, event.rsvpLimit - yesCount) : null;
