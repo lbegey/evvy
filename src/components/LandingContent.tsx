@@ -535,7 +535,9 @@ export function LandingContent({ demoCalendar }: LandingContentProps) {
                 <FeatureBullets bullets={f.bullets} icons={f.icons} />
               </div>
               <div className={cn("animate-fade-in-up", f.reverse && "lg:order-1")} style={{ animationDelay: `${0.05 * i + 0.1}s` }}>
-                {f.mockup}
+                <div className={i % 2 === 0 ? "animate-float-card" : "animate-float-card-delayed"}>
+                  {f.mockup}
+                </div>
               </div>
             </div>
           ))}
@@ -546,7 +548,9 @@ export function LandingContent({ demoCalendar }: LandingContentProps) {
       <section className="bg-muted/20 px-4 py-20 sm:px-6 sm:py-28">
         <div className="mx-auto grid max-w-5xl items-center gap-10 lg:grid-cols-2 lg:gap-16">
           <div className="lg:order-1">
-            <BrandingMock m={T.landing.mockups.branding} />
+            <div className="animate-float-card">
+              <BrandingMock m={T.landing.mockups.branding} />
+            </div>
           </div>
           <div className="lg:order-2">
             <h3 className="text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
