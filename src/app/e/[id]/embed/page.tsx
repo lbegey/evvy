@@ -25,16 +25,17 @@ export default async function EventEmbedPage({
 
   const event = await db.event.findFirst({
     where: { OR: [{ id }, { slug: id }] },
-    select: { id: true, endAt: true, language: true },
+    select: { id: true, endAt: true, language: true, user: { select: { plan: true } } },
   });
   if (!event) notFound();
 
   const lang = event.language === "fr" || event.language === "en" ? event.language : cookieLang;
   const T = lang === "fr" ? fr : en;
   const isPast = event.endAt < new Date();
+  const isFreeOrganizer = event.user.plan !== "premium";
 
   return (
-    <div className="flex items-center justify-center p-3">
+    <div className="flex flex-col items-center justify-center gap-1 p-3">
       {isPast ? (
         <p className="text-sm text-muted-foreground">{T.publicEvent.eventEnded}</p>
       ) : (
@@ -55,6 +56,17 @@ export default async function EventEmbedPage({
             ))}
           </div>
         </div>
+      )}
+      {isFreeOrganizer && (
+        <a
+          href={APP_URL}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-muted-foreground/60 hover:underline"
+          style={{ fontSize: "11px" }}
+        >
+          {T.publicEvent.poweredBy} evvycal.app
+        </a>
       )}
     </div>
   );

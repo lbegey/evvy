@@ -572,6 +572,7 @@ export const en = {
     spotsLeft: (n: number) => `${n} spot${n === 1 ? "" : "s"} left`,
     noSpotsLeft: "Full",
     organizedWith: "Organized with",
+    poweredBy: "Powered by",
     notFound: {
       title: "Event not found",
       subtitle:

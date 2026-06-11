@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { Cookie, X } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { cn } from "@/lib/utils";
@@ -11,6 +12,7 @@ const COOKIE_KEY = "minical_cookies_accepted";
 export function CookieBanner() {
   const [visible, setVisible] = useState(false);
   const { T } = useLanguage();
+  const pathname = usePathname();
 
   useEffect(() => {
     const stored = localStorage.getItem(COOKIE_KEY);
@@ -27,6 +29,7 @@ export function CookieBanner() {
     setVisible(false);
   };
 
+  if (pathname.endsWith("/embed")) return null;
   if (!visible) return null;
 
   return (

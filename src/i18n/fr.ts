@@ -574,6 +574,7 @@ export const fr: Translations = {
     spotsLeft: (n: number) => `${n} place${n === 1 ? "" : "s"} restante${n === 1 ? "" : "s"}`,
     noSpotsLeft: "Complet",
     organizedWith: "Organisé avec",
+    poweredBy: "Propulsé par",
     notFound: {
       title: "Événement introuvable",
       subtitle:
