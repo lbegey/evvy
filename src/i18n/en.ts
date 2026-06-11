@@ -943,6 +943,7 @@ export const en = {
     typeText: "Short text",
     typeTextarea: "Long text",
     typeSelect: "Single choice",
+    typeCheckbox: "Multiple choice",
     typeBoolean: "Yes / No",
     options: "Options",
     addOption: "Add an option",

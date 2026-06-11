@@ -946,6 +946,7 @@ export const fr: Translations = {
     typeText: "Texte court",
     typeTextarea: "Texte long",
     typeSelect: "Choix unique",
+    typeCheckbox: "Choix multiples",
     typeBoolean: "Oui / Non",
     options: "Options",
     addOption: "Ajouter une option",

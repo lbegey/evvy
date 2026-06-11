@@ -21,6 +21,18 @@ function isoToLocalDate(iso: string, tz: string): string {
   return `${p("year")}-${p("month")}-${p("day")}`;
 }
 
+function formatAnswerValue(type: string, value: string): string {
+  if (value === "true") return "✓";
+  if (value === "false") return "✗";
+  if (type === "checkbox") {
+    try {
+      const arr = JSON.parse(value) as string[];
+      if (Array.isArray(arr)) return arr.join(", ");
+    } catch { /* ignore */ }
+  }
+  return value;
+}
+
 function naiveToUTC(date: string, time: string, tz: string): string {
   const dummy = new Date(`${date}T${time}:00Z`);
   const parts = new Intl.DateTimeFormat("en-US", {
@@ -55,7 +67,7 @@ interface RsvpSectionProps {
   rsvpDeadline?: string | null;
   timezone?: string;
   rsvps: RsvpRecord[];
-  questions?: { id: string; label: string }[];
+  questions?: { id: string; label: string; type: string }[];
   expanded?: boolean;
   onExpand?: () => void;
 }
@@ -309,7 +321,7 @@ export function RsvpSection({ eventId, rsvpEnabled, rsvpLimit = null, rsvpDeadli
                                       return (
                                         <div key={q.id} className="flex flex-col gap-0.5">
                                           <dt className="text-xs font-medium text-muted-foreground">{q.label}</dt>
-                                          <dd className="text-xs text-foreground">{answer.value === "true" ? "✓" : answer.value === "false" ? "✗" : answer.value}</dd>
+                                          <dd className="text-xs text-foreground">{formatAnswerValue(q.type, answer.value)}</dd>
                                         </div>
                                       );
                                     })}

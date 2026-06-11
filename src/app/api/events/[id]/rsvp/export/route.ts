@@ -24,7 +24,7 @@ export async function GET(
     db.rsvpQuestion.findMany({
       where: { eventId: id },
       orderBy: { order: "asc" },
-      select: { id: true, label: true },
+      select: { id: true, label: true, type: true },
     }),
   ]);
 
@@ -52,7 +52,15 @@ export async function GET(
       const answerCols = questions.map((q) => {
         const ans = r.answers.find((a) => a.questionId === q.id);
         if (!ans) return escape("");
-        const val = ans.value === "true" ? "Oui" : ans.value === "false" ? "Non" : ans.value;
+        let val = ans.value;
+        if (val === "true") val = "Oui";
+        else if (val === "false") val = "Non";
+        else if (q.type === "checkbox") {
+          try {
+            const arr = JSON.parse(val);
+            if (Array.isArray(arr)) val = arr.join("; ");
+          } catch { /* ignore */ }
+        }
         return escape(val);
       });
       return [...base, ...answerCols].join(",");

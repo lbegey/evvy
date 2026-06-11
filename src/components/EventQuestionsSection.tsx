@@ -31,7 +31,7 @@ interface Props {
   questions: RsvpQuestion[];
 }
 
-type QuestionType = "text" | "textarea" | "select" | "boolean";
+type QuestionType = "text" | "textarea" | "select" | "checkbox";
 
 interface FormState {
   label: string;
@@ -70,7 +70,7 @@ export function EventQuestionsSection({ eventId, plan, questions: initialQuestio
 
   const openEdit = (q: RsvpQuestion) => {
     let opts: string[] = ["", ""];
-    if (q.type === "select" && q.options) {
+    if ((q.type === "select" || q.type === "checkbox") && q.options) {
       try { opts = JSON.parse(q.options) as string[]; } catch { /* ignore */ }
     }
     setForm({ label: q.label, type: q.type as QuestionType, options: opts, required: q.required });
@@ -81,7 +81,7 @@ export function EventQuestionsSection({ eventId, plan, questions: initialQuestio
 
   const handleSave = () => {
     if (!form.label.trim()) return;
-    const options = form.type === "select"
+    const options = form.type === "select" || form.type === "checkbox"
       ? JSON.stringify(form.options.filter((o) => o.trim()))
       : null;
 
@@ -137,10 +137,11 @@ export function EventQuestionsSection({ eventId, plan, questions: initialQuestio
     });
   };
 
-  const TYPE_LABELS: Record<QuestionType, string> = {
+  const TYPE_LABELS: Record<string, string> = {
     text: T.rsvpQuestions.typeText,
     textarea: T.rsvpQuestions.typeTextarea,
     select: T.rsvpQuestions.typeSelect,
+    checkbox: T.rsvpQuestions.typeCheckbox,
     boolean: T.rsvpQuestions.typeBoolean,
   };
 
@@ -246,7 +247,7 @@ function QuestionForm({
 }: {
   form: FormState;
   setForm: React.Dispatch<React.SetStateAction<FormState>>;
-  typeLabels: Record<string, string>;
+  typeLabels: Record<QuestionType, string>;
   T: { rsvpQuestions: Record<string, string> };
   isPending: boolean;
   onSave: () => void;
@@ -273,7 +274,7 @@ function QuestionForm({
             onChange={(e) => setForm((f) => ({ ...f, type: e.target.value as FormState["type"] }))}
             className="h-8 w-full rounded-md border border-input bg-background px-2 text-sm"
           >
-            {(["text", "textarea", "select", "boolean"] as const).map((t) => (
+            {(["text", "textarea", "select", "checkbox"] as const).map((t) => (
               <option key={t} value={t}>{typeLabels[t]}</option>
             ))}
           </select>
@@ -291,7 +292,7 @@ function QuestionForm({
         </div>
       </div>
 
-      {form.type === "select" && (
+      {(form.type === "select" || form.type === "checkbox") && (
         <div className="space-y-1.5">
           <Label className="text-xs">{T.rsvpQuestions.options}</Label>
           {form.options.map((opt, i) => (

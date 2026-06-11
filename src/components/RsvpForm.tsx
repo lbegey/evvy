@@ -212,6 +212,32 @@ export function RsvpForm({
             </label>
           )}
 
+          {q.type === "checkbox" && (() => {
+            let opts: string[] = [];
+            try { opts = JSON.parse(q.options ?? "[]") as string[]; } catch { /* ignore */ }
+            let selected: string[] = [];
+            try { selected = JSON.parse(customAnswers[q.id] || "[]") as string[]; } catch { /* ignore */ }
+            const toggle = (opt: string) => {
+              const next = selected.includes(opt) ? selected.filter((o) => o !== opt) : [...selected, opt];
+              setCustomAnswers((a) => ({ ...a, [q.id]: next.length > 0 ? JSON.stringify(next) : "" }));
+            };
+            return (
+              <div className="space-y-1.5">
+                {opts.map((opt) => (
+                  <label key={opt} className="flex cursor-pointer items-center gap-2 text-sm text-foreground">
+                    <input
+                      type="checkbox"
+                      checked={selected.includes(opt)}
+                      onChange={() => toggle(opt)}
+                      className="h-4 w-4 accent-primary"
+                    />
+                    {opt}
+                  </label>
+                ))}
+              </div>
+            );
+          })()}
+
           {customErrors[q.id] && (
             <p className="text-xs text-destructive">{T.rsvpForm.errors.nameRequired}</p>
           )}
