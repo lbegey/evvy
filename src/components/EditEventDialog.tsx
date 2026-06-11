@@ -28,8 +28,6 @@ const schema = z
     allDay: z.boolean(),
     isOnline: z.boolean(),
     rsvpEnabled: z.boolean(),
-    rsvpLimit: z.string().optional(),
-    rsvpDeadlineDate: z.string().optional(),
     timezone: z.string().min(1),
     language: z.enum(["fr", "en"]),
     organizerEmail: z.string().email().or(z.literal("")).optional(),
@@ -63,8 +61,6 @@ interface EditEventDialogProps {
     allDay: boolean;
     isOnline: boolean;
     rsvpEnabled: boolean;
-    rsvpLimit: number | null;
-    rsvpDeadline: string | null;
     timezone: string;
     language: string | null;
   };
@@ -116,8 +112,6 @@ export function EditEventDialog({ open, onOpenChange, plan, event }: EditEventDi
     defaultValues: {
       title: event.title, startDate: startLocal.date, endDate: endLocal.date, startTime: startLocal.time,
       endTime: endLocal.time, allDay: event.allDay, isOnline: event.isOnline, rsvpEnabled: event.rsvpEnabled,
-      rsvpLimit: event.rsvpLimit != null ? String(event.rsvpLimit) : "",
-      rsvpDeadlineDate: event.rsvpDeadline ? isoToLocal(event.rsvpDeadline, event.timezone).date : "",
       timezone: event.timezone, language: event.language === "fr" || event.language === "en" ? event.language : lang,
       organizerEmail: event.organizerEmail ?? "", location: event.location ?? "",
       description: event.description ?? "",
@@ -126,7 +120,6 @@ export function EditEventDialog({ open, onOpenChange, plan, event }: EditEventDi
 
   const allDay = form.watch("allDay");
   const isOnline = form.watch("isOnline");
-  const rsvpEnabled = form.watch("rsvpEnabled");
   const startDate = form.watch("startDate");
   const startTime = form.watch("startTime");
 
@@ -137,8 +130,6 @@ export function EditEventDialog({ open, onOpenChange, plan, event }: EditEventDi
       form.reset({
         title: event.title, startDate: s.date, endDate: e.date, startTime: s.time, endTime: e.time,
         allDay: event.allDay, isOnline: event.isOnline, rsvpEnabled: event.rsvpEnabled,
-        rsvpLimit: event.rsvpLimit != null ? String(event.rsvpLimit) : "",
-        rsvpDeadlineDate: event.rsvpDeadline ? isoToLocal(event.rsvpDeadline, event.timezone).date : "",
         timezone: event.timezone,
         language: event.language === "fr" || event.language === "en" ? event.language : lang,
         organizerEmail: event.organizerEmail ?? "", location: event.location ?? "",
@@ -177,8 +168,6 @@ export function EditEventDialog({ open, onOpenChange, plan, event }: EditEventDi
         allDay: values.allDay,
         isOnline: values.isOnline,
         rsvpEnabled: values.rsvpEnabled,
-        rsvpLimit: values.rsvpLimit && values.rsvpLimit.trim() !== "" ? parseInt(values.rsvpLimit, 10) : null,
-        rsvpDeadline: values.rsvpDeadlineDate ? naiveToUTC(values.rsvpDeadlineDate, "23:59", values.timezone) : null,
         timezone: values.timezone,
         language: values.language,
         imageUrl,
@@ -250,26 +239,6 @@ export function EditEventDialog({ open, onOpenChange, plan, event }: EditEventDi
                   <Label htmlFor="ed-rsvp" className="cursor-pointer font-normal">{T.eventForm.enableRsvp}</Label>
                 </div>
               </div>
-
-              {rsvpEnabled && (
-                <div className="grid gap-4 sm:grid-cols-2">
-                  <div className="space-y-1.5">
-                    <Label htmlFor="ed-rsvp-limit">{T.eventForm.rsvpLimit}</Label>
-                    <Input
-                      id="ed-rsvp-limit"
-                      type="number"
-                      min={0}
-                      placeholder={T.eventForm.rsvpLimitPlaceholder}
-                      {...form.register("rsvpLimit")}
-                    />
-                  </div>
-                  <div className="space-y-1.5">
-                    <Label htmlFor="ed-rsvp-deadline">{T.eventForm.rsvpDeadline}</Label>
-                    <Input id="ed-rsvp-deadline" type="date" {...form.register("rsvpDeadlineDate")} />
-                    <p className="text-xs text-muted-foreground">{T.eventForm.rsvpDeadlineHint}</p>
-                  </div>
-                </div>
-              )}
 
               <div className="space-y-2.5 rounded-xl border border-border/60 bg-muted/10 p-3">
                 <div className="space-y-1.5">

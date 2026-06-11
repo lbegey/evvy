@@ -22,8 +22,6 @@ type EventData = {
   language: string;
   imageUrl?: string;
   rsvpEnabled: boolean;
-  rsvpLimit?: number | null;
-  rsvpDeadline?: string | null;
 };
 
 function buildWebhookEventPayload(
@@ -103,8 +101,6 @@ export async function createEvent(data: EventData): Promise<{ id: string } | { e
       timezone: data.timezone,
       language: data.language,
       rsvpEnabled: data.rsvpEnabled,
-      rsvpLimit: data.rsvpLimit ?? null,
-      rsvpDeadline: data.rsvpDeadline ? new Date(data.rsvpDeadline) : null,
       brandingEnabled: false,
       userId: session.user.id,
     },
@@ -140,8 +136,6 @@ export async function updateEvent(id: string, data: EventData) {
       timezone: data.timezone,
       language: data.language,
       rsvpEnabled: data.rsvpEnabled,
-      rsvpLimit: data.rsvpLimit ?? null,
-      rsvpDeadline: data.rsvpDeadline ? new Date(data.rsvpDeadline) : null,
     },
   });
 
@@ -270,6 +264,26 @@ export async function toggleRsvp(id: string, enabled: boolean) {
   await db.event.update({ where: { id }, data: { rsvpEnabled: enabled } });
   revalidatePath(`/dashboard/events/${id}`);
   revalidatePath(`/e/${id}`);
+}
+
+export async function updateRsvpSettings(id: string, data: { rsvpLimit: number | null; rsvpDeadline: string | null }) {
+  const session = await auth.api.getSession({ headers: await headers() });
+  if (!session) throw new Error("Unauthorized");
+
+  const event = await db.event.findUnique({ where: { id } });
+  if (!event || event.userId !== session.user.id) throw new Error("Forbidden");
+
+  await db.event.update({
+    where: { id },
+    data: {
+      rsvpLimit: data.rsvpLimit,
+      rsvpDeadline: data.rsvpDeadline ? new Date(data.rsvpDeadline) : null,
+    },
+  });
+
+  revalidatePath(`/dashboard/events/${id}`);
+  revalidatePath(`/e/${id}`);
+  if (event.slug) revalidatePath(`/e/${event.slug}`);
 }
 
 export async function deleteRsvp(id: string): Promise<{ error: "forbidden" } | undefined> {

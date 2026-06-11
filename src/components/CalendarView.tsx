@@ -217,8 +217,6 @@ export function CalendarView({ events, calendars, plan, initialYear, initialMont
     allDay: boolean;
     isOnline: boolean;
     rsvpEnabled: boolean;
-    rsvpLimit: number | null;
-    rsvpDeadline: string | null;
     timezone: string;
     language: string;
     imageUrl: string;

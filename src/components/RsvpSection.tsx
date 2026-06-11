@@ -5,11 +5,33 @@ import { useRouter } from "next/navigation";
 import { Download, Search, Users, ChevronLeft, ChevronRight, ChevronDown, ChevronUp, Maximize2, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { toggleRsvp, deleteRsvp } from "@/app/actions/events";
+import { Label } from "@/components/ui/label";
+import { toggleRsvp, deleteRsvp, updateRsvpSettings } from "@/app/actions/events";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { cn } from "@/lib/utils";
 
 const PAGE_SIZE = 10;
+
+function isoToLocalDate(iso: string, tz: string): string {
+  const d = new Date(iso);
+  const parts = new Intl.DateTimeFormat("en-US", {
+    timeZone: tz, year: "numeric", month: "2-digit", day: "2-digit",
+  }).formatToParts(d);
+  const p = (t: string) => parts.find((x) => x.type === t)?.value ?? "00";
+  return `${p("year")}-${p("month")}-${p("day")}`;
+}
+
+function naiveToUTC(date: string, time: string, tz: string): string {
+  const dummy = new Date(`${date}T${time}:00Z`);
+  const parts = new Intl.DateTimeFormat("en-US", {
+    timeZone: tz, year: "numeric", month: "2-digit", day: "2-digit",
+    hour: "2-digit", minute: "2-digit", second: "2-digit", hour12: false,
+  }).formatToParts(dummy);
+  const p = (t: string) => parts.find((x) => x.type === t)?.value ?? "00";
+  const h = p("hour") === "24" ? "00" : p("hour");
+  const tzClock = new Date(`${p("year")}-${p("month")}-${p("day")}T${h}:${p("minute")}:${p("second")}Z`);
+  return new Date(dummy.getTime() - (tzClock.getTime() - dummy.getTime())).toISOString();
+}
 
 export interface RsvpAnswer {
   questionId: string;
@@ -29,19 +51,25 @@ export interface RsvpRecord {
 interface RsvpSectionProps {
   eventId: string;
   rsvpEnabled: boolean;
+  rsvpLimit?: number | null;
+  rsvpDeadline?: string | null;
+  timezone?: string;
   rsvps: RsvpRecord[];
   questions?: { id: string; label: string }[];
   expanded?: boolean;
   onExpand?: () => void;
 }
 
-export function RsvpSection({ eventId, rsvpEnabled, rsvps, questions = [], expanded = false, onExpand }: RsvpSectionProps) {
+export function RsvpSection({ eventId, rsvpEnabled, rsvpLimit = null, rsvpDeadline = null, timezone = "UTC", rsvps, questions = [], expanded = false, onExpand }: RsvpSectionProps) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
+  const [isSavingSettings, startSettingsTransition] = useTransition();
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [expandedRows, setExpandedRows] = useState<Set<string>>(new Set());
+  const [limitInput, setLimitInput] = useState(rsvpLimit != null ? String(rsvpLimit) : "");
+  const [deadlineInput, setDeadlineInput] = useState(rsvpDeadline ? isoToLocalDate(rsvpDeadline, timezone) : "");
   const { T, lang } = useLanguage();
   const locale = lang === "fr" ? "fr-FR" : "en-US";
 
@@ -91,6 +119,15 @@ export function RsvpSection({ eventId, rsvpEnabled, rsvps, questions = [], expan
     });
   };
 
+  const handleSaveSettings = () => {
+    startSettingsTransition(async () => {
+      const limit = limitInput.trim() !== "" ? parseInt(limitInput, 10) : null;
+      const deadline = deadlineInput ? naiveToUTC(deadlineInput, "23:59", timezone) : null;
+      await updateRsvpSettings(eventId, { rsvpLimit: limit, rsvpDeadline: deadline });
+      router.refresh();
+    });
+  };
+
   return (
     <section className={cn("space-y-4", expanded ? "" : "rounded-xl border border-border/60 p-5")}>
       <div className="flex items-center justify-between">
@@ -132,6 +169,33 @@ export function RsvpSection({ eventId, rsvpEnabled, rsvps, questions = [], expan
 
       {rsvpEnabled && (
         <>
+          <div className="flex flex-col gap-3 rounded-lg border border-border/40 p-3 sm:flex-row sm:items-end">
+            <div className="flex-1 space-y-1.5">
+              <Label htmlFor={`rsvp-limit-${eventId}`}>{T.eventForm.rsvpLimit}</Label>
+              <Input
+                id={`rsvp-limit-${eventId}`}
+                type="number"
+                min={0}
+                placeholder={T.eventForm.rsvpLimitPlaceholder}
+                value={limitInput}
+                onChange={(e) => setLimitInput(e.target.value)}
+              />
+            </div>
+            <div className="flex-1 space-y-1.5">
+              <Label htmlFor={`rsvp-deadline-${eventId}`}>{T.eventForm.rsvpDeadline}</Label>
+              <Input
+                id={`rsvp-deadline-${eventId}`}
+                type="date"
+                value={deadlineInput}
+                onChange={(e) => setDeadlineInput(e.target.value)}
+              />
+              <p className="text-xs text-muted-foreground">{T.eventForm.rsvpDeadlineHint}</p>
+            </div>
+            <Button type="button" size="sm" disabled={isSavingSettings} onClick={handleSaveSettings}>
+              {T.eventForm.save}
+            </Button>
+          </div>
+
           <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
             {[
               { label: T.rsvpSection.total, count: rsvps.length, color: "text-foreground" },

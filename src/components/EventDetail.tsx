@@ -330,8 +330,6 @@ export function EventDetail({ event, appUrl, plan, emailVerified, calendars, sta
     allDay: boolean;
     isOnline: boolean;
     rsvpEnabled: boolean;
-    rsvpLimit: number | null;
-    rsvpDeadline: string | null;
     timezone: string;
     language: string;
     imageUrl: string;
@@ -546,6 +544,9 @@ export function EventDetail({ event, appUrl, plan, emailVerified, calendars, sta
         <RsvpSection
           eventId={event.id}
           rsvpEnabled={event.rsvpEnabled}
+          rsvpLimit={event.rsvpLimit}
+          rsvpDeadline={event.rsvpDeadline}
+          timezone={event.timezone}
           rsvps={rsvps}
           questions={questions}
           onExpand={() => setRsvpModalOpen(true)}
@@ -583,7 +584,16 @@ export function EventDetail({ event, appUrl, plan, emailVerified, calendars, sta
                 <X className="h-4 w-4" />
               </Dialog.Close>
             </div>
-            <RsvpSection eventId={event.id} rsvpEnabled={event.rsvpEnabled} rsvps={rsvps} questions={questions} expanded />
+            <RsvpSection
+              eventId={event.id}
+              rsvpEnabled={event.rsvpEnabled}
+              rsvpLimit={event.rsvpLimit}
+              rsvpDeadline={event.rsvpDeadline}
+              timezone={event.timezone}
+              rsvps={rsvps}
+              questions={questions}
+              expanded
+            />
           </Dialog.Popup>
         </Dialog.Portal>
       </Dialog.Root>
@@ -832,8 +842,6 @@ export function EventDetail({ event, appUrl, plan, emailVerified, calendars, sta
           allDay: event.allDay,
           isOnline: event.isOnline,
           rsvpEnabled: event.rsvpEnabled,
-          rsvpLimit: event.rsvpLimit,
-          rsvpDeadline: event.rsvpDeadline,
           timezone: event.timezone,
           language: event.language,
         }}
