@@ -365,7 +365,7 @@ function FeatureBadge({ children }: { children: string }) {
 
 function FeatureBullets({ bullets, icons }: { bullets: readonly string[]; icons: LucideIcon[] }) {
   return (
-    <div className="mt-6 grid gap-3 sm:grid-cols-2">
+    <div className="mt-6 flex flex-col gap-3">
       {bullets.map((b, i) => {
         const Icon = icons[i] ?? CheckCircle2;
         return (
