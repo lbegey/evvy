@@ -26,6 +26,7 @@ import {
   Code2,
   Palette,
   HelpCircle,
+  Paperclip,
   X,
 } from "lucide-react";
 import { Dialog } from "@base-ui/react/dialog";
@@ -35,6 +36,7 @@ import { EditEventDialog } from "@/components/EditEventDialog";
 import { RsvpSection, type RsvpRecord } from "@/components/RsvpSection";
 import { EventBrandingSection } from "@/components/EventBrandingSection";
 import { EventCalendarSection } from "@/components/EventCalendarSection";
+import { EventAttachmentSection } from "@/components/EventAttachmentSection";
 import { EventQuestionsSection, type RsvpQuestion } from "@/components/EventQuestionsSection";
 import { EventSlugSection } from "@/components/EventSlugSection";
 import { SocialShareLinks } from "@/components/SocialShareLinks";
@@ -127,6 +129,7 @@ const SIDEBAR_SECTIONS = [
   { id: "calendar", labelKey: "calendar", icon: CalendarRange },
   { id: "rsvp", labelKey: "rsvp", icon: Users },
   { id: "branding", labelKey: "branding", icon: Palette },
+  { id: "attachment", labelKey: "attachment", icon: Paperclip },
   { id: "qr-code", labelKey: "qrCode", icon: QrCode },
   { id: "links", labelKey: "links", icon: ListChecks },
   { id: "integration", labelKey: "integration", icon: Code2 },
@@ -632,6 +635,20 @@ export function EventDetail({ event, appUrl, plan, emailVerified, calendars, sta
         />
       </section>
 
+      {/* Attachment */}
+      <section id="attachment" className="scroll-mt-24 space-y-3 rounded-xl border border-border/60 p-4 sm:p-5">
+        <div className="flex items-center gap-2">
+          <Paperclip className="h-4 w-4 text-muted-foreground" />
+          <h2 className="text-sm font-semibold text-foreground">{T.eventForm.attachment}</h2>
+        </div>
+        <EventAttachmentSection
+          eventId={event.id}
+          attachmentUrl={event.attachmentUrl}
+          attachmentName={event.attachmentName}
+          attachmentButtonLabel={event.attachmentButtonLabel}
+        />
+      </section>
+
       {/* QR code */}
       <section id="qr-code" className="scroll-mt-24 space-y-3 rounded-xl border border-border/60 p-4 sm:p-5">
         <div>
@@ -879,9 +896,6 @@ export function EventDetail({ event, appUrl, plan, emailVerified, calendars, sta
           rsvpEnabled: event.rsvpEnabled,
           timezone: event.timezone,
           language: event.language,
-          attachmentUrl: event.attachmentUrl,
-          attachmentName: event.attachmentName,
-          attachmentButtonLabel: event.attachmentButtonLabel,
         }}
       />
 

@@ -22,9 +22,6 @@ type EventData = {
   language: string;
   imageUrl?: string;
   rsvpEnabled: boolean;
-  attachmentUrl?: string;
-  attachmentName?: string;
-  attachmentButtonLabel?: string;
 };
 
 function buildWebhookEventPayload(
@@ -139,15 +136,33 @@ export async function updateEvent(id: string, data: EventData) {
       timezone: data.timezone,
       language: data.language,
       rsvpEnabled: data.rsvpEnabled,
-      attachmentUrl: data.attachmentUrl !== undefined ? (data.attachmentUrl || null) : undefined,
-      attachmentName: data.attachmentUrl !== undefined ? (data.attachmentUrl ? (data.attachmentName || null) : null) : undefined,
-      attachmentButtonLabel: data.attachmentButtonLabel !== undefined ? (data.attachmentButtonLabel || null) : undefined,
     },
   });
 
   revalidatePath("/dashboard");
   revalidatePath(`/dashboard/events/${id}`);
   revalidatePath(`/e/${id}`);
+}
+
+export async function updateEventAttachment(id: string, data: { attachmentUrl: string | null; attachmentName: string | null; attachmentButtonLabel: string | null }): Promise<{ error: "forbidden" } | undefined> {
+  const session = await auth.api.getSession({ headers: await headers() });
+  if (!session) throw new Error("Unauthorized");
+
+  const event = await db.event.findUnique({ where: { id } });
+  if (!event || event.userId !== session.user.id) return { error: "forbidden" };
+
+  await db.event.update({
+    where: { id },
+    data: {
+      attachmentUrl: data.attachmentUrl,
+      attachmentName: data.attachmentUrl ? data.attachmentName : null,
+      attachmentButtonLabel: data.attachmentButtonLabel,
+    },
+  });
+
+  revalidatePath(`/dashboard/events/${id}`);
+  revalidatePath(`/e/${id}`);
+  if (event.slug) revalidatePath(`/e/${event.slug}`);
 }
 
 export async function updateEventSlug(id: string, slug: string | null): Promise<{ error: "forbidden" | "invalid" | "taken" } | undefined> {

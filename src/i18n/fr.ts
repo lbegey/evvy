@@ -422,6 +422,7 @@ export const fr: Translations = {
       rsvp: "RSVP",
       questions: "Questions",
       branding: "Personnalisation",
+      attachment: "Pièce jointe",
       calendar: "Calendrier",
       events: "Événements",
       publicLink: "Lien public",

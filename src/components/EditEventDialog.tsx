@@ -13,7 +13,6 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select } from "@/components/ui/select";
 import { ImageDropzone } from "@/components/ImageDropzone";
-import { AttachmentDropzone } from "@/components/AttachmentDropzone";
 import { getTimezones } from "@/lib/timezones";
 import { updateEvent } from "@/app/actions/events";
 import { useLanguage } from "@/contexts/LanguageContext";
@@ -34,7 +33,6 @@ const schema = z
     organizerEmail: z.string().email().or(z.literal("")).optional(),
     location: z.string().optional(),
     description: z.string().optional(),
-    attachmentButtonLabel: z.string().optional(),
   })
   .refine(
     (data) => {
@@ -65,9 +63,6 @@ interface EditEventDialogProps {
     rsvpEnabled: boolean;
     timezone: string;
     language: string | null;
-    attachmentUrl: string | null;
-    attachmentName: string | null;
-    attachmentButtonLabel: string | null;
   };
 }
 
@@ -107,8 +102,6 @@ export function EditEventDialog({ open, onOpenChange, plan, event }: EditEventDi
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const [imageUrl, setImageUrl] = useState(event.imageUrl ?? "");
-  const [attachmentUrl, setAttachmentUrl] = useState(event.attachmentUrl ?? "");
-  const [attachmentName, setAttachmentName] = useState(event.attachmentName ?? "");
   const { T, lang } = useLanguage();
   const timezones = useMemo(() => getTimezones(lang), [lang]);
   const startLocal = isoToLocal(event.startAt, event.timezone);
@@ -122,7 +115,6 @@ export function EditEventDialog({ open, onOpenChange, plan, event }: EditEventDi
       timezone: event.timezone, language: event.language === "fr" || event.language === "en" ? event.language : lang,
       organizerEmail: event.organizerEmail ?? "", location: event.location ?? "",
       description: event.description ?? "",
-      attachmentButtonLabel: event.attachmentButtonLabel ?? "",
     },
   });
 
@@ -142,11 +134,8 @@ export function EditEventDialog({ open, onOpenChange, plan, event }: EditEventDi
         language: event.language === "fr" || event.language === "en" ? event.language : lang,
         organizerEmail: event.organizerEmail ?? "", location: event.location ?? "",
         description: event.description ?? "",
-        attachmentButtonLabel: event.attachmentButtonLabel ?? "",
       });
       setImageUrl(event.imageUrl ?? "");
-      setAttachmentUrl(event.attachmentUrl ?? "");
-      setAttachmentName(event.attachmentName ?? "");
     }
   }, [open]); // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -182,9 +171,6 @@ export function EditEventDialog({ open, onOpenChange, plan, event }: EditEventDi
         timezone: values.timezone,
         language: values.language,
         imageUrl,
-        attachmentUrl,
-        attachmentName,
-        attachmentButtonLabel: values.attachmentButtonLabel ?? "",
       });
       onOpenChange(false);
       router.refresh();
@@ -345,27 +331,6 @@ export function EditEventDialog({ open, onOpenChange, plan, event }: EditEventDi
                   {...form.register("description")}
                 />
               </div>
-
-              <div className="space-y-1.5">
-                <Label>{T.eventForm.attachment}</Label>
-                <p className="text-xs text-muted-foreground">{T.eventForm.attachmentHint}</p>
-                <AttachmentDropzone
-                  url={attachmentUrl}
-                  name={attachmentName}
-                  onChange={(url, name) => { setAttachmentUrl(url); setAttachmentName(name); }}
-                />
-              </div>
-
-              {attachmentUrl && (
-                <div className="space-y-1.5">
-                  <Label htmlFor="ed-attachment-label">{T.eventForm.attachmentButtonLabel}</Label>
-                  <Input
-                    id="ed-attachment-label"
-                    placeholder={T.eventForm.attachmentButtonLabelPlaceholder}
-                    {...form.register("attachmentButtonLabel")}
-                  />
-                </div>
-              )}
             </div>
 
             <div className="shrink-0 border-t border-border/60 bg-background px-5 py-4 sm:px-6">

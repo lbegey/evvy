@@ -420,6 +420,7 @@ export const en = {
       rsvp: "RSVP",
       questions: "Questions",
       branding: "Branding",
+      attachment: "Attachment",
       calendar: "Calendar",
       events: "Events",
       publicLink: "Public link",
