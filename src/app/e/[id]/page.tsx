@@ -461,20 +461,27 @@ export default async function PublicEventPage({
         {/* RSVP */}
         {event.rsvpEnabled && (
           <div className="rounded-xl border border-border/60 bg-background px-5 py-4 shadow-sm">
-            <div className="flex items-center justify-between mb-3">
+            <div className="flex items-center justify-between mb-3 gap-2">
               <h2 className="text-sm font-semibold text-foreground">RSVP</h2>
-              {spotsRemaining !== null ? (
-                <span className={cn("text-xs font-medium", rsvpFull ? "text-destructive" : "text-green-600")}>
-                  {rsvpFull ? T.publicEvent.noSpotsLeft : T.publicEvent.spotsLeft(spotsRemaining)}
-                </span>
-              ) : (
-                yesCount > 0 && (
-                  <span className="text-xs text-green-600 font-medium">
-                    {yesCount}{" "}
-                    {yesCount > 1 ? T.publicEvent.participantsPlural : T.publicEvent.participants}
+              <div className="flex items-center gap-2">
+                {rsvpDeadlineDate && !isPast && !rsvpDeadlinePassed && (
+                  <span className="text-xs font-medium text-muted-foreground">
+                    {T.publicEvent.rsvpDeadlineUntil(rsvpDeadlineDate)}
                   </span>
-                )
-              )}
+                )}
+                {spotsRemaining !== null ? (
+                  <span className={cn("text-xs font-medium", rsvpFull ? "text-destructive" : "text-green-600")}>
+                    {rsvpFull ? T.publicEvent.noSpotsLeft : T.publicEvent.spotsLeft(spotsRemaining)}
+                  </span>
+                ) : (
+                  yesCount > 0 && (
+                    <span className="text-xs text-green-600 font-medium">
+                      {yesCount}{" "}
+                      {yesCount > 1 ? T.publicEvent.participantsPlural : T.publicEvent.participants}
+                    </span>
+                  )
+                )}
+              </div>
             </div>
             {isPast ? (
               <p className="py-2 text-center text-sm text-muted-foreground">{T.publicEvent.rsvpClosed}</p>
@@ -483,14 +490,7 @@ export default async function PublicEventPage({
             ) : rsvpFull ? (
               <p className="py-2 text-center text-sm text-muted-foreground">{T.rsvpForm.full}</p>
             ) : (
-              <>
-                <RsvpForm eventId={event.id} lang={lang} questions={event.questions} branded={!!brandStyle} />
-                {rsvpDeadlineDate && (
-                  <p className="mt-2 text-center text-xs text-muted-foreground">
-                    {T.publicEvent.rsvpDeadlineUntil(rsvpDeadlineDate)}
-                  </p>
-                )}
-              </>
+              <RsvpForm eventId={event.id} lang={lang} questions={event.questions} branded={!!brandStyle} />
             )}
           </div>
         )}
