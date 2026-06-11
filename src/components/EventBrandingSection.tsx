@@ -191,7 +191,6 @@ export function EventBrandingSection({
           <button
             type="button" id="evb-enabled" role="switch" aria-checked={enabled}
             onClick={() => { const next = !enabled; setEnabled(next); persist({ enabled: next }); }}
-            disabled={isPending}
             className={cn(
               "relative inline-flex h-5 w-9 cursor-pointer items-center rounded-full transition-colors",
               "focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-ring/50",
@@ -244,7 +243,7 @@ export function EventBrandingSection({
                 ].map(({ id, label, checked, toggle }) => (
                   <div key={id} className="flex items-center justify-between gap-2 rounded-lg border border-border/60 px-2.5 py-2">
                     <Label htmlFor={id} className="cursor-pointer text-xs">{label}</Label>
-                    <button type="button" id={id} role="switch" aria-checked={checked} onClick={toggle} disabled={isPending}
+                    <button type="button" id={id} role="switch" aria-checked={checked} onClick={toggle}
                       className={cn("relative inline-flex h-5 w-9 shrink-0 cursor-pointer items-center rounded-full transition-colors focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-ring/50 disabled:pointer-events-none disabled:opacity-50", checked ? "bg-primary" : "bg-muted-foreground/30")}
                     >
                       <span className={cn("inline-block h-3.5 w-3.5 rounded-full bg-background shadow transition-transform", checked ? "translate-x-4.5" : "translate-x-0.5")} />

@@ -74,7 +74,7 @@ interface RsvpSectionProps {
 
 export function RsvpSection({ eventId, rsvpEnabled, rsvpLimit = null, rsvpDeadline = null, timezone = "UTC", rsvps, questions = [], expanded = false, onExpand }: RsvpSectionProps) {
   const router = useRouter();
-  const [isPending, startTransition] = useTransition();
+  const [, startTransition] = useTransition();
   const [isSavingSettings, startSettingsTransition] = useTransition();
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
@@ -161,7 +161,6 @@ export function RsvpSection({ eventId, rsvpEnabled, rsvpLimit = null, rsvpDeadli
             role="switch"
             aria-checked={rsvpEnabled}
             onClick={handleToggle}
-            disabled={isPending}
             className={cn(
               "relative inline-flex h-5 w-9 cursor-pointer items-center rounded-full transition-colors",
               "focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-ring/50",

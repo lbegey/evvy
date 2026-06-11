@@ -13,15 +13,15 @@ export default async function CalendarPage({
   const { id } = await params;
   const APP_URL = await getAppUrl();
   const session = await auth.api.getSession({ headers: await headers() });
-  const [calendar, user, calendars] = await Promise.all([
+  const [calendar, calendars] = await Promise.all([
     db.calendar.findUnique({
       where: { id },
       include: {
         _count: { select: { events: true } },
         events: { orderBy: { startAt: "asc" }, select: { id: true, title: true, startAt: true, endAt: true, allDay: true, timezone: true, published: true } },
+        user: { select: { plan: true, emailVerified: true } },
       },
     }),
-    db.user.findUnique({ where: { id: session!.user.id } }),
     db.calendar.findMany({ where: { userId: session!.user.id }, select: { id: true, name: true }, orderBy: { createdAt: "asc" } }),
   ]);
 
@@ -61,8 +61,8 @@ export default async function CalendarPage({
       }))}
       calendars={calendars}
       appUrl={APP_URL}
-      plan={user?.plan ?? "free"}
-      emailVerified={user?.emailVerified ?? false}
+      plan={calendar.user.plan}
+      emailVerified={calendar.user.emailVerified}
     />
   );
 }

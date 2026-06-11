@@ -20,7 +20,7 @@ export function EventCalendarSection({ eventId, plan, calendarId, calendars }: E
   const router = useRouter();
   const { T } = useLanguage();
   const [selected, setSelected] = useState(calendarId ?? "");
-  const [isPending, startTransition] = useTransition();
+  const [, startTransition] = useTransition();
 
   if (plan !== "premium") {
     return (
@@ -60,7 +60,6 @@ export function EventCalendarSection({ eventId, plan, calendarId, calendars }: E
       <select
         value={selected}
         onChange={(e) => handleChange(e.target.value)}
-        disabled={isPending}
         className={cn(
           "w-full cursor-pointer rounded-lg border border-input bg-background px-3 py-2 text-sm",
           "focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:border-ring",

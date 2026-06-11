@@ -1,9 +1,9 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useRef, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { Plus, Pencil, Trash2, ChevronUp, ChevronDown, GripVertical } from "lucide-react";
+import { Plus, Pencil, Trash2, GripVertical } from "lucide-react";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -51,6 +51,9 @@ export function EventQuestionsSection({ eventId, plan, questions: initialQuestio
   const [editing, setEditing] = useState<string | null>(null); // questionId or "new"
   const [form, setForm] = useState<FormState>(EMPTY_FORM);
   const [isPending, startTransition] = useTransition();
+  const [draggedId, setDraggedId] = useState<string | null>(null);
+  const [dragOverId, setDragOverId] = useState<string | null>(null);
+  const rowRefs = useRef<Map<string, HTMLDivElement>>(new Map());
 
   if (plan !== "premium") {
     return (
@@ -120,14 +123,35 @@ export function EventQuestionsSection({ eventId, plan, questions: initialQuestio
     });
   };
 
-  const handleMove = (id: string, dir: -1 | 1) => {
+  const handleDragStart = (e: React.DragEvent, id: string) => {
+    setDraggedId(id);
+    const el = rowRefs.current.get(id);
+    if (el) {
+      const rect = el.getBoundingClientRect();
+      e.dataTransfer.setDragImage(el, e.clientX - rect.left, e.clientY - rect.top);
+    }
+    e.dataTransfer.effectAllowed = "move";
+  };
+
+  const handleDragOver = (e: React.DragEvent, id: string) => {
+    e.preventDefault();
+    if (id !== draggedId && id !== dragOverId) setDragOverId(id);
+  };
+
+  const handleDrop = (e: React.DragEvent, id: string) => {
+    e.preventDefault();
+    const sourceId = draggedId;
+    setDraggedId(null);
+    setDragOverId(null);
+    if (!sourceId || sourceId === id) return;
+
     setQuestions((prev) => {
-      const idx = prev.findIndex((q) => q.id === id);
-      if (idx < 0) return prev;
+      const fromIdx = prev.findIndex((q) => q.id === sourceId);
+      const toIdx = prev.findIndex((q) => q.id === id);
+      if (fromIdx < 0 || toIdx < 0) return prev;
       const next = [...prev];
-      const swapIdx = idx + dir;
-      if (swapIdx < 0 || swapIdx >= next.length) return prev;
-      [next[idx], next[swapIdx]] = [next[swapIdx], next[idx]];
+      const [moved] = next.splice(fromIdx, 1);
+      next.splice(toIdx, 0, moved);
       const reordered = next.map((q, i) => ({ ...q, order: i }));
       startTransition(async () => {
         await reorderRsvpQuestions(eventId, reordered.map((q) => q.id));
@@ -135,6 +159,11 @@ export function EventQuestionsSection({ eventId, plan, questions: initialQuestio
       });
       return reordered;
     });
+  };
+
+  const handleDragEnd = () => {
+    setDraggedId(null);
+    setDragOverId(null);
   };
 
   const TYPE_LABELS: Record<string, string> = {
@@ -151,7 +180,7 @@ export function EventQuestionsSection({ eventId, plan, questions: initialQuestio
         <p className="text-sm text-muted-foreground">{T.rsvpQuestions.noQuestionsHint}</p>
       )}
 
-      {questions.map((q, idx) => (
+      {questions.map((q) => (
         <div key={q.id}>
           {editing === q.id ? (
             <QuestionForm
@@ -164,8 +193,29 @@ export function EventQuestionsSection({ eventId, plan, questions: initialQuestio
               onCancel={closeForm}
             />
           ) : (
-            <div className="flex items-center gap-2 rounded-lg border border-border/60 bg-background px-3 py-2.5">
-              <GripVertical className="h-3.5 w-3.5 shrink-0 text-muted-foreground/40" />
+            <div
+              ref={(el) => {
+                if (el) rowRefs.current.set(q.id, el);
+                else rowRefs.current.delete(q.id);
+              }}
+              onDragOver={(e) => handleDragOver(e, q.id)}
+              onDrop={(e) => handleDrop(e, q.id)}
+              className={cn(
+                "flex items-center gap-2 rounded-lg border bg-background px-3 py-2.5 transition-colors",
+                draggedId === q.id ? "border-border/60 opacity-40" : "border-border/60",
+                dragOverId === q.id && draggedId !== q.id && "border-primary border-dashed"
+              )}
+            >
+              <button
+                type="button"
+                draggable
+                onDragStart={(e) => handleDragStart(e, q.id)}
+                onDragEnd={handleDragEnd}
+                className="shrink-0 cursor-grab rounded p-1 text-muted-foreground/40 hover:text-muted-foreground active:cursor-grabbing"
+                aria-label="Drag to reorder"
+              >
+                <GripVertical className="h-3.5 w-3.5" />
+              </button>
               <div className="min-w-0 flex-1">
                 <p className="truncate text-sm font-medium text-foreground">{q.label}</p>
                 <p className="text-xs text-muted-foreground">
@@ -174,24 +224,6 @@ export function EventQuestionsSection({ eventId, plan, questions: initialQuestio
                 </p>
               </div>
               <div className="flex shrink-0 items-center gap-1">
-                <button
-                  type="button"
-                  onClick={() => handleMove(q.id, -1)}
-                  disabled={idx === 0 || isPending}
-                  className="rounded p-1 text-muted-foreground hover:text-foreground disabled:opacity-30"
-                  aria-label="Move up"
-                >
-                  <ChevronUp className="h-3.5 w-3.5" />
-                </button>
-                <button
-                  type="button"
-                  onClick={() => handleMove(q.id, 1)}
-                  disabled={idx === questions.length - 1 || isPending}
-                  className="rounded p-1 text-muted-foreground hover:text-foreground disabled:opacity-30"
-                  aria-label="Move down"
-                >
-                  <ChevronDown className="h-3.5 w-3.5" />
-                </button>
                 <button
                   type="button"
                   onClick={() => openEdit(q)}
