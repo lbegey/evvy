@@ -9,12 +9,23 @@ import {
   Link2,
   Loader2,
   CalendarRange,
+  CalendarPlus,
   Clock,
   Check,
   X,
   MapPin,
   Globe,
   ArrowUpRight,
+  ListChecks,
+  Download,
+  BellRing,
+  HelpCircle,
+  Webhook,
+  Palette,
+  Code2,
+  ImageUp,
+  EyeOff,
+  type LucideIcon,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useLanguage } from "@/contexts/LanguageContext";
@@ -63,25 +74,25 @@ function MockFrame({ children, className }: { children: React.ReactNode; classNa
   );
 }
 
-function RsvpMock() {
+function RsvpMock({ m }: { m: { yes: string; maybe: string; no: string; confirm: string } }) {
   return (
     <MockFrame>
       <div className="space-y-2.5">
         <div className="grid grid-cols-3 gap-2">
           <div className="flex h-9 items-center justify-center gap-1.5 rounded-lg bg-emerald-500/15 text-xs font-semibold text-emerald-600 ring-1 ring-emerald-500/30">
-            <span className="text-base leading-none">✓</span> Oui
+            <span className="text-base leading-none">✓</span> {m.yes}
           </div>
           <div className="flex h-9 items-center justify-center gap-1.5 rounded-lg border border-border/60 bg-muted/30 text-xs font-medium text-muted-foreground">
-            <span className="text-base leading-none">?</span> Peut-être
+            <span className="text-base leading-none">?</span> {m.maybe}
           </div>
           <div className="flex h-9 items-center justify-center gap-1.5 rounded-lg border border-border/60 bg-muted/30 text-xs font-medium text-muted-foreground">
-            <span className="text-base leading-none">✕</span> Non
+            <span className="text-base leading-none">✕</span> {m.no}
           </div>
         </div>
         <div className="flex h-9 items-center rounded-lg border border-border/60 bg-muted/30 px-3 text-xs text-muted-foreground">Jane Doe</div>
         <div className="flex h-9 items-center rounded-lg border border-border/60 bg-muted/30 px-3 text-xs text-muted-foreground">jane@example.com</div>
         <div className="flex h-10 items-center justify-center rounded-lg bg-primary text-sm font-medium text-primary-foreground shadow-sm shadow-primary/20">
-          Confirmer ma présence
+          {m.confirm}
         </div>
       </div>
     </MockFrame>
@@ -102,7 +113,6 @@ function PublicCalendarMock({ lang }: { lang: "fr" | "en" }) {
         <span className="h-2.5 w-2.5 rounded-full bg-border" />
         <span className="h-2.5 w-2.5 rounded-full bg-border" />
         <span className="h-2.5 w-2.5 rounded-full bg-border" />
-        <span className="ml-2 truncate text-[10px] text-muted-foreground/60">evvycal.app/c/tech-conferences-2026</span>
       </div>
       <div className="p-4 space-y-2.5">
         <div className="rounded-2xl border border-border/60 bg-background px-4 py-3 shadow-sm">
@@ -162,11 +172,11 @@ const SHARE_LOGOS = [
   { key: "yahoo", name: "Yahoo Calendar", logo: "/logos/yahoo-calendar.png" },
 ] as const;
 
-function SharingMock() {
+function SharingMock({ m }: { m: { addToCalendar: string } }) {
   return (
     <MockFrame>
       <div className="flex flex-wrap items-center gap-3 sm:gap-4">
-        <p className="shrink-0 text-sm text-muted-foreground">Ajouter au calendrier</p>
+        <p className="shrink-0 text-sm text-muted-foreground">{m.addToCalendar}</p>
         <div className="flex items-center gap-2 sm:gap-3">
           {SHARE_LOGOS.map((s) => (
             <span key={s.key} className="rounded-lg p-1">
@@ -177,7 +187,7 @@ function SharingMock() {
       </div>
       <div className="mt-5 flex items-center gap-2 rounded-lg border border-border/60 bg-muted/30 px-3 py-2.5 text-xs text-muted-foreground">
         <Link2 className="h-3.5 w-3.5 shrink-0" />
-        <span className="truncate">evvy.app/e/conf-2026</span>
+        <span className="truncate">evvycal.app/e/conf-2026</span>
       </div>
     </MockFrame>
   );
@@ -198,7 +208,7 @@ function AmazonSmile() {
   );
 }
 
-function BrandingMock() {
+function BrandingMock({ m }: { m: { customBrand: string; confirm: string; eventDate: string } }) {
   return (
     <div className="overflow-hidden rounded-2xl border border-border/60 shadow-xl shadow-black/5" style={{ backgroundColor: "#0F1111" }}>
       <div className="flex items-center gap-3 px-5 py-4 text-white" style={{ backgroundColor: "#131921" }}>
@@ -208,19 +218,19 @@ function BrandingMock() {
         </span>
         <span className="ml-auto inline-flex items-center gap-1 rounded-full bg-white/10 px-2 py-0.5 text-[10px] font-medium text-white/80">
           <CheckCircle2 className="h-3 w-3" style={{ color: "#FF9900" }} />
-          Marque personnalisée
+          {m.customBrand}
         </span>
       </div>
       <div className="p-5 sm:p-6">
         <div className="space-y-1.5">
           <h4 className="text-base font-semibold text-white">Amazon Web Summit 2026</h4>
-          <p className="text-xs text-white/50">Mer. 18 nov · 09:00 – 18:00 · Seattle, WA</p>
+          <p className="text-xs text-white/50">{m.eventDate}</p>
         </div>
         <div
           className="mt-4 inline-flex h-10 items-center justify-center rounded-lg px-6 text-xs font-semibold shadow-sm"
           style={{ backgroundColor: "#FF9900", color: "#0F1111" }}
         >
-          Confirmer ma présence
+          {m.confirm}
         </div>
       </div>
     </div>
@@ -338,6 +348,42 @@ function HeroCalendarBackdrop() {
   );
 }
 
+const RSVP_BULLET_ICONS: LucideIcon[] = [ListChecks, Download, BellRing, HelpCircle, Webhook];
+const CALENDARS_BULLET_ICONS: LucideIcon[] = [Palette, Link2, CalendarPlus];
+const SHARING_BULLET_ICONS: LucideIcon[] = [Link2, Code2, CalendarRange];
+const BRANDING_BULLET_ICONS: LucideIcon[] = [ImageUp, Palette, EyeOff];
+
+function FeatureBullets({ bullets, icons }: { bullets: readonly string[]; icons: LucideIcon[] }) {
+  return (
+    <div className="mt-6 grid gap-2.5 sm:grid-cols-2">
+      {bullets.map((b, i) => {
+        const Icon = icons[i] ?? CheckCircle2;
+        return (
+          <div
+            key={b}
+            className="flex items-start gap-2.5 rounded-lg border border-border/60 px-3 py-2.5 text-sm text-foreground"
+          >
+            <Icon className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
+            {b}
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+function HighlightedTitle({ title, highlight }: { title: string; highlight: string }) {
+  const idx = title.indexOf(highlight);
+  if (idx === -1) return <>{title}</>;
+  return (
+    <>
+      {title.slice(0, idx)}
+      <span className="text-blue-600">{highlight}</span>
+      {title.slice(idx + highlight.length)}
+    </>
+  );
+}
+
 function FaqItem({ question, answer, defaultOpen }: { question: string; answer: string; defaultOpen?: boolean }) {
   const [open, setOpen] = useState(!!defaultOpen);
   return (
@@ -371,9 +417,9 @@ export function LandingContent({ demoCalendar }: LandingContentProps) {
   };
 
   const featureSections = [
-    { ...T.landing.features.rsvp, mockup: <RsvpMock />, reverse: false },
-    { ...T.landing.features.calendars, mockup: <PublicCalendarMock lang={lang} />, reverse: true },
-    { ...T.landing.features.sharing, mockup: <SharingMock />, reverse: false },
+    { ...T.landing.features.rsvp, mockup: <RsvpMock m={T.landing.mockups.rsvp} />, reverse: false, icons: RSVP_BULLET_ICONS },
+    { ...T.landing.features.calendars, mockup: <PublicCalendarMock lang={lang} />, reverse: true, icons: CALENDARS_BULLET_ICONS },
+    { ...T.landing.features.sharing, mockup: <SharingMock m={T.landing.mockups.sharing} />, reverse: false, icons: SHARING_BULLET_ICONS },
   ];
 
   const demoDateFmt = new Intl.DateTimeFormat(lang === "fr" ? "fr-FR" : "en-US", {
@@ -483,17 +529,10 @@ export function LandingContent({ demoCalendar }: LandingContentProps) {
             <div key={f.title} className="grid items-center gap-10 lg:grid-cols-2 lg:gap-16">
               <div className={cn("animate-fade-in-up", f.reverse && "lg:order-2")} style={{ animationDelay: `${0.05 * i}s` }}>
                 <h3 className="text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
-                  {f.title}
+                  <HighlightedTitle title={f.title} highlight={f.titleHighlight} />
                 </h3>
                 <p className="mt-3 leading-relaxed text-muted-foreground">{f.description}</p>
-                <ul className="mt-6 space-y-2.5">
-                  {f.bullets.map((b) => (
-                    <li key={b} className="flex items-start gap-2.5 text-sm text-foreground">
-                      <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
-                      {b}
-                    </li>
-                  ))}
-                </ul>
+                <FeatureBullets bullets={f.bullets} icons={f.icons} />
               </div>
               <div className={cn("animate-fade-in-up", f.reverse && "lg:order-1")} style={{ animationDelay: `${0.05 * i + 0.1}s` }}>
                 {f.mockup}
@@ -507,21 +546,14 @@ export function LandingContent({ demoCalendar }: LandingContentProps) {
       <section className="bg-muted/20 px-4 py-20 sm:px-6 sm:py-28">
         <div className="mx-auto grid max-w-5xl items-center gap-10 lg:grid-cols-2 lg:gap-16">
           <div className="lg:order-1">
-            <BrandingMock />
+            <BrandingMock m={T.landing.mockups.branding} />
           </div>
           <div className="lg:order-2">
             <h3 className="text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
-              {T.landing.branding.title}
+              <HighlightedTitle title={T.landing.branding.title} highlight={T.landing.branding.titleHighlight} />
             </h3>
             <p className="mt-3 leading-relaxed text-muted-foreground">{T.landing.branding.description}</p>
-            <ul className="mt-6 space-y-2.5">
-              {T.landing.branding.bullets.map((b) => (
-                <li key={b} className="flex items-start gap-2.5 text-sm text-foreground">
-                  <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
-                  {b}
-                </li>
-              ))}
-            </ul>
+            <FeatureBullets bullets={T.landing.branding.bullets} icons={BRANDING_BULLET_ICONS} />
           </div>
         </div>
       </section>

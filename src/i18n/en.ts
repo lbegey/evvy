@@ -72,6 +72,7 @@ export const en = {
       rsvp: {
         badge: "📋 RSVP management",
         title: "Collect your guests' responses, effortlessly.",
+        titleHighlight: "effortlessly",
         description:
           "Turn on RSVPs with one click and watch confirmations roll in on your dashboard — no spreadsheets, no back-and-forth emails.",
         bullets: [
@@ -86,6 +87,7 @@ export const en = {
       calendars: {
         badge: "📅 Custom calendars",
         title: "Create and manage calendars in your brand's colors.",
+        titleHighlight: "your brand's colors",
         description:
           "Group your events into named calendars, pick a color and icon, and share a single link your audience can subscribe to.",
         bullets: [
@@ -98,12 +100,12 @@ export const en = {
       sharing: {
         badge: "🔗 Sharing & integrations",
         title: "Share your events everywhere: public page, HTML or email.",
+        titleHighlight: "everywhere",
         description:
           "Every event gets a polished public page plus a ready-to-paste HTML snippet — drop it into your newsletter and you're done.",
         bullets: [
           "A custom public URL for every event",
           "A one-line HTML snippet to embed anywhere",
-          "Links that work with any emailing tool",
           "Compatible with Google, Apple, Outlook, Office 365 and Yahoo",
         ],
         cta: "See the integrations →",
@@ -112,13 +114,13 @@ export const en = {
     branding: {
       badge: "🎨 White-label & branding",
       title: "Event pages that look like your brand, not ours.",
+      titleHighlight: "your brand",
       description:
         "Upload your logo, set your own colors, and remove our branding entirely — your guests will only ever see you.",
       bullets: [
         "Upload your logo in seconds",
         "Custom primary and secondary colors",
         "Remove the \"Powered by\" footer",
-        "See your changes update live as you type",
       ],
       cta: "Customize my event →",
     },
@@ -206,6 +208,22 @@ export const en = {
       subtitle: "Join thousands of organizers who trust the platform every day.",
       ctaPrimary: "Start for free",
       ctaSecondary: "Try it, it's free",
+    },
+    mockups: {
+      rsvp: {
+        yes: "Yes",
+        maybe: "Maybe",
+        no: "No",
+        confirm: "I'll be there",
+      },
+      sharing: {
+        addToCalendar: "Add to calendar",
+      },
+      branding: {
+        customBrand: "Custom branding",
+        confirm: "I'll be there",
+        eventDate: "Wed, Nov 18 · 9:00 AM – 6:00 PM · Seattle, WA",
+      },
     },
   },
 

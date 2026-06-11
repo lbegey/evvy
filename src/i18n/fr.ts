@@ -74,6 +74,7 @@ export const fr: Translations = {
       rsvp: {
         badge: "📋 Gestion des RSVPs",
         title: "Collectez les réponses de vos invités, sans effort.",
+        titleHighlight: "sans effort",
         description:
           "Activez les RSVPs en un clic et regardez les confirmations arriver sur votre tableau de bord — fini les tableurs et les allers-retours par email.",
         bullets: [
@@ -88,6 +89,7 @@ export const fr: Translations = {
       calendars: {
         badge: "📅 Calendriers personnalisés",
         title: "Créez et gérez vos calendriers aux couleurs de votre marque.",
+        titleHighlight: "couleurs de votre marque",
         description:
           "Regroupez vos événements dans des calendriers nommés, choisissez une couleur et une icône, et partagez un lien unique auquel votre audience peut s'abonner.",
         bullets: [
@@ -100,12 +102,12 @@ export const fr: Translations = {
       sharing: {
         badge: "🔗 Partage & Intégrations",
         title: "Partagez vos événements partout : page publique, HTML et mailing.",
+        titleHighlight: "partout",
         description:
           "Chaque événement obtient une page publique soignée ainsi qu'un extrait HTML prêt à coller — glissez-le dans votre newsletter et c'est terminé.",
         bullets: [
           "Une URL publique personnalisée par événement",
           "Un extrait HTML à intégrer en une ligne",
-          "Des liens compatibles avec tous les outils d'emailing",
           "Compatible Google, Apple, Outlook, Office 365 et Yahoo",
         ],
         cta: "Voir les intégrations →",
@@ -114,13 +116,13 @@ export const fr: Translations = {
     branding: {
       badge: "🎨 White-Label & Branding",
       title: "Des pages événements à l'image de votre marque.",
+      titleHighlight: "votre marque",
       description:
         "Importez votre logo, définissez vos propres couleurs, et retirez complètement notre image — vos invités ne verront que la vôtre.",
       bullets: [
         "Import de logo en quelques secondes",
         "Couleurs principale et secondaire personnalisées",
         "Suppression de la mention « Powered by »",
-        "Aperçu en temps réel pendant que vous personnalisez",
       ],
       cta: "Personnaliser mon événement →",
     },
@@ -208,6 +210,22 @@ export const fr: Translations = {
       subtitle: "Rejoignez des milliers d'organisateurs qui font confiance à la plateforme.",
       ctaPrimary: "Commencer gratuitement",
       ctaSecondary: "Essayer, c'est gratuit",
+    },
+    mockups: {
+      rsvp: {
+        yes: "Oui",
+        maybe: "Peut-être",
+        no: "Non",
+        confirm: "Confirmer ma présence",
+      },
+      sharing: {
+        addToCalendar: "Ajouter au calendrier",
+      },
+      branding: {
+        customBrand: "Marque personnalisée",
+        confirm: "Confirmer ma présence",
+        eventDate: "Mer. 18 nov · 09:00 – 18:00 · Seattle, WA",
+      },
     },
   },
 
