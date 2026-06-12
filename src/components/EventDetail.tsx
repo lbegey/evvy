@@ -11,7 +11,8 @@ import { CreateEventDialog } from "@/components/CreateEventDialog";
 import { type RsvpQuestion } from "@/components/EventQuestionsSection";
 import { type BrandingPreset } from "@/app/actions/brandingPresets";
 import { assignEventToCalendar } from "@/app/actions/calendars";
-import { createEvent, deleteEvent, toggleEventPublished } from "@/app/actions/events";
+import { createEvent, deleteEvent, toggleEventPublished, updateEventBranding } from "@/app/actions/events";
+import { applyBrandingPresetToEvent } from "@/app/actions/brandingPresets";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { markdownToHtml } from "@/lib/markdown";
 import { EvvySwitch } from "@/components/event-dashboard/EvvySwitch";
@@ -20,7 +21,7 @@ import { type SidebarItem } from "@/components/event-dashboard/DashboardSidebar"
 import { EventRsvpCard, type RsvpRecord } from "@/components/event-dashboard/EventRsvpCard";
 import { EventShareCard } from "@/components/event-dashboard/EventShareCard";
 import { EventQrCard } from "@/components/event-dashboard/EventQrCard";
-import { EventBrandingCard } from "@/components/event-dashboard/EventBrandingCard";
+import { BrandingCard } from "@/components/event-dashboard/BrandingCard";
 import { EventAttachmentCard } from "@/components/event-dashboard/EventAttachmentCard";
 import { EventCalendarCard } from "@/components/event-dashboard/EventCalendarCard";
 import { EventIntegrationCard } from "@/components/event-dashboard/EventIntegrationCard";
@@ -311,8 +312,10 @@ export function EventDetail({
                 </div>
               </section>
 
-              <EventBrandingCard
-                eventId={event.id}
+              <BrandingCard
+                targetId={event.id}
+                updateBranding={updateEventBranding}
+                applyPreset={applyBrandingPresetToEvent}
                 plan={plan}
                 brandingEnabled={event.brandingEnabled}
                 brandLogoUrl={event.brandLogoUrl}

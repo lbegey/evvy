@@ -543,6 +543,8 @@ export const en = {
     manageCalendar: "Manage calendar",
     kpiPublished: "Published",
     kpiDrafts: "Drafts",
+    homeTitle: "My events",
+    homeSubtitle: "Browse, create and manage all your events.",
   },
 
   rsvpSection: {

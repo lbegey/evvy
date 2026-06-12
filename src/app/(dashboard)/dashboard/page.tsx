@@ -2,6 +2,7 @@ import { headers } from "next/headers";
 import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { CalendarView } from "@/components/CalendarView";
+import { DashboardPageHeader } from "@/components/event-dashboard/DashboardPageHeader";
 
 export const dynamic = "force-dynamic";
 
@@ -46,15 +47,20 @@ export default async function DashboardPage({
   const initialMonth = month ? parseInt(month) : undefined;
 
   return (
-    <section className="mx-auto max-w-6xl px-6 py-8">
-      <CalendarView
-        events={events}
-        calendars={calendars}
-        plan={user?.plan ?? "free"}
-        initialYear={initialYear}
-        initialMonth={initialMonth}
-        initialViewMode={user?.dashboardView ?? null}
-      />
-    </section>
+    <>
+      <DashboardPageHeader variant="events" />
+      <section className="mx-auto max-w-[1400px] px-4 py-8 sm:px-8">
+        <div className="rounded-xl2 border border-line bg-white p-4 shadow-card sm:p-6">
+          <CalendarView
+            events={events}
+            calendars={calendars}
+            plan={user?.plan ?? "free"}
+            initialYear={initialYear}
+            initialMonth={initialMonth}
+            initialViewMode={user?.dashboardView ?? null}
+          />
+        </div>
+      </section>
+    </>
   );
 }

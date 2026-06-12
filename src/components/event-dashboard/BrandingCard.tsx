@@ -7,8 +7,7 @@ import { Palette, RotateCcw, Loader2 } from "lucide-react";
 import { ImageDropzone } from "@/components/ImageDropzone";
 import { SaveBrandingPresetButton } from "@/components/SaveBrandingPresetButton";
 import { useBrandingPresets } from "@/hooks/useBrandingPresets";
-import { updateEventBranding } from "@/app/actions/events";
-import { applyBrandingPresetToEvent, type BrandingPreset } from "@/app/actions/brandingPresets";
+import { type BrandingPreset } from "@/app/actions/brandingPresets";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { cn } from "@/lib/utils";
 import { EvvySwitch } from "./EvvySwitch";
@@ -19,8 +18,22 @@ const MIN_LOGO_SIZE = 16;
 const MAX_LOGO_SIZE = 300;
 const COLOR_SAVE_DELAY_MS = 700;
 
+interface BrandingData {
+  brandingEnabled: boolean;
+  brandLogoUrl: string | null;
+  brandLogoSize: number | null;
+  brandLogoTransparentBg: boolean;
+  brandLogoRounded: boolean;
+  brandColor: string | null;
+  brandTextColor: string | null;
+  brandCardColor: string | null;
+  brandIconBackgroundColor: string | null;
+  brandBackgroundColor: string | null;
+  brandBackgroundImageUrl: string | null;
+}
+
 interface Props {
-  eventId: string;
+  targetId: string;
   plan: string;
   brandingEnabled: boolean;
   brandLogoUrl: string | null;
@@ -36,6 +49,8 @@ interface Props {
   initialPresets: BrandingPreset[];
   previewTitle: string;
   previewMeta: string;
+  updateBranding: (id: string, data: BrandingData) => Promise<{ error: "forbidden" } | undefined>;
+  applyPreset: (id: string, presetId: string) => Promise<{ error: "forbidden" } | undefined>;
 }
 
 function ColorField({ label, value, placeholder, onChange, onCommit }: {
@@ -55,8 +70,8 @@ function ColorField({ label, value, placeholder, onChange, onCommit }: {
   );
 }
 
-export function EventBrandingCard(props: Props) {
-  const { eventId, plan, previewTitle, previewMeta, initialPresets } = props;
+export function BrandingCard(props: Props) {
+  const { targetId, plan, previewTitle, previewMeta, initialPresets, updateBranding, applyPreset } = props;
   const router = useRouter();
   const { T } = useLanguage();
   const { presets, refresh: refreshPresets } = useBrandingPresets(initialPresets);
@@ -104,7 +119,7 @@ export function EventBrandingCard(props: Props) {
   };
 
   const persist = (overrides: Partial<Record<string, unknown>> = {}) => {
-    startTransition(async () => { await updateEventBranding(eventId, buildData(overrides)); router.refresh(); });
+    startTransition(async () => { await updateBranding(targetId, buildData(overrides)); router.refresh(); });
   };
 
   // debounced auto-save for color fields
@@ -112,7 +127,7 @@ export function EventBrandingCard(props: Props) {
     if (isFirstRender.current) { isFirstRender.current = false; return; }
     if (!enabled) return;
     const timer = setTimeout(() => {
-      startColorSave(async () => { await updateEventBranding(eventId, buildData()); router.refresh(); });
+      startColorSave(async () => { await updateBranding(targetId, buildData()); router.refresh(); });
     }, COLOR_SAVE_DELAY_MS);
     return () => clearTimeout(timer);
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -131,7 +146,7 @@ export function EventBrandingCard(props: Props) {
     setCardColor(preset.brandCardColor ?? "");
     setBackgroundColor(preset.brandBackgroundColor ?? "");
     setBackgroundImageUrl(preset.brandBackgroundImageUrl ?? "");
-    startApply(async () => { await applyBrandingPresetToEvent(eventId, preset.id); router.refresh(); });
+    startApply(async () => { await applyPreset(targetId, preset.id); router.refresh(); });
   };
 
   const onReset = () => {
@@ -139,7 +154,7 @@ export function EventBrandingCard(props: Props) {
     setLogoUrl(""); setLogoSize(DEFAULT_LOGO_SIZE); setLogoTransparentBg(true); setLogoRounded(false);
     setColor(""); setTextColor(""); setCardColor(""); setBackgroundColor(""); setBackgroundImageUrl("");
     startReset(async () => {
-      await updateEventBranding(eventId, {
+      await updateBranding(targetId, {
         brandingEnabled: enabled, brandLogoUrl: null, brandLogoSize: null, brandLogoTransparentBg: true, brandLogoRounded: false,
         brandColor: null, brandTextColor: null, brandCardColor: null, brandIconBackgroundColor: null, brandBackgroundColor: null, brandBackgroundImageUrl: null,
       });

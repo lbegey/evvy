@@ -9,7 +9,7 @@ import { cn } from "@/lib/utils";
 
 interface Props {
   isSuperAdmin: boolean;
-  onMenuClick: () => void;
+  onMenuClick?: () => void;
   onNewEvent?: () => void;
   showNav?: boolean;
 }
@@ -25,9 +25,11 @@ export function DashboardTopbar({ isSuperAdmin, onMenuClick, onNewEvent, showNav
 
   return (
     <header className="z-40 flex h-16 shrink-0 items-center gap-3 border-b border-line bg-white px-4 sm:px-6">
-      <button onClick={onMenuClick} className="-ml-1 rounded-lg p-2 text-inksoft hover:bg-paper lg:hidden" aria-label="Menu">
-        <Menu className="h-5 w-5" />
-      </button>
+      {onMenuClick && (
+        <button onClick={onMenuClick} className="-ml-1 rounded-lg p-2 text-inksoft hover:bg-paper lg:hidden" aria-label="Menu">
+          <Menu className="h-5 w-5" />
+        </button>
+      )}
 
       <Link href="/dashboard" className="font-display text-[22px] font-extrabold tracking-tight text-ink">
         Ev<span className="text-evvy">vy</span><span className="text-evvy">.</span>

@@ -8,12 +8,11 @@ import {
   CalendarX2, ChevronLeft, ChevronRight, QrCode, Download, Copy,
 } from "lucide-react";
 import { CalendarDialog, type CalendarDialogValues } from "@/components/CalendarDialog";
-import { CalendarBrandingSection } from "@/components/CalendarBrandingSection";
-import { type BrandingPreset } from "@/app/actions/brandingPresets";
+import { applyBrandingPresetToCalendar, type BrandingPreset } from "@/app/actions/brandingPresets";
 import { CalendarSlugSection } from "@/components/CalendarSlugSection";
 import { SocialShareLinks } from "@/components/SocialShareLinks";
 import { CreateEventDialog } from "@/components/CreateEventDialog";
-import { updateCalendar, deleteCalendar, assignEventToCalendar, toggleCalendarPublished } from "@/app/actions/calendars";
+import { updateCalendar, deleteCalendar, assignEventToCalendar, toggleCalendarPublished, updateCalendarBranding } from "@/app/actions/calendars";
 import { createEvent, removeEvent } from "@/app/actions/events";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { cn } from "@/lib/utils";
@@ -21,6 +20,7 @@ import { DashboardShell } from "@/components/event-dashboard/DashboardShell";
 import { type SidebarItem } from "@/components/event-dashboard/DashboardSidebar";
 import { EvvySwitch } from "@/components/event-dashboard/EvvySwitch";
 import { CopyButton } from "@/components/event-dashboard/CopyButton";
+import { BrandingCard } from "@/components/event-dashboard/BrandingCard";
 
 interface CalendarRecord {
   id: string;
@@ -296,33 +296,26 @@ export function CalendarDetail({ calendar, events, calendars, appUrl, plan, emai
           </section>
 
           {/* Branding */}
-          <section data-reveal id="branding" className="scroll-mt-24 rounded-xl2 border border-line bg-white p-5 shadow-card">
-            <div className="mb-4 flex items-center gap-3">
-              <span className="grid h-9 w-9 place-items-center rounded-lg bg-evvy-soft text-evvy"><Palette className="h-[18px] w-[18px]" /></span>
-              <div>
-                <h2 className="font-display text-lg font-bold leading-none">{T.eventDetail.branding.title}</h2>
-                <p className="mt-1 text-xs text-inksoft">{T.eventDashboard.brandingSubtitle}</p>
-              </div>
-            </div>
-            <div className="evvy-theme">
-              <CalendarBrandingSection
-                calendarId={calendar.id}
-                plan={plan}
-                brandingEnabled={calendar.brandingEnabled}
-                brandLogoUrl={calendar.brandLogoUrl}
-                brandLogoSize={calendar.brandLogoSize}
-                brandLogoTransparentBg={calendar.brandLogoTransparentBg}
-                brandLogoRounded={calendar.brandLogoRounded}
-                brandColor={calendar.brandColor}
-                brandTextColor={calendar.brandTextColor}
-                brandCardColor={calendar.brandCardColor}
-                brandIconBackgroundColor={calendar.brandIconBackgroundColor}
-                brandBackgroundColor={calendar.brandBackgroundColor}
-                brandBackgroundImageUrl={calendar.brandBackgroundImageUrl}
-                initialPresets={brandingPresets}
-              />
-            </div>
-          </section>
+          <BrandingCard
+            targetId={calendar.id}
+            updateBranding={updateCalendarBranding}
+            applyPreset={applyBrandingPresetToCalendar}
+            plan={plan}
+            brandingEnabled={calendar.brandingEnabled}
+            brandLogoUrl={calendar.brandLogoUrl}
+            brandLogoSize={calendar.brandLogoSize}
+            brandLogoTransparentBg={calendar.brandLogoTransparentBg}
+            brandLogoRounded={calendar.brandLogoRounded}
+            brandColor={calendar.brandColor}
+            brandTextColor={calendar.brandTextColor}
+            brandCardColor={calendar.brandCardColor}
+            brandIconBackgroundColor={calendar.brandIconBackgroundColor}
+            brandBackgroundColor={calendar.brandBackgroundColor}
+            brandBackgroundImageUrl={calendar.brandBackgroundImageUrl}
+            initialPresets={brandingPresets}
+            previewTitle={calendar.name}
+            previewMeta={T.dashboardDetail.sidebar.events + " · " + events.length}
+          />
 
           {/* Events */}
           <section data-reveal id="events" className="scroll-mt-24 rounded-xl2 border border-line bg-white p-5 shadow-card">

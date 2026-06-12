@@ -146,7 +146,7 @@ export function CalendarsManager({ calendars, appUrl, plan }: CalendarsManagerPr
             return (
               <li
                 key={calendar.id}
-                className="group relative flex items-center gap-3 rounded-xl border border-border/60 bg-background p-3 transition-colors hover:bg-muted/20"
+                className="group relative flex items-center gap-3 rounded-xl2 border border-border/60 bg-background p-3 shadow-card transition-colors hover:bg-muted/20"
               >
                 <Link
                   href={`/dashboard/calendars/${calendar.id}`}

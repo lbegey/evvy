@@ -545,6 +545,8 @@ export const fr: Translations = {
     manageCalendar: "Gérer le calendrier",
     kpiPublished: "Publiés",
     kpiDrafts: "Brouillons",
+    homeTitle: "Mes événements",
+    homeSubtitle: "Parcourez, créez et gérez tous vos événements.",
   },
 
   rsvpSection: {

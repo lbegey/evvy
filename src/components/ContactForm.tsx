@@ -49,10 +49,10 @@ export function ContactForm() {
       <div className="mx-auto max-w-lg">
         {/* Header */}
         <div className="mb-10 text-center">
-          <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10">
-            <MessageSquare className="h-6 w-6 text-primary" />
+          <div className="mx-auto mb-4 grid h-14 w-14 place-items-center rounded-2xl bg-linear-to-br from-evvy to-coral text-white shadow-pop">
+            <MessageSquare className="h-7 w-7" />
           </div>
-          <h1 className="text-3xl font-bold tracking-tight text-foreground">
+          <h1 className="font-display text-3xl font-extrabold tracking-tight text-foreground">
             {T.contact.title}
           </h1>
           <p className="mt-2 text-muted-foreground">{T.contact.subtitle}</p>
@@ -72,7 +72,7 @@ export function ContactForm() {
         ) : (
           <form
             onSubmit={form.handleSubmit(onSubmit)}
-            className="space-y-5 rounded-xl border border-border/60 bg-card p-6 shadow-sm"
+            className="space-y-5 rounded-xl2 border border-border/60 bg-card p-6 shadow-card"
           >
             <div className="grid gap-4 sm:grid-cols-2">
               <div className="space-y-1.5">

@@ -4,7 +4,10 @@ import { ContactForm } from "@/components/ContactForm";
 
 export default function ContactPage() {
   return (
-    <div className="flex min-h-full flex-col">
+    <div
+      className="evvy-theme flex min-h-full flex-col bg-white"
+      style={{ fontFamily: "var(--font-inter), Inter, system-ui, sans-serif" }}
+    >
       <Navbar />
       <ContactForm />
       <Footer />
