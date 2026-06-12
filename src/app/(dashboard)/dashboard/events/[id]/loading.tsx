@@ -1,6 +1,6 @@
 export default function EventDetailLoading() {
   return (
-    <div className="flex h-dvh flex-col overflow-hidden bg-paper">
+    <div className="fixed inset-0 flex flex-col overflow-hidden bg-paper">
       {/* topbar */}
       <div className="flex h-16 shrink-0 items-center gap-3 border-b border-line bg-white px-4 sm:px-6">
         <div className="h-6 w-16 animate-pulse rounded bg-line" />

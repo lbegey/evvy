@@ -23,7 +23,6 @@ import { EventShareCard } from "@/components/event-dashboard/EventShareCard";
 import { EventQrCard } from "@/components/event-dashboard/EventQrCard";
 import { EventBrandingCard } from "@/components/event-dashboard/EventBrandingCard";
 import { EventAttachmentCard } from "@/components/event-dashboard/EventAttachmentCard";
-import { EventQuestionsCard } from "@/components/event-dashboard/EventQuestionsCard";
 import { EventCalendarCard } from "@/components/event-dashboard/EventCalendarCard";
 import { EventIntegrationCard } from "@/components/event-dashboard/EventIntegrationCard";
 import { EventEmbedCard } from "@/components/event-dashboard/EventEmbedCard";
@@ -151,7 +150,7 @@ export function EventDetail({
     { id: "qr-code", label: T.dashboardDetail.sidebar.qrCode, Icon: QrCode },
     { id: "branding", label: T.dashboardDetail.sidebar.branding, Icon: Palette },
     { id: "rsvp", label: T.dashboardDetail.sidebar.rsvp, Icon: Users, badge: rsvps.length },
-    { id: "attachment", label: T.eventDashboard.attachmentQuestions, Icon: Paperclip },
+    { id: "attachment", label: T.dashboardDetail.sidebar.attachment, Icon: Paperclip },
     { id: "integration", label: T.dashboardDetail.sidebar.integration, Icon: Code2 },
     { id: "embed", label: T.dashboardDetail.sidebar.embed, Icon: AppWindow },
     { id: "stats", label: T.dashboardDetail.sidebar.stats, Icon: BarChart2 },
@@ -354,6 +353,7 @@ export function EventDetail({
               <section id="overview" className="grid scroll-mt-24 grid-cols-1 gap-6 xl:grid-cols-3">
                 <EventRsvpCard
                   eventId={event.id}
+                  plan={plan}
                   rsvpEnabled={event.rsvpEnabled}
                   rsvpLimit={event.rsvpLimit}
                   rsvpDeadline={event.rsvpDeadline}
@@ -386,14 +386,13 @@ export function EventDetail({
                 previewMeta={previewMeta}
               />
 
-              <section id="attachment" data-reveal className="grid scroll-mt-24 grid-cols-1 gap-6 lg:grid-cols-3">
+              <section id="attachment" data-reveal className="grid scroll-mt-24 grid-cols-1 gap-6 lg:grid-cols-2">
                 <EventAttachmentCard
                   eventId={event.id}
                   attachmentUrl={event.attachmentUrl}
                   attachmentName={event.attachmentName}
                   attachmentButtonLabel={event.attachmentButtonLabel}
                 />
-                <EventQuestionsCard eventId={event.id} plan={plan} questions={questions} />
                 <EventCalendarCard eventId={event.id} plan={plan} calendarId={event.calendarId} calendars={calendars} />
               </section>
 

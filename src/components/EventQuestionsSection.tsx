@@ -2,11 +2,7 @@
 
 import { useRef, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import Link from "next/link";
 import { Plus, Pencil, Trash2, GripVertical } from "lucide-react";
-import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
 import {
   createRsvpQuestion,
   updateRsvpQuestion,
@@ -15,6 +11,7 @@ import {
 } from "@/app/actions/questions";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { cn } from "@/lib/utils";
+import { LockedNotice } from "@/components/event-dashboard/LockedNotice";
 
 export interface RsvpQuestion {
   id: string;
@@ -42,6 +39,10 @@ interface FormState {
 
 const EMPTY_FORM: FormState = { label: "", type: "text", options: ["", ""], required: false };
 
+const INPUT_CLS = "h-9 w-full rounded-lg border border-line bg-white px-3 text-sm placeholder:text-inksoft/50 focus:border-evvy focus:outline-none focus:ring-2 focus:ring-evvy/30";
+const PRIMARY_BTN = "inline-flex items-center gap-1.5 rounded-lg bg-evvy px-3 text-sm font-medium text-white transition hover:bg-evvy-deep disabled:opacity-40";
+const OUTLINE_BTN = "inline-flex items-center gap-1.5 rounded-lg border border-line px-3 text-sm font-medium transition hover:bg-paper disabled:opacity-40";
+
 export function EventQuestionsSection({ eventId, plan, questions: initialQuestions }: Props) {
   const router = useRouter();
   const { T } = useLanguage();
@@ -57,20 +58,10 @@ export function EventQuestionsSection({ eventId, plan, questions: initialQuestio
   const rowRefs = useRef<Map<string, HTMLDivElement>>(new Map());
 
   if (plan !== "premium") {
-    return (
-      <div className="flex flex-wrap items-center justify-between gap-3 rounded-lg bg-muted/40 p-3">
-        <p className="text-sm text-muted-foreground">{T.rsvpQuestions.locked}</p>
-        <Link href="/dashboard/billing" className="inline-flex items-center rounded-lg bg-primary px-3 py-1.5 text-xs font-medium text-primary-foreground transition-colors hover:bg-primary/80">
-          {T.rsvpQuestions.unlock}
-        </Link>
-      </div>
-    );
+    return <LockedNotice message={T.rsvpQuestions.locked} unlock={T.rsvpQuestions.unlock} />;
   }
 
-  const openNew = () => {
-    setForm(EMPTY_FORM);
-    setEditing("new");
-  };
+  const openNew = () => { setForm(EMPTY_FORM); setEditing("new"); };
 
   const openEdit = (q: RsvpQuestion) => {
     let opts: string[] = ["", ""];
@@ -92,11 +83,7 @@ export function EventQuestionsSection({ eventId, plan, questions: initialQuestio
     startTransition(async () => {
       if (editing === "new") {
         const result = await createRsvpQuestion(eventId, {
-          label: form.label,
-          type: form.type,
-          options,
-          required: form.required,
-          order: questions.length,
+          label: form.label, type: form.type, options, required: form.required, order: questions.length,
         });
         if (!("error" in result)) {
           setQuestions((prev) => [
@@ -158,10 +145,7 @@ export function EventQuestionsSection({ eventId, plan, questions: initialQuestio
     setOrderDirty(true);
   };
 
-  const handleDragEnd = () => {
-    setDraggedId(null);
-    setDragOverId(null);
-  };
+  const handleDragEnd = () => { setDraggedId(null); setDragOverId(null); };
 
   const handleSaveOrder = () => {
     startTransition(async () => {
@@ -182,33 +166,22 @@ export function EventQuestionsSection({ eventId, plan, questions: initialQuestio
   return (
     <div className="space-y-3">
       {questions.length === 0 && editing === null && (
-        <p className="text-sm text-muted-foreground">{T.rsvpQuestions.noQuestionsHint}</p>
+        <p className="text-sm text-inksoft">{T.rsvpQuestions.noQuestionsHint}</p>
       )}
 
       {questions.map((q) => (
         <div key={q.id}>
           {editing === q.id ? (
-            <QuestionForm
-              form={form}
-              setForm={setForm}
-              typeLabels={TYPE_LABELS}
-              T={T}
-              isPending={isPending}
-              onSave={handleSave}
-              onCancel={closeForm}
-            />
+            <QuestionForm form={form} setForm={setForm} typeLabels={TYPE_LABELS} T={T} isPending={isPending} onSave={handleSave} onCancel={closeForm} />
           ) : (
             <div
-              ref={(el) => {
-                if (el) rowRefs.current.set(q.id, el);
-                else rowRefs.current.delete(q.id);
-              }}
+              ref={(el) => { if (el) rowRefs.current.set(q.id, el); else rowRefs.current.delete(q.id); }}
               onDragOver={(e) => handleDragOver(e, q.id)}
               onDrop={(e) => handleDrop(e, q.id)}
               className={cn(
-                "flex items-center gap-2 rounded-lg border bg-background px-3 py-2.5 transition-colors",
-                draggedId === q.id ? "border-border/60 opacity-40" : "border-border/60",
-                dragOverId === q.id && draggedId !== q.id && "border-primary border-dashed"
+                "flex items-center gap-2 rounded-lg border bg-white px-3 py-2.5 transition-colors",
+                draggedId === q.id ? "border-line opacity-40" : "border-line",
+                dragOverId === q.id && draggedId !== q.id && "border-dashed border-evvy"
               )}
             >
               <button
@@ -216,33 +189,23 @@ export function EventQuestionsSection({ eventId, plan, questions: initialQuestio
                 draggable
                 onDragStart={(e) => handleDragStart(e, q.id)}
                 onDragEnd={handleDragEnd}
-                className="shrink-0 cursor-grab rounded p-1 text-muted-foreground/40 hover:text-muted-foreground active:cursor-grabbing"
+                className="shrink-0 cursor-grab rounded p-1 text-inksoft/40 hover:text-inksoft active:cursor-grabbing"
                 aria-label="Drag to reorder"
               >
                 <GripVertical className="h-3.5 w-3.5" />
               </button>
               <div className="min-w-0 flex-1">
-                <p className="truncate text-sm font-medium text-foreground">{q.label}</p>
-                <p className="text-xs text-muted-foreground">
+                <p className="truncate text-sm font-medium text-ink">{q.label}</p>
+                <p className="text-xs text-inksoft">
                   {TYPE_LABELS[q.type as QuestionType] ?? q.type}
-                  {q.required && <span className="ml-1.5 text-destructive">*</span>}
+                  {q.required && <span className="ml-1.5 text-coral">*</span>}
                 </p>
               </div>
               <div className="flex shrink-0 items-center gap-1">
-                <button
-                  type="button"
-                  onClick={() => openEdit(q)}
-                  disabled={isPending}
-                  className="rounded p-1 text-muted-foreground hover:text-foreground"
-                >
+                <button type="button" onClick={() => openEdit(q)} disabled={isPending} className="rounded p-1 text-inksoft hover:text-ink">
                   <Pencil className="h-3.5 w-3.5" />
                 </button>
-                <button
-                  type="button"
-                  onClick={() => handleDelete(q.id)}
-                  disabled={isPending}
-                  className="rounded p-1 text-muted-foreground hover:text-destructive"
-                >
+                <button type="button" onClick={() => handleDelete(q.id)} disabled={isPending} className="rounded p-1 text-inksoft hover:text-coral">
                   <Trash2 className="h-3.5 w-3.5" />
                 </button>
               </div>
@@ -252,27 +215,18 @@ export function EventQuestionsSection({ eventId, plan, questions: initialQuestio
       ))}
 
       {editing === "new" && (
-        <QuestionForm
-          form={form}
-          setForm={setForm}
-          typeLabels={TYPE_LABELS}
-          T={T}
-          isPending={isPending}
-          onSave={handleSave}
-          onCancel={closeForm}
-        />
+        <QuestionForm form={form} setForm={setForm} typeLabels={TYPE_LABELS} T={T} isPending={isPending} onSave={handleSave} onCancel={closeForm} />
       )}
 
       {editing === null && (
         <div className="flex items-center gap-2">
-          <Button variant="outline" size="sm" className="gap-1.5" onClick={openNew} disabled={isPending}>
-            <Plus className="h-3.5 w-3.5" />
-            {T.rsvpQuestions.add}
-          </Button>
+          <button type="button" onClick={openNew} disabled={isPending} className={cn(OUTLINE_BTN, "h-9")}>
+            <Plus className="h-3.5 w-3.5" />{T.rsvpQuestions.add}
+          </button>
           {orderDirty && (
-            <Button size="sm" className="gap-1.5" onClick={handleSaveOrder} disabled={isPending}>
+            <button type="button" onClick={handleSaveOrder} disabled={isPending} className={cn(PRIMARY_BTN, "h-9")}>
               {T.rsvpQuestions.saveOrder}
-            </Button>
+            </button>
           )}
         </div>
       )}
@@ -281,13 +235,7 @@ export function EventQuestionsSection({ eventId, plan, questions: initialQuestio
 }
 
 function QuestionForm({
-  form,
-  setForm,
-  typeLabels,
-  T,
-  isPending,
-  onSave,
-  onCancel,
+  form, setForm, typeLabels, T, isPending, onSave, onCancel,
 }: {
   form: FormState;
   setForm: React.Dispatch<React.SetStateAction<FormState>>;
@@ -298,25 +246,25 @@ function QuestionForm({
   onCancel: () => void;
 }) {
   return (
-    <div className="space-y-3 rounded-xl border border-primary/30 bg-primary/5 p-3">
+    <div className="space-y-3 rounded-xl border border-evvy/30 bg-evvy-soft/40 p-3">
       <div className="space-y-1.5">
-        <Label className="text-xs">{T.rsvpQuestions.label}</Label>
-        <Input
+        <label className="text-xs font-medium text-inksoft">{T.rsvpQuestions.label}</label>
+        <input
           value={form.label}
           onChange={(e) => setForm((f) => ({ ...f, label: e.target.value }))}
           placeholder={T.rsvpQuestions.labelPlaceholder}
-          className="h-8 text-sm"
+          className={cn(INPUT_CLS, "h-8")}
           autoFocus
         />
       </div>
 
       <div className="grid grid-cols-2 gap-2">
         <div className="space-y-1.5">
-          <Label className="text-xs">{T.rsvpQuestions.type}</Label>
+          <label className="text-xs font-medium text-inksoft">{T.rsvpQuestions.type}</label>
           <select
             value={form.type}
             onChange={(e) => setForm((f) => ({ ...f, type: e.target.value as FormState["type"] }))}
-            className="h-8 w-full rounded-md border border-input bg-background px-2 text-sm"
+            className="h-8 w-full rounded-lg border border-line bg-white px-2 text-sm focus:border-evvy focus:outline-none focus:ring-2 focus:ring-evvy/30"
           >
             {(["text", "textarea", "select", "checkbox"] as const).map((t) => (
               <option key={t} value={t}>{typeLabels[t]}</option>
@@ -324,12 +272,12 @@ function QuestionForm({
           </select>
         </div>
         <div className="flex items-end pb-0.5">
-          <label className="flex cursor-pointer items-center gap-2 text-xs text-foreground">
+          <label className="flex cursor-pointer items-center gap-2 text-xs text-ink">
             <input
               type="checkbox"
               checked={form.required}
               onChange={(e) => setForm((f) => ({ ...f, required: e.target.checked }))}
-              className="h-3.5 w-3.5 accent-primary"
+              className="h-3.5 w-3.5 accent-evvy"
             />
             {T.rsvpQuestions.required}
           </label>
@@ -338,10 +286,10 @@ function QuestionForm({
 
       {(form.type === "select" || form.type === "checkbox") && (
         <div className="space-y-1.5">
-          <Label className="text-xs">{T.rsvpQuestions.options}</Label>
+          <label className="text-xs font-medium text-inksoft">{T.rsvpQuestions.options}</label>
           {form.options.map((opt, i) => (
             <div key={i} className="flex items-center gap-1.5">
-              <Input
+              <input
                 value={opt}
                 onChange={(e) => setForm((f) => {
                   const opts = [...f.options];
@@ -349,13 +297,13 @@ function QuestionForm({
                   return { ...f, options: opts };
                 })}
                 placeholder={`Option ${i + 1}`}
-                className="h-7 text-xs"
+                className={cn(INPUT_CLS, "h-7 text-xs")}
               />
               {form.options.length > 2 && (
                 <button
                   type="button"
                   onClick={() => setForm((f) => ({ ...f, options: f.options.filter((_, j) => j !== i) }))}
-                  className="shrink-0 text-xs text-muted-foreground hover:text-destructive"
+                  className="shrink-0 text-xs text-inksoft hover:text-coral"
                 >
                   {T.rsvpQuestions.removeOption}
                 </button>
@@ -365,7 +313,7 @@ function QuestionForm({
           <button
             type="button"
             onClick={() => setForm((f) => ({ ...f, options: [...f.options, ""] }))}
-            className={cn("text-xs text-primary hover:text-primary/80")}
+            className="text-xs text-evvy hover:text-evvy-deep"
           >
             + {T.rsvpQuestions.addOption}
           </button>
@@ -373,12 +321,12 @@ function QuestionForm({
       )}
 
       <div className="flex items-center gap-2 pt-1">
-        <Button size="sm" onClick={onSave} disabled={isPending || !form.label.trim()} className="h-7 text-xs px-3">
+        <button type="button" onClick={onSave} disabled={isPending || !form.label.trim()} className={cn(PRIMARY_BTN, "h-7 px-3 text-xs")}>
           {T.rsvpQuestions.save}
-        </Button>
-        <Button size="sm" variant="ghost" onClick={onCancel} disabled={isPending} className="h-7 text-xs px-3">
+        </button>
+        <button type="button" onClick={onCancel} disabled={isPending} className="inline-flex h-7 items-center rounded-lg px-3 text-xs font-medium text-inksoft transition hover:bg-paper disabled:opacity-40">
           {T.rsvpQuestions.cancel}
-        </Button>
+        </button>
       </div>
     </div>
   );

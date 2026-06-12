@@ -1,13 +1,9 @@
 import { notFound } from "next/navigation";
-import { Inter, Bricolage_Grotesque } from "next/font/google";
 import { db } from "@/lib/db";
 import { getAppUrl } from "@/lib/url";
 import { getCurrentUser } from "@/lib/session";
 import { listBrandingPresets } from "@/app/actions/brandingPresets";
 import { EventDetail } from "@/components/EventDetail";
-
-const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
-const bricolage = Bricolage_Grotesque({ subsets: ["latin"], variable: "--font-bricolage" });
 
 const RSVP_QUERY_LIMIT = 500;
 
@@ -63,8 +59,8 @@ export default async function EventPage({
 
   return (
     <div
-      className={`evvy-app ${inter.variable} ${bricolage.variable} h-dvh`}
-      style={{ fontFamily: "var(--font-inter)" }}
+      className="evvy-app fixed inset-0 overflow-hidden"
+      style={{ fontFamily: "var(--font-inter), Inter, system-ui, sans-serif" }}
     >
     <EventDetail
       event={{

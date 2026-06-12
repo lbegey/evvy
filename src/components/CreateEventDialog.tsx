@@ -187,14 +187,14 @@ export function CreateEventDialog({
           "data-[starting-style]:opacity-0 data-[ending-style]:opacity-0"
         )} />
         <Dialog.Popup className={cn(
-          "fixed left-1/2 top-1/2 z-50 flex h-[min(92vh,56rem)] w-[min(96vw,52rem)] -translate-x-1/2 -translate-y-1/2 flex-col",
-          "border border-border/60 bg-background shadow-xl",
+          "evvy-theme fixed left-1/2 top-1/2 z-50 flex h-[min(92vh,56rem)] w-[min(96vw,52rem)] -translate-x-1/2 -translate-y-1/2 flex-col",
+          "overflow-hidden rounded-xl2 border border-border/60 bg-background shadow-pop",
           "transition-[transform,opacity] duration-200",
           "data-[starting-style]:opacity-0 data-[starting-style]:scale-95",
           "data-[ending-style]:opacity-0 data-[ending-style]:scale-95"
         )}>
           <div className="flex shrink-0 items-center justify-between border-b border-border/60 px-5 py-4 sm:px-6">
-            <Dialog.Title className="text-lg font-semibold text-foreground">
+            <Dialog.Title className="font-display text-lg font-bold text-foreground">
               {T.eventForm.new}
             </Dialog.Title>
             <Dialog.Close className="cursor-pointer rounded-lg p-1.5 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-ring/50">

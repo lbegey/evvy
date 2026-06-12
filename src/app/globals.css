@@ -202,6 +202,22 @@
   letter-spacing: -0.01em;
 }
 
+/* interactive elements get a pointer cursor (Tailwind v4 preflight no longer does this) */
+.evvy-app button:not(:disabled),
+.evvy-app [role="switch"]:not(:disabled),
+.evvy-app [role="tab"]:not(:disabled),
+.evvy-app label[for],
+.evvy-app summary,
+.evvy-app select:not(:disabled),
+.evvy-app input[type="color"]:not(:disabled),
+.evvy-app input[type="range"]:not(:disabled) {
+  cursor: pointer;
+}
+.evvy-app button:disabled,
+.evvy-app [role="switch"]:disabled {
+  cursor: not-allowed;
+}
+
 /* faint calendar-grid texture (mockup header signature) */
 .evvy-app .grid-texture {
   background-image: linear-gradient(#e5e3f7 1px, transparent 1px),
@@ -276,4 +292,36 @@
 }
 .evvy-scroll::-webkit-scrollbar-track {
   background: transparent;
+}
+
+/* ── Evvy theme scope — remaps the shadcn semantic tokens to the new palette.
+   Apply to portaled UI (dialogs) so their existing utilities + primitives
+   (Button/Input/Switch) inherit the new look without rewriting them. ── */
+.evvy-theme {
+  --background: #ffffff;
+  --foreground: #1a1838;
+  --card: #ffffff;
+  --card-foreground: #1a1838;
+  --popover: #ffffff;
+  --popover-foreground: #1a1838;
+  --primary: #5b4be6;
+  --primary-foreground: #ffffff;
+  --secondary: #f4f4fe;
+  --secondary-foreground: #1a1838;
+  --muted: #f4f4fe;
+  --muted-foreground: #5b5872;
+  --accent: #eeebfc;
+  --accent-foreground: #4636c9;
+  --destructive: #ff7a59;
+  --border: #e5e3f7;
+  --input: #e5e3f7;
+  --ring: #5b4be6;
+  --radius: 0.7rem;
+  font-family: var(--font-inter), "Inter", system-ui, sans-serif;
+}
+.evvy-theme button:not(:disabled),
+.evvy-theme [role="switch"]:not(:disabled),
+.evvy-theme select:not(:disabled),
+.evvy-theme label[for] {
+  cursor: pointer;
 }

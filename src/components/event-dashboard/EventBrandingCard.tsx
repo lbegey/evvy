@@ -153,6 +153,12 @@ export function EventBrandingCard(props: Props) {
     brandBackgroundColor: backgroundColor || null, brandBackgroundImageUrl: backgroundImageUrl || null,
   };
 
+  const safe = (v: string, fallback: string) => (/^#[0-9a-fA-F]{3,8}$/.test(v.trim()) ? v.trim() : fallback);
+  const accentColor = safe(color, "#6366f1");
+  const pageColor = safe(backgroundColor, "#f4f4f5");
+  const cardCol = safe(cardColor, "#ffffff");
+  const textCol = safe(textColor, "#111111");
+
   return (
     <section data-reveal id="branding" className="scroll-mt-24">
       <div className="rounded-xl2 border border-line bg-white shadow-card">
@@ -246,16 +252,28 @@ export function EventBrandingCard(props: Props) {
             {/* live preview */}
             <div className="lg:col-span-2">
               <p className="mb-1.5 text-xs font-medium text-inksoft">{T.eventDashboard.livePreview}</p>
-              <div className="overflow-hidden rounded-xl2 border border-line" style={{ background: backgroundColor || "#f4f4f5" }}>
-                <div className="h-16 bg-linear-to-br from-evvy to-coral" />
-                <div className="-mt-7 mx-4 rounded-xl border border-line p-4 shadow-card" style={{ background: cardColor || "#ffffff" }}>
-                  <p className="font-display text-base font-bold" style={{ color: textColor || "#111111" }}>{previewTitle}</p>
-                  <p className="mt-1 text-xs text-inksoft">{previewMeta}</p>
-                  <button type="button" className="mt-3 h-9 w-full rounded-lg text-sm font-semibold text-white" style={{ background: color || "#6366f1" }}>
+              <div
+                className="overflow-hidden rounded-xl2 border border-line bg-cover bg-center"
+                style={{ background: pageColor, ...(backgroundImageUrl ? { backgroundImage: `url(${backgroundImageUrl})` } : {}) }}
+              >
+                <div className="h-16" style={{ backgroundImage: `linear-gradient(135deg, ${accentColor}, #ff7a59)` }} />
+                <div className="-mt-7 mx-4 rounded-xl border border-line p-4 shadow-card" style={{ background: cardCol }}>
+                  {logoUrl && (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                      src={logoUrl}
+                      alt=""
+                      className="mb-2 w-auto object-contain"
+                      style={{ height: Math.min(logoSize, 40), borderRadius: logoRounded ? 8 : 0, background: logoTransparentBg ? "transparent" : "#fff" }}
+                    />
+                  )}
+                  <p className="font-display text-base font-bold" style={{ color: textCol }}>{previewTitle}</p>
+                  <p className="mt-1 text-xs" style={{ color: textCol, opacity: 0.6 }}>{previewMeta}</p>
+                  <button type="button" className="mt-3 h-9 w-full rounded-lg text-sm font-semibold text-white" style={{ background: accentColor }}>
                     {T.rsvpForm.attending.replace(/^✓\s*/, "")}
                   </button>
                 </div>
-                <div className="p-4 pt-3 text-[11px] text-inksoft">{T.eventDashboard.poweredBy}</div>
+                <div className="p-4 pt-3 text-[11px]" style={{ color: textCol, opacity: 0.55 }}>{T.eventDashboard.poweredBy}</div>
               </div>
               <div className="mt-3 flex items-center gap-2">
                 <button type="button" onClick={onReset} disabled={isResetting || !hasCustom}

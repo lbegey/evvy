@@ -107,7 +107,6 @@ export function EventShareCard({ eventId, plan, appUrl, slug, publicUrl, title }
           className="grid h-9 w-9 place-items-center rounded-lg border border-line transition hover:bg-paper">
           <svg width="15" height="15" viewBox="0 0 16 16" fill="#0A66C2"><path d="M14 1H2a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1zM5 13H3V6h2v7zM4 5a1.2 1.2 0 1 1 0-2.4A1.2 1.2 0 0 1 4 5zm9 8h-2V9.4c0-.9-.3-1.5-1.1-1.5-.6 0-1 .4-1.1.9 0 .2-.05.4-.05.6V13H6.8s.03-6.3 0-7h2v1c.27-.43.75-1 1.85-1 1.35 0 2.35.9 2.35 2.8V13z"/></svg>
         </a>
-        <a href="#qr-code" className="ml-auto inline-flex h-9 items-center gap-1.5 rounded-lg border border-line px-3 text-sm font-medium transition hover:bg-paper">QR ▾</a>
       </div>
     </div>
   );
