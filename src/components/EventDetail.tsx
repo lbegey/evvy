@@ -1,52 +1,35 @@
 "use client";
 
 import { useEffect, useRef, useState, useTransition } from "react";
-import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import {
-  ArrowLeft,
-  Calendar,
-  CalendarRange,
-  MapPin,
-  Clock,
-  Copy,
-  Check,
-  ExternalLink,
-  Globe,
-  Pencil,
-  Plus,
-  Trash2,
-  BarChart2,
-  Download,
-  Info,
-  Users,
-  Link2,
-  QrCode,
-  AppWindow,
-  Code2,
-  Palette,
-  HelpCircle,
-  Paperclip,
-  X,
+  CalendarDays, Calendar, Clock, Globe, MapPin, ExternalLink, Pencil, Trash2,
+  LayoutGrid, Link2, CalendarRange, QrCode, Palette, Users, Paperclip, Code2, AppWindow, BarChart2,
 } from "lucide-react";
-import { Dialog } from "@base-ui/react/dialog";
-import { Button } from "@/components/ui/button";
-import { CreateEventDialog } from "@/components/CreateEventDialog";
 import { EditEventDialog } from "@/components/EditEventDialog";
-import { RsvpSection, type RsvpRecord } from "@/components/RsvpSection";
-import { EventBrandingSection } from "@/components/EventBrandingSection";
+import { CreateEventDialog } from "@/components/CreateEventDialog";
+import { type RsvpQuestion } from "@/components/EventQuestionsSection";
 import { type BrandingPreset } from "@/app/actions/brandingPresets";
-import { EventCalendarSection } from "@/components/EventCalendarSection";
-import { EventAttachmentSection } from "@/components/EventAttachmentSection";
-import { EventQuestionsSection, type RsvpQuestion } from "@/components/EventQuestionsSection";
-import { EventSlugSection } from "@/components/EventSlugSection";
-import { SocialShareLinks } from "@/components/SocialShareLinks";
 import { assignEventToCalendar } from "@/app/actions/calendars";
 import { createEvent, deleteEvent, toggleEventPublished } from "@/app/actions/events";
-import { Switch } from "@/components/ui/switch";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { markdownToHtml } from "@/lib/markdown";
-import { cn } from "@/lib/utils";
+import { ToastProvider } from "@/components/event-dashboard/Toast";
+import { EvvySwitch } from "@/components/event-dashboard/EvvySwitch";
+import { EventTopbar } from "@/components/event-dashboard/EventTopbar";
+import { EventSidebar, type SidebarItem } from "@/components/event-dashboard/EventSidebar";
+import { EventRsvpCard, type RsvpRecord } from "@/components/event-dashboard/EventRsvpCard";
+import { EventShareCard } from "@/components/event-dashboard/EventShareCard";
+import { EventQrCard } from "@/components/event-dashboard/EventQrCard";
+import { EventBrandingCard } from "@/components/event-dashboard/EventBrandingCard";
+import { EventAttachmentCard } from "@/components/event-dashboard/EventAttachmentCard";
+import { EventQuestionsCard } from "@/components/event-dashboard/EventQuestionsCard";
+import { EventCalendarCard } from "@/components/event-dashboard/EventCalendarCard";
+import { EventIntegrationCard } from "@/components/event-dashboard/EventIntegrationCard";
+import { EventEmbedCard } from "@/components/event-dashboard/EventEmbedCard";
+import { EventStatsCard } from "@/components/event-dashboard/EventStatsCard";
+
+export type { RsvpRecord };
 
 interface Event {
   id: string;
@@ -98,6 +81,7 @@ interface EventDetailProps {
   appUrl: string;
   plan: string;
   emailVerified: boolean;
+  isSuperAdmin: boolean;
   calendars: { id: string; name: string; color: string | null }[];
   brandingPresets: BrandingPreset[];
   stats: Stats;
@@ -105,198 +89,39 @@ interface EventDetailProps {
   questions: RsvpQuestion[];
 }
 
-function CopyButton({ value, label, copiedLabel }: { value: string; label: string; copiedLabel: string }) {
-  const [copied, setCopied] = useState(false);
-  return (
-    <Button
-      variant="outline"
-      size="sm"
-      className={cn("gap-1.5", copied && "border-green-500/40 bg-green-50 text-green-700 hover:bg-green-50 hover:text-green-700")}
-      onClick={() =>
-        navigator.clipboard.writeText(value).then(() => {
-          setCopied(true);
-          setTimeout(() => setCopied(false), 2000);
-        })
-      }
-    >
-      {copied ? <Check className="h-3.5 w-3.5" /> : <Copy className="h-3.5 w-3.5" />}
-      {copied ? copiedLabel : label}
-    </Button>
-  );
-}
-
-const SIDEBAR_SECTIONS = [
-  { id: "info", labelKey: "info", icon: Info },
-  { id: "public-link", labelKey: "publicLink", icon: Link2 },
-  { id: "calendar", labelKey: "calendar", icon: CalendarRange },
-  { id: "qr-code", labelKey: "qrCode", icon: QrCode },
-  { id: "branding", labelKey: "branding", icon: Palette },
-  { id: "rsvp", labelKey: "rsvp", icon: Users },
-  { id: "attachment", labelKey: "attachment", icon: Paperclip },
-  { id: "integration", labelKey: "integration", icon: Code2 },
-  { id: "embed", labelKey: "embed", icon: AppWindow },
-  { id: "stats", labelKey: "stats", icon: BarChart2 },
-] as const;
-
-const CALENDAR_SERVICES = [
-  { key: "google",    name: "Google Calendar", logo: "/logos/google-calendar.png" },
-  { key: "apple",     name: "Apple Calendar",  logo: "/logos/apple-calendar.png" },
-  { key: "outlook",   name: "Outlook.com",     logo: "/logos/outlook.png" },
-  { key: "office365", name: "Office 365",      logo: "/logos/office365.png" },
-  { key: "yahoo",     name: "Yahoo Calendar",  logo: "/logos/yahoo-calendar.png" },
-] as const;
-
-function buildEmailHTML(event: Event, appUrl: string, addToCalendarText: string, centered: boolean): string {
-  const t = `${appUrl}/api/events/${event.id}/track`;
-  const logos = CALENDAR_SERVICES.map(
-    ({ key, name, logo }) =>
-      `      <a href="${t}?service=${key}" style="display:inline-block;margin:0 4px;vertical-align:middle">
-        <img src="${appUrl}${logo}" width="40" height="40" alt="${name}" border="0" style="display:block" />
-      </a>`
-  ).join("\n");
-  const align = centered ? "center" : "left";
-  const tableStyle = centered ? ' style="margin:0 auto"' : "";
-  return `<style>
-  @media (max-width: 480px) {
-    .atc-email-cell { display: block !important; width: 100% !important; padding: 0 !important; text-align: ${align} !important; white-space: normal !important; }
-    .atc-email-label { padding-bottom: 10px !important; }
-  }
-</style>
-<table cellpadding="0" cellspacing="0" border="0" role="presentation" align="${align}"${tableStyle}>
-  <tr>
-    <td class="atc-email-cell atc-email-label" align="${align}" style="text-align:${align};vertical-align:middle;padding-right:16px;font-size:15px;color:#374151;font-family:Arial,Helvetica,sans-serif;white-space:nowrap">
-      ${addToCalendarText}
-    </td>
-    <td class="atc-email-cell" align="${align}" style="text-align:${align};vertical-align:middle">
-${logos}
-    </td>
-  </tr>
-</table>`;
-}
-
-function buildWebHTML(event: Event, appUrl: string, addToCalendarText: string, centered: boolean): string {
-  const t = `${appUrl}/api/events/${event.id}/track`;
-  const links = CALENDAR_SERVICES.map(
-    ({ key, name, logo }) =>
-      `    <a class="atc-link" href="${t}?service=${key}" target="_blank" rel="noopener noreferrer">
-      <img class="atc-icon" src="${appUrl}${logo}" width="40" height="40" alt="${name}" />
-    </a>`
-  ).join("\n");
-  return `<style>
-  .atc { display: flex; align-items: center; gap: 12px; font-family: system-ui, -apple-system, sans-serif;${centered ? " width: 100%; justify-content: center;" : ""} }
-  .atc-label { font-size: 15px; color: #374151; white-space: nowrap; }
-  .atc-links { display: flex; gap: 8px; }
-  .atc-link { display: inline-block; }
-  .atc-icon { display: block; border-radius: 8px; }
-</style>
-<div class="atc">
-  <span class="atc-label">${addToCalendarText}</span>
-  <div class="atc-links">
-${links}
-  </div>
-</div>`;
-}
-
-function buildTailwindHTML(event: Event, appUrl: string, addToCalendarText: string, centered: boolean): string {
-  const t = `${appUrl}/api/events/${event.id}/track`;
-  const links = CALENDAR_SERVICES.map(
-    ({ key, name, logo }) =>
-      `    <a class="inline-block" href="${t}?service=${key}" target="_blank" rel="noopener noreferrer">
-      <img class="block rounded-lg" src="${appUrl}${logo}" width="40" height="40" alt="${name}" />
-    </a>`
-  ).join("\n");
-  return `<div class="flex items-center gap-3 font-sans${centered ? " w-full justify-center" : ""}">
-  <span class="text-sm text-gray-700 whitespace-nowrap">${addToCalendarText}</span>
-  <div class="flex gap-2">
-${links}
-  </div>
-</div>`;
-}
-
-export function EventDetail({ event, appUrl, plan, emailVerified, calendars, brandingPresets, stats, rsvps, questions }: EventDetailProps) {
+export function EventDetail({
+  event, appUrl, plan, emailVerified, isSuperAdmin, calendars, brandingPresets, stats, rsvps, questions,
+}: EventDetailProps) {
   const router = useRouter();
-  const [editOpen, setEditOpen] = useState(false);
-  const [rsvpModalOpen, setRsvpModalOpen] = useState(false);
-  const [isDeleting, startDelete] = useTransition();
-  const [deleteError, setDeleteError] = useState<string | null>(null);
-  const [exportFormat, setExportFormat] = useState<"email" | "web" | "tailwind" | "links">("email");
-  const [exportCentered, setExportCentered] = useState(false);
-  const [activeSection, setActiveSection] = useState<string>(SIDEBAR_SECTIONS[0].id);
-  const mobileNavRef = useRef<HTMLElement>(null);
-  const [createEventOpen, setCreateEventOpen] = useState(false);
-  const [createEventError, setCreateEventError] = useState<string | null>(null);
-  const [isCreatingEvent, startCreateEvent] = useTransition();
-  const [published, setPublished] = useState(event.published);
-  const [, startTogglePublished] = useTransition();
   const { T, lang } = useLanguage();
   const searchParams = useSearchParams();
   const fromCalendarId = searchParams.get("calendar");
   const browserTz = Intl.DateTimeFormat().resolvedOptions().timeZone;
 
-  useEffect(() => {
-    const sections = SIDEBAR_SECTIONS
-      .map(({ id }) => document.getElementById(id))
-      .filter((el): el is HTMLElement => el !== null);
-    if (sections.length === 0) return;
+  const [editOpen, setEditOpen] = useState(false);
+  const [createEventOpen, setCreateEventOpen] = useState(false);
+  const [createEventError, setCreateEventError] = useState<string | null>(null);
+  const [isCreatingEvent, startCreateEvent] = useTransition();
+  const [published, setPublished] = useState(event.published);
+  const [, startTogglePublished] = useTransition();
+  const [isDeleting, startDelete] = useTransition();
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [activeSection, setActiveSection] = useState("overview");
+  const scrollerRef = useRef<HTMLElement>(null);
 
-    const visible = new Map<string, number>();
-    const observer = new IntersectionObserver(
-      (entries) => {
-        for (const entry of entries) {
-          if (entry.isIntersecting) visible.set(entry.target.id, entry.intersectionRatio);
-          else visible.delete(entry.target.id);
-        }
-        if (visible.size > 0) {
-          const topId = SIDEBAR_SECTIONS.find(({ id }) => visible.has(id))?.id;
-          if (topId) setActiveSection(topId);
-        }
-      },
-      { rootMargin: "-96px 0px -70% 0px", threshold: [0, 1] }
-    );
-    sections.forEach((el) => observer.observe(el));
-
-    const handleScroll = () => {
-      const atBottom = window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 4;
-      if (atBottom) setActiveSection(SIDEBAR_SECTIONS[SIDEBAR_SECTIONS.length - 1].id);
-    };
-    window.addEventListener("scroll", handleScroll, { passive: true });
-
-    return () => {
-      observer.disconnect();
-      window.removeEventListener("scroll", handleScroll);
-    };
-  }, []);
-
-  useEffect(() => {
-    const nav = mobileNavRef.current;
-    const activeLink = nav?.querySelector<HTMLAnchorElement>(`a[href="#${activeSection}"]`);
-    activeLink?.scrollIntoView({ behavior: "smooth", inline: "center", block: "nearest" });
-  }, [activeSection]);
-
+  // ── meta (timezone-aware, reused from the previous implementation) ──
   const tz = event.timezone;
-  const eventDate = new Date(event.startAt);
   const locale = lang === "fr" ? "fr-FR" : "en-US";
+  const eventDate = new Date(event.startAt);
 
-  const tzParts = new Intl.DateTimeFormat("en-US", { timeZone: tz, year: "numeric", month: "numeric" })
-    .formatToParts(eventDate);
+  const tzParts = new Intl.DateTimeFormat("en-US", { timeZone: tz, year: "numeric", month: "numeric" }).formatToParts(eventDate);
   const backYear = tzParts.find((p) => p.type === "year")?.value ?? "";
   const backMonth = String(Number(tzParts.find((p) => p.type === "month")?.value ?? "1") - 1);
-  const backUrl = fromCalendarId
-    ? `/dashboard/calendars/${fromCalendarId}`
-    : `/dashboard?year=${backYear}&month=${backMonth}`;
+  const backUrl = fromCalendarId ? `/dashboard/calendars/${fromCalendarId}` : `/dashboard?year=${backYear}&month=${backMonth}`;
 
-  const startDate = new Intl.DateTimeFormat(locale, {
-    timeZone: tz, weekday: "long", day: "numeric", month: "long", year: "numeric",
-  }).format(eventDate);
-
-  const startTime = new Intl.DateTimeFormat(locale, {
-    timeZone: tz, hour: "2-digit", minute: "2-digit",
-  }).format(new Date(event.startAt));
-
-  const endTime = new Intl.DateTimeFormat(locale, {
-    timeZone: tz, hour: "2-digit", minute: "2-digit",
-  }).format(new Date(event.endAt));
-
+  const startDate = new Intl.DateTimeFormat(locale, { timeZone: tz, weekday: "long", day: "numeric", month: "long", year: "numeric" }).format(eventDate);
+  const startTime = new Intl.DateTimeFormat(locale, { timeZone: tz, hour: "2-digit", minute: "2-digit" }).format(new Date(event.startAt));
+  const endTime = new Intl.DateTimeFormat(locale, { timeZone: tz, hour: "2-digit", minute: "2-digit" }).format(new Date(event.endAt));
   const dayKeyFmt = new Intl.DateTimeFormat("en-CA", { timeZone: tz, year: "numeric", month: "2-digit", day: "2-digit" });
   const isMultiDay = dayKeyFmt.format(new Date(event.startAt)) !== dayKeyFmt.format(new Date(event.endAt));
   const fullDateTimeFmt = new Intl.DateTimeFormat(locale, {
@@ -305,29 +130,72 @@ export function EventDetail({ event, appUrl, plan, emailVerified, calendars, bra
   });
   const startDateTime = fullDateTimeFmt.format(new Date(event.startAt));
   const endDateTime = fullDateTimeFmt.format(new Date(event.endAt));
+  const shortDate = new Intl.DateTimeFormat(locale, { timeZone: tz, weekday: "short", day: "numeric", month: "short" }).format(eventDate);
+  const previewMeta = `${shortDate}${event.allDay ? "" : ` · ${startTime}`}${event.location ? ` — ${event.location}` : ""}`;
 
-  const publicUrl = `${appUrl}/e/${event.slug || event.id}`;
-  const trackBase = `${appUrl}/api/events/${event.id}/track`;
-  const addToCalendarText = T.eventDetail.integration.addToCalendar;
-  const exportSources = {
-    email: buildEmailHTML(event, appUrl, addToCalendarText, exportCentered),
-    web: buildWebHTML(event, appUrl, addToCalendarText, exportCentered),
-    tailwind: buildTailwindHTML(event, appUrl, addToCalendarText, exportCentered),
-  } as const;
-  const exportCode = exportFormat === "links" ? "" : exportSources[exportFormat];
-  const embedUrl = `${appUrl}/e/${event.slug || event.id}/embed`;
-  const iframeCode = `<iframe src="${embedUrl}" width="100%" height="80" style="border:0;" loading="lazy"></iframe>`;
-  const totalCalendarClicks = stats.google + stats.apple + stats.outlook + stats.office365 + stats.yahoo;
+  const slugOrId = event.slug || event.id;
+  const publicUrl = `${appUrl}/e/${slugOrId}`;
 
-  const handleDelete = () => {
-    if (!confirm(T.eventDetail.confirmDelete)) return;
-    setDeleteError(null);
-    startDelete(async () => {
-      const result = await deleteEvent(event.id);
-      if (result?.error === "forbidden") setDeleteError(T.eventDetail.deleteForbidden);
-    });
+  // ── KPIs ──
+  const yes = rsvps.filter((r) => r.status === "yes").length;
+  const maybe = rsvps.filter((r) => r.status === "maybe").length;
+  const serviceCounts = [stats.google, stats.apple, stats.outlook, stats.office365, stats.yahoo];
+  const totalCalendarClicks = serviceCounts.reduce((a, b) => a + b, 0);
+  const servicesWithClicks = serviceCounts.filter((n) => n > 0).length;
+
+  // ── sidebar sections ──
+  const SECTIONS: SidebarItem[] = [
+    { id: "overview", label: T.dashboardDetail.sidebar.info, Icon: LayoutGrid },
+    { id: "public-link", label: T.dashboardDetail.sidebar.publicLink, Icon: Link2 },
+    { id: "calendar", label: T.dashboardDetail.sidebar.calendar, Icon: CalendarRange },
+    { id: "qr-code", label: T.dashboardDetail.sidebar.qrCode, Icon: QrCode },
+    { id: "branding", label: T.dashboardDetail.sidebar.branding, Icon: Palette },
+    { id: "rsvp", label: T.dashboardDetail.sidebar.rsvp, Icon: Users, badge: rsvps.length },
+    { id: "attachment", label: T.eventDashboard.attachmentQuestions, Icon: Paperclip },
+    { id: "integration", label: T.dashboardDetail.sidebar.integration, Icon: Code2 },
+    { id: "embed", label: T.dashboardDetail.sidebar.embed, Icon: AppWindow },
+    { id: "stats", label: T.dashboardDetail.sidebar.stats, Icon: BarChart2 },
+  ];
+
+  const topIn = (el: HTMLElement, scroller: HTMLElement) =>
+    el.getBoundingClientRect().top - scroller.getBoundingClientRect().top + scroller.scrollTop;
+
+  const navigateTo = (id: string) => {
+    const scroller = scrollerRef.current;
+    const el = document.getElementById(id);
+    if (scroller && el) scroller.scrollTo({ top: topIn(el, scroller) - 24, behavior: "smooth" });
+    if (window.innerWidth < 1024) setSidebarOpen(false);
   };
 
+  // scrollspy + reveal-on-scroll on the internal scroll container
+  useEffect(() => {
+    const scroller = scrollerRef.current;
+    if (!scroller) return;
+
+    const spy = () => {
+      const y = scroller.scrollTop + 130;
+      let cur = SECTIONS[0].id;
+      for (const s of SECTIONS) {
+        const el = document.getElementById(s.id);
+        if (el && topIn(el, scroller) <= y) cur = s.id;
+      }
+      if (scroller.scrollTop + scroller.clientHeight >= scroller.scrollHeight - 4) cur = SECTIONS[SECTIONS.length - 1].id;
+      setActiveSection(cur);
+    };
+    scroller.addEventListener("scroll", spy, { passive: true });
+    spy();
+
+    const io = new IntersectionObserver(
+      (entries) => entries.forEach((en) => { if (en.isIntersecting) { en.target.classList.add("in"); io.unobserve(en.target); } }),
+      { root: scroller, threshold: 0.08 }
+    );
+    scroller.querySelectorAll("[data-reveal]").forEach((el) => io.observe(el));
+
+    return () => { scroller.removeEventListener("scroll", spy); io.disconnect(); };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // ── actions ──
   const handleTogglePublished = (checked: boolean) => {
     if (checked && !emailVerified) return;
     setPublished(checked);
@@ -338,594 +206,215 @@ export function EventDetail({ event, appUrl, plan, emailVerified, calendars, bra
     });
   };
 
+  const handleDelete = () => {
+    if (!confirm(T.eventDetail.confirmDelete)) return;
+    startDelete(async () => { await deleteEvent(event.id); });
+  };
+
   const handleCreateEvent = async (data: {
-    title: string;
-    description: string;
-    location: string;
-    organizerEmail: string;
-    startAt: string;
-    endAt: string;
-    allDay: boolean;
-    isOnline: boolean;
-    rsvpEnabled: boolean;
-    timezone: string;
-    language: string;
-    imageUrl: string;
-    calendarId: string | null;
+    title: string; description: string; location: string; organizerEmail: string;
+    startAt: string; endAt: string; allDay: boolean; isOnline: boolean; rsvpEnabled: boolean;
+    timezone: string; language: string; imageUrl: string; calendarId: string | null;
   }) => {
     setCreateEventError(null);
     startCreateEvent(async () => {
       const result = await createEvent(data);
-      if ("error" in result) {
-        setCreateEventError(T.eventForm.errors.limitReached);
-        return;
-      }
-      if (data.calendarId) {
-        await assignEventToCalendar(result.id, data.calendarId);
-      }
+      if ("error" in result) { setCreateEventError(T.eventForm.errors.limitReached); return; }
+      if (data.calendarId) await assignEventToCalendar(result.id, data.calendarId);
       router.push(`/dashboard/events/${result.id}${data.calendarId ? `?calendar=${data.calendarId}` : ""}`);
     });
   };
 
+  const publishTitle = !published && !emailVerified
+    ? T.eventDetail.published.verifyEmailRequired
+    : published ? T.eventDetail.published.onlineHint : T.eventDetail.published.offlineHint;
+
   return (
-    <>
-      {/* Fixed action bar */}
-      <div className="sticky top-16 z-40 border-b border-border/60 bg-background/95 backdrop-blur-sm">
-        <div className="mx-auto flex h-12 max-w-6xl items-center justify-between px-4 sm:px-6">
-          <Link
-            href={backUrl}
-            className="inline-flex items-center gap-1.5 text-sm text-muted-foreground transition-colors hover:text-foreground"
-          >
-            <ArrowLeft className="h-4 w-4" />
-            <span className="hidden sm:inline">{T.eventDetail.backToCalendar}</span>
-          </Link>
-          <div className="flex items-center gap-2">
-            {plan === "premium" && (
-              <Button
-                size="sm"
-                variant="outline"
-                className="gap-1.5 text-destructive hover:text-destructive"
-                onClick={handleDelete}
-                disabled={isDeleting}
-              >
-                <Trash2 className="h-3.5 w-3.5" />
-                <span className="hidden sm:inline">{isDeleting ? T.eventDetail.deleting : T.eventDetail.delete}</span>
-              </Button>
-            )}
-            <label
-              className={cn(
-                "flex items-center gap-1.5 rounded-lg border border-border/60 px-2 py-1 text-xs font-medium",
-                !published && !emailVerified && "opacity-60"
-              )}
-              title={
-                !published && !emailVerified
-                  ? T.eventDetail.published.verifyEmailRequired
-                  : published
-                    ? T.eventDetail.published.onlineHint
-                    : T.eventDetail.published.offlineHint
-              }
-            >
-              <Switch
-                checked={published}
-                onCheckedChange={handleTogglePublished}
-                disabled={!published && !emailVerified}
-              />
-              <span className={cn(published ? "text-foreground" : "text-muted-foreground")}>
-                {published ? T.eventDetail.published.online : T.eventDetail.published.offline}
-              </span>
-            </label>
-            <Button
-              size="sm"
-              variant="outline"
-              className="gap-1.5"
-              nativeButton={false}
-              render={<a href={publicUrl} target="_blank" rel="noopener noreferrer" />}
-            >
-              <ExternalLink className="h-3.5 w-3.5" />
-              <span className="hidden sm:inline">{T.common.open}</span>
-            </Button>
-            <Button size="sm" variant="outline" className="gap-1.5" onClick={() => setEditOpen(true)}>
-              <Pencil className="h-3.5 w-3.5" />
-              <span className="hidden sm:inline">{T.eventDetail.edit}</span>
-            </Button>
-            <Button
-              size="sm"
-              className="gap-1.5"
-              onClick={() => { setCreateEventError(null); setCreateEventOpen(true); }}
-            >
-              <Plus className="h-3.5 w-3.5" />
-              <span className="hidden sm:inline">{T.calendar.newEvent}</span>
-            </Button>
-          </div>
-        </div>
+    <ToastProvider>
+      <div className="flex h-full flex-col overflow-hidden bg-paper text-ink">
+        <EventTopbar
+          isSuperAdmin={isSuperAdmin}
+          onMenuClick={() => setSidebarOpen(true)}
+          onNewEvent={() => { setCreateEventError(null); setCreateEventOpen(true); }}
+        />
 
-        {/* Mobile section navigation */}
-        <nav ref={mobileNavRef} className="flex gap-1 overflow-x-auto px-4 pb-2 sm:px-6 lg:hidden">
-          {SIDEBAR_SECTIONS.map(({ id, labelKey, icon: Icon }) => (
-            <a
-              key={id}
-              href={`#${id}`}
-              className={cn(
-                "flex shrink-0 items-center gap-1.5 whitespace-nowrap rounded-lg px-3 py-1.5 text-xs transition-colors",
-                activeSection === id
-                  ? "bg-primary/10 text-primary font-medium"
-                  : "text-muted-foreground hover:bg-muted hover:text-foreground"
-              )}
-            >
-              <Icon className="h-3.5 w-3.5 shrink-0" />
-              {T.dashboardDetail.sidebar[labelKey]}
-            </a>
-          ))}
-        </nav>
-      </div>
-
-    <div className="mx-auto max-w-6xl px-4 pt-4 pb-6 sm:px-6 sm:pt-6 sm:pb-8 lg:flex lg:items-start lg:gap-8">
-      {/* Sidebar navigation */}
-      <aside className="hidden shrink-0 lg:sticky lg:top-28 lg:block lg:w-44">
-        <nav className="space-y-0.5">
-          {SIDEBAR_SECTIONS.map(({ id, labelKey, icon: Icon }) => (
-            <a
-              key={id}
-              href={`#${id}`}
-              className={cn(
-                "flex items-center gap-2 rounded-lg px-3 py-1.5 text-sm transition-colors",
-                activeSection === id
-                  ? "bg-primary/10 text-primary font-medium"
-                  : "text-muted-foreground hover:bg-muted hover:text-foreground"
-              )}
-            >
-              <Icon className="h-4 w-4 shrink-0" />
-              {T.dashboardDetail.sidebar[labelKey]}
-            </a>
-          ))}
-        </nav>
-      </aside>
-
-      <div className="min-w-0 max-w-4xl flex-1 space-y-6 sm:space-y-8">
-      {deleteError && <p className="text-sm text-destructive">{deleteError}</p>}
-
-      {/* Event info */}
-      <div id="info" className="scroll-mt-24">
-        {event.imageUrl && (
-          <img
-            src={event.imageUrl}
-            alt={event.title}
-            className="mb-5 h-48 w-full rounded-xl object-cover sm:h-52"
-          />
-        )}
-        <h1 className="text-2xl font-bold tracking-tight text-foreground sm:text-3xl">{event.title}</h1>
-        <dl className="mt-4 space-y-2">
-          {isMultiDay ? (
-            <div className="flex items-center gap-2 text-sm text-muted-foreground">
-              <Calendar className="h-4 w-4 shrink-0" />
-              <span className="capitalize">{startDateTime} → {endDateTime}</span>
-            </div>
-          ) : (
-            <>
-              <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                <Calendar className="h-4 w-4 shrink-0" />
-                <span className="capitalize">{startDate}</span>
-              </div>
-              {!event.allDay && (
-                <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                  <Clock className="h-4 w-4 shrink-0" />
-                  <span>{startTime} – {endTime}</span>
-                </div>
-              )}
-            </>
+        <div className="flex min-h-0 flex-1">
+          {sidebarOpen && (
+            <div className="fixed inset-0 z-40 bg-ink/30 backdrop-blur-sm lg:hidden" onClick={() => setSidebarOpen(false)} />
           )}
-          <div className="flex items-center gap-2 text-sm text-muted-foreground">
-            <Globe className="h-4 w-4 shrink-0" />
-            <span>{tz}</span>
-          </div>
-          {event.location && (
-            <div className="flex items-center gap-2 text-sm text-muted-foreground">
-              <MapPin className="h-4 w-4 shrink-0" />
-              <span>{event.location}</span>
-            </div>
-          )}
-        </dl>
-        {event.description && (
-          <div
-            className={cn(
-              "mt-4 text-sm leading-relaxed text-foreground/80",
-              "[&_p]:mb-1.5 last:[&_p]:mb-0 [&_a]:underline [&_a]:underline-offset-4",
-              "[&_a]:decoration-foreground/30 hover:[&_a]:decoration-foreground [&_ul]:list-disc [&_ul]:pl-5 [&_ul]:mb-1.5"
-            )}
-            dangerouslySetInnerHTML={{ __html: markdownToHtml(event.description) }}
+
+          <EventSidebar
+            items={SECTIONS}
+            activeId={activeSection}
+            onNavigate={navigateTo}
+            backUrl={backUrl}
+            isOpen={sidebarOpen}
+            onClose={() => setSidebarOpen(false)}
           />
-        )}
-      </div>
 
-      {/* Public link */}
-      <section id="public-link" className="scroll-mt-24 space-y-3 rounded-xl border border-border/60 p-4 sm:p-5">
-        <h2 className="text-sm font-semibold text-foreground">{T.eventDetail.publicLink.title}</h2>
-        <div className="flex flex-wrap items-center gap-2">
-          <code className="flex-1 min-w-0 truncate rounded-md border border-border/60 bg-muted/40 px-3 py-1.5 text-xs">
-            {publicUrl}
-          </code>
-          <div className="flex items-center gap-1.5 shrink-0">
-            <CopyButton value={publicUrl} label={T.common.copy} copiedLabel={T.common.copied} />
-            <Button
-              size="sm"
-              className="gap-1.5"
-              nativeButton={false}
-              render={<a href={publicUrl} target="_blank" rel="noopener noreferrer" />}
-            >
-              <ExternalLink className="h-3.5 w-3.5" />
-              {T.common.open}
-            </Button>
-          </div>
-        </div>
+          <main ref={scrollerRef} className="evvy-scroll min-w-0 flex-1 overflow-y-auto scroll-smooth">
+            {/* ── EVENT HEADER ── */}
+            <div className="relative overflow-hidden border-b border-line bg-white">
+              <div className="grid-texture pointer-events-none absolute inset-0" />
+              <div className="relative mx-auto max-w-[1400px] px-4 py-6 sm:px-8 lg:py-8">
+                <div className="flex flex-col gap-6 xl:flex-row xl:items-start">
+                  <div className="flex min-w-0 flex-1 gap-4">
+                    <div className="hidden h-16 w-16 shrink-0 place-items-center rounded-2xl bg-linear-to-br from-evvy to-coral text-white shadow-pop sm:grid">
+                      <CalendarDays className="h-7 w-7" strokeWidth={1.8} />
+                    </div>
+                    <div className="min-w-0">
+                      <div className="flex flex-wrap items-center gap-2">
+                        <h1 className="truncate font-display text-2xl font-extrabold tracking-tight sm:text-3xl">{event.title}</h1>
+                        {published ? (
+                          <span className="inline-flex items-center gap-1.5 rounded-full bg-mint/15 px-2.5 py-1 text-xs font-semibold text-mint">
+                            <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-mint" />{T.eventDetail.published.online}
+                          </span>
+                        ) : (
+                          <span className="inline-flex items-center gap-1.5 rounded-full border border-line bg-paper px-2.5 py-1 text-xs font-semibold text-inksoft">
+                            <span className="h-1.5 w-1.5 rounded-full bg-inksoft/50" />{T.eventDetail.published.offline}
+                          </span>
+                        )}
+                      </div>
+                      <div className="mt-2.5 flex flex-wrap items-center gap-x-5 gap-y-1.5 text-sm text-inksoft">
+                        {isMultiDay ? (
+                          <span className="inline-flex items-center gap-1.5"><Calendar className="h-[15px] w-[15px] shrink-0" /><span className="capitalize">{startDateTime} → {endDateTime}</span></span>
+                        ) : (
+                          <>
+                            <span className="inline-flex items-center gap-1.5"><Calendar className="h-[15px] w-[15px] shrink-0" /><span className="capitalize">{startDate}</span></span>
+                            {!event.allDay && (
+                              <span className="inline-flex items-center gap-1.5"><Clock className="h-[15px] w-[15px] shrink-0" />{startTime} – {endTime} · {tz}</span>
+                            )}
+                          </>
+                        )}
+                        {event.allDay && (
+                          <span className="inline-flex items-center gap-1.5"><Globe className="h-[15px] w-[15px] shrink-0" />{tz}</span>
+                        )}
+                        {event.location && (
+                          <span className="inline-flex max-w-full items-center gap-1.5"><MapPin className="h-[15px] w-[15px] shrink-0" /><span className="truncate">{event.location}</span></span>
+                        )}
+                      </div>
+                      {event.description && (
+                        <div
+                          className="mt-2 text-sm italic text-inksoft/90 [&_a]:underline [&_p]:mb-1.5 last:[&_p]:mb-0"
+                          dangerouslySetInnerHTML={{ __html: markdownToHtml(event.description) }}
+                        />
+                      )}
+                    </div>
+                  </div>
 
-        <div className="flex items-center gap-2">
-          <span className="text-xs text-muted-foreground">{T.eventDetail.publicLink.share}</span>
-          <SocialShareLinks url={publicUrl} title={event.title} />
-        </div>
-
-        <EventSlugSection eventId={event.id} plan={plan} appUrl={appUrl} slug={event.slug} />
-      </section>
-
-      {/* Calendar */}
-      <section id="calendar" className="scroll-mt-24 space-y-3 rounded-xl border border-border/60 p-4 sm:p-5">
-        <div className="flex items-center gap-2">
-          <CalendarRange className="h-4 w-4 text-muted-foreground" />
-          <h2 className="text-sm font-semibold text-foreground">{T.eventDetail.calendar.title}</h2>
-        </div>
-        <p className="text-xs text-muted-foreground">{T.eventDetail.calendar.subtitle}</p>
-        <EventCalendarSection
-          eventId={event.id}
-          plan={plan}
-          calendarId={event.calendarId}
-          calendars={calendars}
-        />
-      </section>
-
-      {/* QR code */}
-      <section id="qr-code" className="scroll-mt-24 space-y-3 rounded-xl border border-border/60 p-4 sm:p-5">
-        <div>
-          <h2 className="text-sm font-semibold text-foreground">{T.eventDetail.qrCode.title}</h2>
-          <p className="text-xs text-muted-foreground mt-0.5">{T.eventDetail.qrCode.subtitle}</p>
-        </div>
-        <div className="flex flex-wrap items-center gap-4">
-          <img
-            src={`${appUrl}/api/events/${event.id}/qrcode?format=png`}
-            alt={T.eventDetail.qrCode.title}
-            width={120}
-            height={120}
-            className="shrink-0 rounded-lg border border-border/60 bg-white p-2"
-          />
-          <div className="flex flex-wrap items-center gap-2">
-            <Button
-              variant="outline"
-              size="sm"
-              className="gap-1.5"
-              nativeButton={false}
-              render={<a href={`${appUrl}/api/events/${event.id}/qrcode?format=png`} download />}
-            >
-              <Download className="h-3.5 w-3.5" />
-              {T.eventDetail.qrCode.downloadPng}
-            </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              className="gap-1.5"
-              nativeButton={false}
-              render={<a href={`${appUrl}/api/events/${event.id}/qrcode?format=svg`} download />}
-            >
-              <Download className="h-3.5 w-3.5" />
-              {T.eventDetail.qrCode.downloadSvg}
-            </Button>
-          </div>
-        </div>
-      </section>
-
-      {/* Branding */}
-      <section id="branding" className="scroll-mt-24 space-y-3 rounded-xl border border-border/60 p-4 sm:p-5">
-        <div className="flex items-center gap-2">
-          <Palette className="h-4 w-4 text-muted-foreground" />
-          <h2 className="text-sm font-semibold text-foreground">{T.eventDetail.branding.title}</h2>
-        </div>
-        <EventBrandingSection
-          eventId={event.id}
-          plan={plan}
-          brandingEnabled={event.brandingEnabled}
-          brandLogoUrl={event.brandLogoUrl}
-          brandLogoSize={event.brandLogoSize}
-          brandLogoTransparentBg={event.brandLogoTransparentBg}
-          brandLogoRounded={event.brandLogoRounded}
-          brandColor={event.brandColor}
-          brandTextColor={event.brandTextColor}
-          brandCardColor={event.brandCardColor}
-          brandIconBackgroundColor={event.brandIconBackgroundColor}
-          brandBackgroundColor={event.brandBackgroundColor}
-          brandBackgroundImageUrl={event.brandBackgroundImageUrl}
-          initialPresets={brandingPresets}
-        />
-      </section>
-
-      {/* RSVP + Questions */}
-      <div id="rsvp" className="scroll-mt-24 space-y-4">
-        <RsvpSection
-          eventId={event.id}
-          rsvpEnabled={event.rsvpEnabled}
-          rsvpLimit={event.rsvpLimit}
-          rsvpDeadline={event.rsvpDeadline}
-          timezone={event.timezone}
-          rsvps={rsvps}
-          questions={questions}
-          onExpand={() => setRsvpModalOpen(true)}
-        />
-
-        {event.rsvpEnabled && (
-          <section className="space-y-3 rounded-xl border border-border/60 p-4 sm:p-5">
-            <div className="flex items-center gap-2">
-              <HelpCircle className="h-4 w-4 text-muted-foreground" />
-              <h2 className="text-sm font-semibold text-foreground">{T.dashboardDetail.sidebar.questions}</h2>
-            </div>
-            <EventQuestionsSection eventId={event.id} plan={plan} questions={questions} />
-          </section>
-        )}
-      </div>
-
-      <Dialog.Root open={rsvpModalOpen} onOpenChange={setRsvpModalOpen}>
-        <Dialog.Portal>
-          <Dialog.Backdrop className={cn(
-            "fixed inset-0 z-50 bg-black/40 backdrop-blur-[2px] transition-opacity duration-200",
-            "data-[starting-style]:opacity-0 data-[ending-style]:opacity-0"
-          )} />
-          <Dialog.Popup className={cn(
-            "fixed left-1/2 top-1/2 z-50 w-[95vw] max-w-4xl -translate-x-1/2 -translate-y-1/2",
-            "border border-border/60 bg-background p-6 shadow-xl",
-            "transition-[transform,opacity] duration-200 overflow-y-auto max-h-[88vh]",
-            "data-[starting-style]:opacity-0 data-[starting-style]:scale-95",
-            "data-[ending-style]:opacity-0 data-[ending-style]:scale-95"
-          )}>
-            <div className="mb-5 flex items-center justify-between">
-              <Dialog.Title className="text-lg font-semibold text-foreground">
-                {T.rsvpSection.expandedTitle}
-              </Dialog.Title>
-              <Dialog.Close className="cursor-pointer rounded-lg p-1.5 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-ring/50">
-                <X className="h-4 w-4" />
-              </Dialog.Close>
-            </div>
-            {rsvpModalOpen && (
-              <RsvpSection
-                eventId={event.id}
-                rsvpEnabled={event.rsvpEnabled}
-                rsvpLimit={event.rsvpLimit}
-                rsvpDeadline={event.rsvpDeadline}
-                timezone={event.timezone}
-                rsvps={rsvps}
-                questions={questions}
-                expanded
-              />
-            )}
-          </Dialog.Popup>
-        </Dialog.Portal>
-      </Dialog.Root>
-
-      {/* Attachment */}
-      <section id="attachment" className="scroll-mt-24 space-y-3 rounded-xl border border-border/60 p-4 sm:p-5">
-        <div className="flex items-center gap-2">
-          <Paperclip className="h-4 w-4 text-muted-foreground" />
-          <h2 className="text-sm font-semibold text-foreground">{T.eventForm.attachment}</h2>
-        </div>
-        <EventAttachmentSection
-          eventId={event.id}
-          attachmentUrl={event.attachmentUrl}
-          attachmentName={event.attachmentName}
-          attachmentButtonLabel={event.attachmentButtonLabel}
-        />
-      </section>
-
-      {/* Integration / export */}
-      <section id="integration" className="scroll-mt-24 space-y-3 rounded-xl border border-border/60 p-4 sm:p-5">
-        <div className="flex flex-wrap items-start justify-between gap-3">
-          <div>
-            <h2 className="text-sm font-semibold text-foreground">{T.eventDetail.integration.title}</h2>
-            <p className="text-xs text-muted-foreground mt-0.5">
-              {T.eventDetail.integration.subtitle}
-            </p>
-          </div>
-          {exportFormat !== "links" && (
-            <CopyButton value={exportCode} label={T.eventDetail.integration.copy} copiedLabel={T.common.copied} />
-          )}
-        </div>
-
-        <div className="inline-flex items-center gap-0.5 rounded-lg border border-border/60 bg-muted/20 p-0.5">
-          {(["email", "web", "tailwind", "links"] as const).map((id) => (
-            <button
-              key={id}
-              type="button"
-              onClick={() => setExportFormat(id)}
-              className={cn(
-                "rounded-md px-2.5 py-1.5 text-xs font-medium transition-colors sm:px-3",
-                exportFormat === id
-                  ? "bg-background text-foreground shadow-sm"
-                  : "text-muted-foreground hover:text-foreground"
-              )}
-            >
-              {T.eventDetail.integration.formats[id]}
-            </button>
-          ))}
-        </div>
-
-        {exportFormat === "links" ? (
-          <div className="space-y-2">
-            {CALENDAR_SERVICES.map((s) => {
-              const trackUrl = `${trackBase}?service=${s.key}`;
-              return (
-                <div
-                  key={s.key}
-                  className="flex flex-wrap items-center gap-3 rounded-lg border border-border/40 bg-muted/20 px-3 py-2.5 sm:px-4 sm:py-3"
-                >
-                  <img src={s.logo} alt={s.name} width={32} height={32} className="shrink-0 rounded" />
-                  <span className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-foreground">{s.name}</p>
-                    <p className="truncate text-xs text-muted-foreground">{trackUrl}</p>
-                  </span>
-                  <div className="flex items-center gap-1.5 shrink-0">
-                    <CopyButton value={trackUrl} label={T.common.copy} copiedLabel={T.common.copied} />
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="gap-1"
-                      nativeButton={false}
-                      render={<a href={trackUrl} target="_blank" rel="noopener noreferrer" />}
-                    >
-                      <ExternalLink className="h-3 w-3" />
-                      <span className="hidden sm:inline">{T.eventDetail.individualLinks.open}</span>
-                    </Button>
+                  {/* actions */}
+                  <div className="flex shrink-0 flex-wrap items-center gap-2 xl:justify-end">
+                    <label className="flex h-9 cursor-pointer select-none items-center gap-2 rounded-lg border border-line bg-white px-3 text-sm font-medium" title={publishTitle}>
+                      <span className="text-inksoft">{T.common.online}</span>
+                      <EvvySwitch checked={published} disabled={!published && !emailVerified} onCheckedChange={handleTogglePublished} />
+                    </label>
+                    <a href={publicUrl} target="_blank" rel="noopener noreferrer" className="inline-flex h-9 items-center gap-1.5 rounded-lg border border-line bg-white px-3 text-sm font-medium transition hover:bg-paper">
+                      <ExternalLink className="h-[15px] w-[15px]" />{T.common.open}
+                    </a>
+                    <button onClick={() => setEditOpen(true)} className="inline-flex h-9 items-center gap-1.5 rounded-lg bg-evvy px-3.5 text-sm font-semibold text-white shadow-card transition hover:bg-evvy-deep">
+                      <Pencil className="h-[15px] w-[15px]" />{T.eventDetail.edit}
+                    </button>
+                    {plan === "premium" && (
+                      <button onClick={handleDelete} disabled={isDeleting} title={T.eventDetail.delete}
+                        className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-line bg-white text-coral transition hover:bg-coral/5 disabled:opacity-50">
+                        <Trash2 className="h-4 w-4" />
+                      </button>
+                    )}
                   </div>
                 </div>
-              );
-            })}
-          </div>
-        ) : (
-          <>
-            <div className="flex items-center justify-between gap-3 rounded-lg border border-border/60 bg-muted/10 px-3 py-2.5">
-              <div>
-                <p className="text-xs font-medium text-foreground">{T.eventDetail.integration.centered}</p>
-                <p className="mt-0.5 text-xs text-muted-foreground">{T.eventDetail.integration.centeredHint}</p>
+
+                {/* KPI strip */}
+                <div className="mt-7 grid grid-cols-2 gap-3 sm:grid-cols-4">
+                  <div data-reveal className="rounded-xl2 border border-line bg-paper/70 p-4">
+                    <p className="text-xs font-medium text-inksoft">{T.eventDashboard.kpiRsvp}</p>
+                    <p className="mt-1 font-display text-2xl font-bold">{rsvps.length}</p>
+                    <p className="mt-0.5 text-xs font-medium text-mint">{T.eventDashboard.kpiRsvpBreakdown(yes, maybe)}</p>
+                  </div>
+                  <div data-reveal className="rounded-xl2 border border-line bg-paper/70 p-4">
+                    <p className="text-xs font-medium text-inksoft">{T.eventDashboard.kpiViews}</p>
+                    <p className="mt-1 font-display text-2xl font-bold">{stats.page}</p>
+                    <p className="mt-0.5 text-xs text-inksoft/70">{T.eventDashboard.kpiSinceCreation}</p>
+                  </div>
+                  <div data-reveal className="rounded-xl2 border border-line bg-paper/70 p-4">
+                    <p className="text-xs font-medium text-inksoft">{T.eventDashboard.kpiCalendarAdds}</p>
+                    <p className="mt-1 font-display text-2xl font-bold">{totalCalendarClicks}</p>
+                    <p className="mt-0.5 text-xs text-inksoft/70">{T.eventDashboard.kpiServices(servicesWithClicks)}</p>
+                  </div>
+                  <div data-reveal className="rounded-xl2 border border-line bg-paper/70 p-4">
+                    <p className="text-xs font-medium text-inksoft">{T.eventDashboard.kpiQrScans}</p>
+                    <p className="mt-1 font-display text-2xl font-bold">{stats.qr}</p>
+                    <p className="mt-0.5 text-xs text-inksoft/70">{T.eventDashboard.kpiInPerson}</p>
+                  </div>
+                </div>
               </div>
-              <button
-                type="button"
-                role="switch"
-                aria-checked={exportCentered}
-                onClick={() => setExportCentered((c) => !c)}
-                className={cn(
-                  "relative inline-flex h-5 w-9 shrink-0 cursor-pointer items-center rounded-full transition-colors",
-                  "focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-ring/50",
-                  exportCentered ? "bg-primary" : "bg-muted-foreground/30"
-                )}
-              >
-                <span
-                  className={cn(
-                    "inline-block h-3.5 w-3.5 rounded-full bg-background shadow transition-transform",
-                    exportCentered ? "translate-x-4.5" : "translate-x-0.5"
-                  )}
+            </div>
+
+            {/* ── CONTENT ── */}
+            <div className="mx-auto max-w-[1400px] space-y-8 px-4 py-8 sm:px-8">
+              <section id="overview" className="grid scroll-mt-24 grid-cols-1 gap-6 xl:grid-cols-3">
+                <EventRsvpCard
+                  eventId={event.id}
+                  rsvpEnabled={event.rsvpEnabled}
+                  rsvpLimit={event.rsvpLimit}
+                  rsvpDeadline={event.rsvpDeadline}
+                  timezone={event.timezone}
+                  rsvps={rsvps}
+                  questions={questions}
                 />
-              </button>
-            </div>
+                <div className="space-y-6">
+                  <EventShareCard eventId={event.id} plan={plan} appUrl={appUrl} slug={event.slug} publicUrl={publicUrl} title={event.title} />
+                  <EventQrCard eventId={event.id} appUrl={appUrl} />
+                </div>
+              </section>
 
-            <div className="overflow-auto rounded-lg border border-border/40 bg-white p-4 pointer-events-none">
-              <div dangerouslySetInnerHTML={{ __html: exportCode }} />
-            </div>
+              <EventBrandingCard
+                eventId={event.id}
+                plan={plan}
+                brandingEnabled={event.brandingEnabled}
+                brandLogoUrl={event.brandLogoUrl}
+                brandLogoSize={event.brandLogoSize}
+                brandLogoTransparentBg={event.brandLogoTransparentBg}
+                brandLogoRounded={event.brandLogoRounded}
+                brandColor={event.brandColor}
+                brandTextColor={event.brandTextColor}
+                brandCardColor={event.brandCardColor}
+                brandIconBackgroundColor={event.brandIconBackgroundColor}
+                brandBackgroundColor={event.brandBackgroundColor}
+                brandBackgroundImageUrl={event.brandBackgroundImageUrl}
+                initialPresets={brandingPresets}
+                previewTitle={event.title}
+                previewMeta={previewMeta}
+              />
 
-            <div className="relative">
-              <pre className="max-h-72 overflow-auto rounded-lg border border-border/40 bg-muted/30 p-4 pr-24 text-xs leading-relaxed text-foreground/80">
-                <code>{exportCode}</code>
-              </pre>
-              <div className="absolute right-2 top-2">
-                <CopyButton value={exportCode} label={T.common.copy} copiedLabel={T.common.copied} />
-              </div>
-            </div>
-          </>
-        )}
-      </section>
+              <section id="attachment" data-reveal className="grid scroll-mt-24 grid-cols-1 gap-6 lg:grid-cols-3">
+                <EventAttachmentCard
+                  eventId={event.id}
+                  attachmentUrl={event.attachmentUrl}
+                  attachmentName={event.attachmentName}
+                  attachmentButtonLabel={event.attachmentButtonLabel}
+                />
+                <EventQuestionsCard eventId={event.id} plan={plan} questions={questions} />
+                <EventCalendarCard eventId={event.id} plan={plan} calendarId={event.calendarId} calendars={calendars} />
+              </section>
 
-      {/* Embed */}
-      <section id="embed" className="scroll-mt-24 space-y-3 rounded-xl border border-border/60 p-4 sm:p-5">
-        <div>
-          <h2 className="text-sm font-semibold text-foreground">{T.eventDetail.integration.iframe.title}</h2>
-          <p className="text-xs text-muted-foreground mt-0.5">{T.eventDetail.integration.iframe.subtitle}</p>
+              <EventIntegrationCard eventId={event.id} appUrl={appUrl} />
+              <EventEmbedCard appUrl={appUrl} slugOrId={slugOrId} />
+              <EventStatsCard eventId={event.id} plan={plan} stats={stats} />
+
+              <div className="h-2" />
+            </div>
+          </main>
         </div>
-
-        <div className="flex flex-wrap items-center gap-2">
-          <code className="flex-1 min-w-0 truncate rounded-md border border-border/60 bg-muted/40 px-3 py-1.5 text-xs">
-            {embedUrl}
-          </code>
-          <CopyButton value={embedUrl} label={T.common.copy} copiedLabel={T.common.copied} />
-        </div>
-
-        <div className="relative">
-          <pre className="max-h-72 overflow-auto rounded-lg border border-border/40 bg-muted/30 p-4 pr-24 text-xs leading-relaxed text-foreground/80">
-            <code>{iframeCode}</code>
-          </pre>
-          <div className="absolute right-2 top-2">
-            <CopyButton value={iframeCode} label={T.common.copy} copiedLabel={T.common.copied} />
-          </div>
-        </div>
-      </section>
-
-      {/* Stats */}
-      <section id="stats" className="scroll-mt-24 space-y-3 rounded-xl border border-border/60 p-4 sm:p-5">
-        <div className="flex items-center justify-between gap-2">
-          <div className="flex items-center gap-2">
-            <BarChart2 className="h-4 w-4 text-muted-foreground" />
-            <h2 className="text-sm font-semibold text-foreground">{T.eventDetail.stats.title}</h2>
-          </div>
-          {plan === "premium" && (
-            <Button
-              variant="outline"
-              size="sm"
-              className="gap-1.5"
-              nativeButton={false}
-              render={<a href={`/api/events/${event.id}/stats/export`} download />}
-            >
-              <Download className="h-3.5 w-3.5" />
-              {T.eventDetail.stats.exportCsv}
-            </Button>
-          )}
-        </div>
-        {plan === "premium" ? (
-          <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
-            <div className="rounded-lg bg-muted/40 p-3">
-              <p className="text-xs text-muted-foreground">{T.eventDetail.stats.pageViews}</p>
-              <p className="mt-0.5 text-2xl font-bold text-foreground">{stats.page}</p>
-            </div>
-            <div className="rounded-lg bg-muted/40 p-3">
-              <p className="text-xs text-muted-foreground">{T.eventDetail.stats.calendarClicks}</p>
-              <p className="mt-0.5 text-2xl font-bold text-foreground">{totalCalendarClicks}</p>
-            </div>
-            <div className="rounded-lg bg-muted/40 p-3">
-              <p className="text-xs text-muted-foreground">{T.eventDetail.stats.qrScans}</p>
-              <p className="mt-0.5 text-2xl font-bold text-foreground">{stats.qr}</p>
-            </div>
-            <div className="col-span-2 sm:col-span-1 rounded-lg bg-muted/40 p-3">
-              <p className="text-xs text-muted-foreground mb-1.5">{T.eventDetail.stats.details}</p>
-              <div className="space-y-1">
-                {CALENDAR_SERVICES.map((s) => (
-                  <div key={s.key} className="flex items-center justify-between text-xs">
-                    <span className="text-muted-foreground">{s.name}</span>
-                    <span className="font-semibold text-foreground">{stats[s.key]}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        ) : (
-          <div className="flex flex-wrap items-center justify-between gap-3 rounded-lg bg-muted/40 p-3">
-            <p className="text-sm text-muted-foreground">{T.eventDetail.stats.locked}</p>
-            <Link
-              href="/dashboard/billing"
-              className="inline-flex items-center rounded-lg bg-primary px-3 py-1.5 text-xs font-medium text-primary-foreground transition-colors hover:bg-primary/80"
-            >
-              {T.eventDetail.stats.unlock}
-            </Link>
-          </div>
-        )}
-      </section>
+      </div>
 
       <EditEventDialog
         open={editOpen}
         onOpenChange={setEditOpen}
         plan={plan}
         event={{
-          id: event.id,
-          title: event.title,
-          description: event.description,
-          location: event.location,
-          imageUrl: event.imageUrl,
-          organizerEmail: event.organizerEmail,
-          startAt: event.startAt,
-          endAt: event.endAt,
-          allDay: event.allDay,
-          isOnline: event.isOnline,
-          rsvpEnabled: event.rsvpEnabled,
-          timezone: event.timezone,
-          language: event.language,
+          id: event.id, title: event.title, description: event.description, location: event.location,
+          imageUrl: event.imageUrl, organizerEmail: event.organizerEmail, startAt: event.startAt, endAt: event.endAt,
+          allDay: event.allDay, isOnline: event.isOnline, rsvpEnabled: event.rsvpEnabled, timezone: event.timezone, language: event.language,
         }}
       />
 
@@ -940,8 +429,6 @@ export function EventDetail({ event, appUrl, plan, emailVerified, calendars, bra
         isPending={isCreatingEvent}
         error={createEventError}
       />
-      </div>
-    </div>
-    </>
+    </ToastProvider>
   );
 }

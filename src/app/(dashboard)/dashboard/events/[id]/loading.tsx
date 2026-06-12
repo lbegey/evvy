@@ -1,48 +1,40 @@
 export default function EventDetailLoading() {
   return (
-    <div className="mx-auto max-w-6xl px-4 py-6 sm:px-6 sm:py-8">
-      {/* back + actions */}
-      <div className="flex items-center justify-between mb-6">
-        <div className="h-8 w-32 rounded-lg bg-muted/60 animate-pulse" />
-        <div className="flex gap-2">
-          <div className="h-8 w-16 rounded-lg bg-muted/60 animate-pulse" />
-          <div className="h-8 w-20 rounded-lg bg-muted/60 animate-pulse" />
-        </div>
+    <div className="flex h-dvh flex-col overflow-hidden bg-paper">
+      {/* topbar */}
+      <div className="flex h-16 shrink-0 items-center gap-3 border-b border-line bg-white px-4 sm:px-6">
+        <div className="h-6 w-16 animate-pulse rounded bg-line" />
+        <div className="ml-auto h-8 w-32 animate-pulse rounded-lg bg-line" />
       </div>
 
-      <div className="grid grid-cols-1 gap-6 lg:grid-cols-[1fr_280px]">
-        {/* main content */}
-        <div className="space-y-4">
-          <div className="rounded-xl border border-border/60 p-5 space-y-4">
-            <div className="h-6 w-3/4 rounded bg-muted/60 animate-pulse" />
-            <div className="space-y-2">
-              <div className="h-4 w-1/2 rounded bg-muted/40 animate-pulse" />
-              <div className="h-4 w-1/3 rounded bg-muted/40 animate-pulse" />
-              <div className="h-4 w-2/5 rounded bg-muted/40 animate-pulse" />
-            </div>
-            <div className="space-y-1.5 pt-2">
-              <div className="h-3 w-full rounded bg-muted/30 animate-pulse" />
-              <div className="h-3 w-5/6 rounded bg-muted/30 animate-pulse" />
-            </div>
-          </div>
-
-          {/* calendar buttons */}
-          <div className="rounded-xl border border-border/60 p-5">
-            <div className="h-4 w-32 rounded bg-muted/40 animate-pulse mb-3" />
-            <div className="flex gap-3">
-              {Array.from({ length: 5 }).map((_, i) => (
-                <div key={i} className="h-9 w-9 rounded-lg bg-muted/40 animate-pulse" />
-              ))}
-            </div>
-          </div>
-        </div>
-
+      <div className="flex min-h-0 flex-1">
         {/* sidebar */}
-        <div className="space-y-2">
-          {Array.from({ length: 6 }).map((_, i) => (
-            <div key={i} className="h-9 rounded-lg bg-muted/40 animate-pulse" />
-          ))}
-        </div>
+        <aside className="hidden w-64 shrink-0 border-r border-line p-4 lg:block">
+          <div className="space-y-2">
+            {Array.from({ length: 9 }).map((_, i) => (
+              <div key={i} className="h-9 animate-pulse rounded-lg bg-line/70" />
+            ))}
+          </div>
+        </aside>
+
+        {/* main */}
+        <main className="min-w-0 flex-1 overflow-hidden">
+          <div className="border-b border-line bg-white px-4 py-8 sm:px-8">
+            <div className="mx-auto max-w-[1400px] space-y-4">
+              <div className="h-8 w-64 animate-pulse rounded bg-line" />
+              <div className="h-4 w-96 max-w-full animate-pulse rounded bg-line/70" />
+              <div className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-4">
+                {Array.from({ length: 4 }).map((_, i) => (
+                  <div key={i} className="h-24 animate-pulse rounded-xl2 border border-line bg-paper/70" />
+                ))}
+              </div>
+            </div>
+          </div>
+          <div className="mx-auto max-w-[1400px] space-y-6 px-4 py-8 sm:px-8">
+            <div className="h-64 animate-pulse rounded-xl2 border border-line bg-white" />
+            <div className="h-48 animate-pulse rounded-xl2 border border-line bg-white" />
+          </div>
+        </main>
       </div>
     </div>
   );
