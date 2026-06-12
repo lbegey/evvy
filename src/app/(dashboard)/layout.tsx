@@ -1,7 +1,5 @@
 import { redirect } from "next/navigation";
 import { getCurrentUser } from "@/lib/session";
-import { Navbar } from "@/components/Navbar";
-import { VerificationBanner } from "@/components/VerificationBanner";
 import { DashboardChrome } from "@/components/DashboardChrome";
 
 export default async function DashboardLayout({
@@ -13,12 +11,10 @@ export default async function DashboardLayout({
   if (!current) redirect("/login");
 
   const showBanner = current.user?.emailVerified === false;
+  const isSuperAdmin = current.user?.role === "super_admin";
 
   return (
-    <DashboardChrome
-      navbar={<Navbar />}
-      banner={showBanner ? <VerificationBanner /> : null}
-    >
+    <DashboardChrome isSuperAdmin={isSuperAdmin} showBanner={showBanner}>
       {children}
     </DashboardChrome>
   );
