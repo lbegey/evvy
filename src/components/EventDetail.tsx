@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState, useTransition } from "react";
+import { useState, useTransition } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import {
   CalendarDays, Calendar, Clock, Globe, MapPin, ExternalLink, Pencil, Trash2,
@@ -14,10 +14,9 @@ import { assignEventToCalendar } from "@/app/actions/calendars";
 import { createEvent, deleteEvent, toggleEventPublished } from "@/app/actions/events";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { markdownToHtml } from "@/lib/markdown";
-import { ToastProvider } from "@/components/event-dashboard/Toast";
 import { EvvySwitch } from "@/components/event-dashboard/EvvySwitch";
-import { EventTopbar } from "@/components/event-dashboard/EventTopbar";
-import { EventSidebar, type SidebarItem } from "@/components/event-dashboard/EventSidebar";
+import { DashboardShell } from "@/components/event-dashboard/DashboardShell";
+import { type SidebarItem } from "@/components/event-dashboard/DashboardSidebar";
 import { EventRsvpCard, type RsvpRecord } from "@/components/event-dashboard/EventRsvpCard";
 import { EventShareCard } from "@/components/event-dashboard/EventShareCard";
 import { EventQrCard } from "@/components/event-dashboard/EventQrCard";
@@ -104,9 +103,6 @@ export function EventDetail({
   const [published, setPublished] = useState(event.published);
   const [, startTogglePublished] = useTransition();
   const [isDeleting, startDelete] = useTransition();
-  const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [activeSection, setActiveSection] = useState("overview");
-  const scrollerRef = useRef<HTMLElement>(null);
 
   // ── meta (timezone-aware, reused from the previous implementation) ──
   const tz = event.timezone;
@@ -156,44 +152,6 @@ export function EventDetail({
     { id: "stats", label: T.dashboardDetail.sidebar.stats, Icon: BarChart2 },
   ];
 
-  const topIn = (el: HTMLElement, scroller: HTMLElement) =>
-    el.getBoundingClientRect().top - scroller.getBoundingClientRect().top + scroller.scrollTop;
-
-  const navigateTo = (id: string) => {
-    const scroller = scrollerRef.current;
-    const el = document.getElementById(id);
-    if (scroller && el) scroller.scrollTo({ top: topIn(el, scroller) - 24, behavior: "smooth" });
-    if (window.innerWidth < 1024) setSidebarOpen(false);
-  };
-
-  // scrollspy + reveal-on-scroll on the internal scroll container
-  useEffect(() => {
-    const scroller = scrollerRef.current;
-    if (!scroller) return;
-
-    const spy = () => {
-      const y = scroller.scrollTop + 130;
-      let cur = SECTIONS[0].id;
-      for (const s of SECTIONS) {
-        const el = document.getElementById(s.id);
-        if (el && topIn(el, scroller) <= y) cur = s.id;
-      }
-      if (scroller.scrollTop + scroller.clientHeight >= scroller.scrollHeight - 4) cur = SECTIONS[SECTIONS.length - 1].id;
-      setActiveSection(cur);
-    };
-    scroller.addEventListener("scroll", spy, { passive: true });
-    spy();
-
-    const io = new IntersectionObserver(
-      (entries) => entries.forEach((en) => { if (en.isIntersecting) { en.target.classList.add("in"); io.unobserve(en.target); } }),
-      { root: scroller, threshold: 0.08 }
-    );
-    scroller.querySelectorAll("[data-reveal]").forEach((el) => io.observe(el));
-
-    return () => { scroller.removeEventListener("scroll", spy); io.disconnect(); };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
   // ── actions ──
   const handleTogglePublished = (checked: boolean) => {
     if (checked && !emailVerified) return;
@@ -229,29 +187,15 @@ export function EventDetail({
     : published ? T.eventDetail.published.onlineHint : T.eventDetail.published.offlineHint;
 
   return (
-    <ToastProvider>
-      <div className="flex h-full flex-col overflow-hidden bg-paper text-ink">
-        <EventTopbar
-          isSuperAdmin={isSuperAdmin}
-          onMenuClick={() => setSidebarOpen(true)}
-          onNewEvent={() => { setCreateEventError(null); setCreateEventOpen(true); }}
-        />
-
-        <div className="flex min-h-0 flex-1">
-          {sidebarOpen && (
-            <div className="fixed inset-0 z-40 bg-ink/30 backdrop-blur-sm lg:hidden" onClick={() => setSidebarOpen(false)} />
-          )}
-
-          <EventSidebar
-            items={SECTIONS}
-            activeId={activeSection}
-            onNavigate={navigateTo}
-            backUrl={backUrl}
-            isOpen={sidebarOpen}
-            onClose={() => setSidebarOpen(false)}
-          />
-
-          <main ref={scrollerRef} className="evvy-scroll min-w-0 flex-1 overflow-y-auto scroll-smooth">
+    <>
+      <DashboardShell
+        sidebarItems={SECTIONS}
+        manageLabel={T.eventDashboard.manageEvent}
+        backUrl={backUrl}
+        backLabel={T.eventDetail.backToCalendar}
+        isSuperAdmin={isSuperAdmin}
+        onNewEvent={() => { setCreateEventError(null); setCreateEventOpen(true); }}
+      >
             {/* ── EVENT HEADER ── */}
             <div className="relative overflow-hidden border-b border-line bg-white">
               <div className="grid-texture pointer-events-none absolute inset-0" />
@@ -402,9 +346,7 @@ export function EventDetail({
 
               <div className="h-2" />
             </div>
-          </main>
-        </div>
-      </div>
+      </DashboardShell>
 
       <EditEventDialog
         open={editOpen}
@@ -428,6 +370,6 @@ export function EventDetail({
         isPending={isCreatingEvent}
         error={createEventError}
       />
-    </ToastProvider>
+    </>
   );
 }

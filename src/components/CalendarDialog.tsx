@@ -67,14 +67,14 @@ export function CalendarDialog({ open, onOpenChange, editing, onSubmit, isPendin
           "data-[starting-style]:opacity-0 data-[ending-style]:opacity-0"
         )} />
         <Dialog.Popup className={cn(
-          "fixed left-1/2 top-1/2 z-50 w-full max-w-md -translate-x-1/2 -translate-y-1/2",
-          "border border-border/60 bg-background p-6 shadow-xl",
+          "evvy-theme fixed left-1/2 top-1/2 z-50 w-full max-w-md -translate-x-1/2 -translate-y-1/2",
+          "rounded-xl2 border border-border/60 bg-background p-6 shadow-pop",
           "transition-[transform,opacity] duration-200 overflow-y-auto max-h-[88vh]",
           "data-[starting-style]:opacity-0 data-[starting-style]:scale-95",
           "data-[ending-style]:opacity-0 data-[ending-style]:scale-95"
         )}>
           <div className="mb-5 flex items-center justify-between">
-            <Dialog.Title className="text-lg font-semibold text-foreground">
+            <Dialog.Title className="font-display text-lg font-bold text-foreground">
               {editing ? T.calendars.edit : T.calendars.create}
             </Dialog.Title>
             <Dialog.Close className="cursor-pointer rounded-lg p-1.5 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-ring/50">

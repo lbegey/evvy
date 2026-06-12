@@ -275,7 +275,7 @@ export function EventBrandingCard(props: Props) {
                   <div className="mb-2 flex justify-center">
                     <span className={cn("inline-flex", logoRounded && "overflow-hidden rounded-lg")} style={!logoTransparentBg ? { backgroundColor: cCard ?? "#ffffff" } : undefined}>
                       {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img src={logoUrl} alt="" style={{ maxWidth: Math.min(logoSize, 120), width: "100%" }} className={cn("h-auto object-contain", logoRounded && "rounded-lg")} />
+                      <img src={logoUrl} alt="" style={{ maxWidth: logoSize, width: "100%" }} className={cn("h-auto object-contain", logoRounded && "rounded-lg")} />
                     </span>
                   </div>
                 )}
@@ -283,7 +283,7 @@ export function EventBrandingCard(props: Props) {
                   <div className="p-4">
                     <p className="font-display text-base font-bold text-foreground">{previewTitle}</p>
                     <p className="mt-1 text-xs text-muted-foreground">{previewMeta}</p>
-                    <button type="button" className="mt-3 h-9 w-full rounded-lg bg-primary text-sm font-semibold text-primary-foreground">
+                    <button type="button" className="mt-3 h-9 w-full rounded-lg text-sm font-semibold" style={{ backgroundColor: "var(--foreground)", color: "var(--card)" }}>
                       {T.rsvpForm.attending.replace(/^✓\s*/, "")}
                     </button>
                   </div>

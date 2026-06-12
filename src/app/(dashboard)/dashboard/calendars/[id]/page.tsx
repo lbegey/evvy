@@ -65,6 +65,7 @@ export default async function CalendarPage({
       appUrl={APP_URL}
       plan={calendar.user.plan}
       emailVerified={calendar.user.emailVerified}
+      isSuperAdmin={current?.user?.role === "super_admin"}
       brandingPresets={brandingPresets}
     />
   );

@@ -3,9 +3,9 @@
 import { usePathname } from "next/navigation";
 import type { ReactNode } from "react";
 
-// The event detail page renders its own full-screen shell (topbar + sidebar),
-// so it opts out of the shared dashboard Navbar.
-const EVENT_SHELL_ROUTE = /^\/dashboard\/events\/[^/]+\/?$/;
+// The event and calendar detail pages render their own full-screen shell
+// (topbar + sidebar), so they opt out of the shared dashboard Navbar.
+const FULL_SHELL_ROUTE = /^\/dashboard\/(events|calendars)\/[^/]+\/?$/;
 
 interface DashboardChromeProps {
   navbar: ReactNode;
@@ -16,7 +16,7 @@ interface DashboardChromeProps {
 export function DashboardChrome({ navbar, banner, children }: DashboardChromeProps) {
   const pathname = usePathname();
 
-  if (EVENT_SHELL_ROUTE.test(pathname ?? "")) {
+  if (FULL_SHELL_ROUTE.test(pathname ?? "")) {
     return <>{children}</>;
   }
 

@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { Menu, Plus } from "lucide-react";
 import { NavbarUserMenu } from "@/components/NavbarUserMenu";
 import { useLanguage } from "@/contexts/LanguageContext";
@@ -12,8 +13,14 @@ interface Props {
   onNewEvent: () => void;
 }
 
-export function EventTopbar({ isSuperAdmin, onMenuClick, onNewEvent }: Props) {
+export function DashboardTopbar({ isSuperAdmin, onMenuClick, onNewEvent }: Props) {
   const { lang, setLanguage, T } = useLanguage();
+  const pathname = usePathname() ?? "";
+  const onCalendars = pathname.startsWith("/dashboard/calendars");
+  const onEvents = !onCalendars;
+
+  const navLink = (active: boolean) =>
+    cn("rounded-lg px-3 py-1.5 transition", active ? "bg-paper font-medium text-ink" : "text-inksoft hover:bg-paper hover:text-ink");
 
   return (
     <header className="z-40 flex h-16 shrink-0 items-center gap-3 border-b border-line bg-white px-4 sm:px-6">
@@ -26,8 +33,8 @@ export function EventTopbar({ isSuperAdmin, onMenuClick, onNewEvent }: Props) {
       </Link>
 
       <nav className="ml-4 hidden items-center gap-1 text-sm md:flex">
-        <Link href="/dashboard" className="rounded-lg bg-paper px-3 py-1.5 font-medium text-ink">{T.nav.events}</Link>
-        <Link href="/dashboard/calendars" className="rounded-lg px-3 py-1.5 text-inksoft transition hover:bg-paper hover:text-ink">{T.nav.calendars}</Link>
+        <Link href="/dashboard" className={navLink(onEvents)}>{T.nav.events}</Link>
+        <Link href="/dashboard/calendars" className={navLink(onCalendars)}>{T.nav.calendars}</Link>
       </nav>
 
       <div className="ml-auto flex items-center gap-2 sm:gap-3">

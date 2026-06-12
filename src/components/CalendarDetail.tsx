@@ -1,28 +1,12 @@
 "use client";
 
-import { useEffect, useRef, useState, useTransition } from "react";
+import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import {
-  ArrowLeft,
-  CalendarRange,
-  Copy,
-  Check,
-  ExternalLink,
-  Pencil,
-  Trash2,
-  Plus,
-  Info,
-  Palette,
-  Link2,
-  CalendarX2,
-  ChevronLeft,
-  ChevronRight,
-  QrCode,
-  Download,
+  CalendarRange, ExternalLink, Pencil, Trash2, Plus, Info, Palette, Link2,
+  CalendarX2, ChevronLeft, ChevronRight, QrCode, Download, Copy,
 } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { CalendarDialog, type CalendarDialogValues } from "@/components/CalendarDialog";
 import { CalendarBrandingSection } from "@/components/CalendarBrandingSection";
 import { type BrandingPreset } from "@/app/actions/brandingPresets";
@@ -31,9 +15,12 @@ import { SocialShareLinks } from "@/components/SocialShareLinks";
 import { CreateEventDialog } from "@/components/CreateEventDialog";
 import { updateCalendar, deleteCalendar, assignEventToCalendar, toggleCalendarPublished } from "@/app/actions/calendars";
 import { createEvent, removeEvent } from "@/app/actions/events";
-import { Switch } from "@/components/ui/switch";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { cn } from "@/lib/utils";
+import { DashboardShell } from "@/components/event-dashboard/DashboardShell";
+import { type SidebarItem } from "@/components/event-dashboard/DashboardSidebar";
+import { EvvySwitch } from "@/components/event-dashboard/EvvySwitch";
+import { CopyButton } from "@/components/event-dashboard/CopyButton";
 
 interface CalendarRecord {
   id: string;
@@ -74,49 +61,21 @@ interface CalendarDetailProps {
   appUrl: string;
   plan: string;
   emailVerified: boolean;
+  isSuperAdmin: boolean;
   brandingPresets: BrandingPreset[];
 }
 
-const SIDEBAR_SECTIONS = [
-  { id: "info", labelKey: "info", icon: Info },
-  { id: "public-link", labelKey: "publicLink", icon: Link2 },
-  { id: "qr-code", labelKey: "qrCode", icon: QrCode },
-  { id: "branding", labelKey: "branding", icon: Palette },
-  { id: "events", labelKey: "events", icon: CalendarRange },
-] as const;
+const EVENTS_PER_PAGE = 6;
 
-const EVENTS_PER_PAGE = 10;
-
-function CopyButton({ value, label, copiedLabel }: { value: string; label: string; copiedLabel: string }) {
-  const [copied, setCopied] = useState(false);
-  return (
-    <Button
-      variant="outline"
-      size="sm"
-      className={cn("gap-1.5", copied && "border-green-500/40 bg-green-50 text-green-700 hover:bg-green-50 hover:text-green-700")}
-      onClick={() =>
-        navigator.clipboard.writeText(value).then(() => {
-          setCopied(true);
-          setTimeout(() => setCopied(false), 2000);
-        })
-      }
-    >
-      {copied ? <Check className="h-3.5 w-3.5" /> : <Copy className="h-3.5 w-3.5" />}
-      {copied ? copiedLabel : label}
-    </Button>
-  );
-}
-
-export function CalendarDetail({ calendar, events, calendars, appUrl, plan, emailVerified, brandingPresets }: CalendarDetailProps) {
+export function CalendarDetail({ calendar, events, calendars, appUrl, plan, emailVerified, isSuperAdmin, brandingPresets }: CalendarDetailProps) {
   const router = useRouter();
   const { T, lang } = useLanguage();
+  const locale = lang === "fr" ? "fr-FR" : "en-US";
   const [editOpen, setEditOpen] = useState(false);
   const [editError, setEditError] = useState<string | null>(null);
   const [isSaving, startSave] = useTransition();
   const [isDeleting, startDelete] = useTransition();
   const [deleteError, setDeleteError] = useState<string | null>(null);
-  const [activeSection, setActiveSection] = useState<string>(SIDEBAR_SECTIONS[0].id);
-  const mobileNavRef = useRef<HTMLElement>(null);
   const [createEventOpen, setCreateEventOpen] = useState(false);
   const [createEventError, setCreateEventError] = useState<string | null>(null);
   const [isCreatingEvent, startCreateEvent] = useTransition();
@@ -125,54 +84,31 @@ export function CalendarDetail({ calendar, events, calendars, appUrl, plan, emai
   const [deleteEventError, setDeleteEventError] = useState<string | null>(null);
   const [isDeletingEvent, startDeleteEvent] = useTransition();
   const [published, setPublished] = useState(calendar.published);
-  const [, startTogglePublished] = useTransition();
+  const [isTogglingPublished, startTogglePublished] = useTransition();
   const browserTz = Intl.DateTimeFormat().resolvedOptions().timeZone;
-  const locale = lang === "fr" ? "fr-FR" : "en-US";
 
   const eventsPageCount = Math.max(1, Math.ceil(events.length / EVENTS_PER_PAGE));
-  const pagedEvents = events.slice((eventsPage - 1) * EVENTS_PER_PAGE, eventsPage * EVENTS_PER_PAGE);
-
-  useEffect(() => {
-    const sections = SIDEBAR_SECTIONS
-      .map(({ id }) => document.getElementById(id))
-      .filter((el): el is HTMLElement => el !== null);
-    if (sections.length === 0) return;
-
-    const visible = new Map<string, number>();
-    const observer = new IntersectionObserver(
-      (entries) => {
-        for (const entry of entries) {
-          if (entry.isIntersecting) visible.set(entry.target.id, entry.intersectionRatio);
-          else visible.delete(entry.target.id);
-        }
-        if (visible.size > 0) {
-          const topId = SIDEBAR_SECTIONS.find(({ id }) => visible.has(id))?.id;
-          if (topId) setActiveSection(topId);
-        }
-      },
-      { rootMargin: "-96px 0px -70% 0px", threshold: [0, 1] }
-    );
-    sections.forEach((el) => observer.observe(el));
-
-    return () => observer.disconnect();
-  }, []);
-
-  useEffect(() => {
-    const nav = mobileNavRef.current;
-    const activeLink = nav?.querySelector<HTMLAnchorElement>(`a[href="#${activeSection}"]`);
-    activeLink?.scrollIntoView({ behavior: "smooth", inline: "center", block: "nearest" });
-  }, [activeSection]);
+  const currentPage = Math.min(eventsPage, eventsPageCount);
+  const pagedEvents = events.slice((currentPage - 1) * EVENTS_PER_PAGE, currentPage * EVENTS_PER_PAGE);
+  const publishedCount = events.filter((e) => e.published).length;
+  const draftCount = events.length - publishedCount;
 
   const publicUrl = `${appUrl}/c/${calendar.slug || calendar.id}`;
+  const host = appUrl.replace(/^https?:\/\//, "");
+
+  const SECTIONS: SidebarItem[] = [
+    { id: "overview", label: T.dashboardDetail.sidebar.info, Icon: Info },
+    { id: "public-link", label: T.dashboardDetail.sidebar.publicLink, Icon: Link2 },
+    { id: "qr-code", label: T.dashboardDetail.sidebar.qrCode, Icon: QrCode },
+    { id: "branding", label: T.dashboardDetail.sidebar.branding, Icon: Palette },
+    { id: "events", label: T.dashboardDetail.sidebar.events, Icon: CalendarRange, badge: events.length },
+  ];
 
   const handleEditSubmit = async (data: CalendarDialogValues) => {
     setEditError(null);
     startSave(async () => {
       const result = await updateCalendar(calendar.id, data);
-      if (result?.error === "forbidden") {
-        setEditError(T.calendars.locked);
-        return;
-      }
+      if (result?.error === "forbidden") { setEditError(T.calendars.locked); return; }
       setEditOpen(false);
       router.refresh();
     });
@@ -183,10 +119,7 @@ export function CalendarDetail({ calendar, events, calendars, appUrl, plan, emai
     setDeleteError(null);
     startDelete(async () => {
       const result = await deleteCalendar(calendar.id);
-      if (result?.error === "forbidden") {
-        setDeleteError(T.calendars.locked);
-        return;
-      }
+      if (result?.error === "forbidden") { setDeleteError(T.calendars.locked); return; }
       router.push("/dashboard/calendars");
       router.refresh();
     });
@@ -208,359 +141,266 @@ export function CalendarDetail({ calendar, events, calendars, appUrl, plan, emai
     setDeletingEventId(eventId);
     startDeleteEvent(async () => {
       const result = await removeEvent(eventId);
-      if ("error" in result) {
-        setDeleteEventError(T.calendarDetail.deleteEventForbidden);
-        setDeletingEventId(null);
-        return;
-      }
+      if ("error" in result) { setDeleteEventError(T.calendarDetail.deleteEventForbidden); setDeletingEventId(null); return; }
       setDeletingEventId(null);
       router.refresh();
     });
   };
 
   const handleCreateEvent = async (data: {
-    title: string;
-    description: string;
-    location: string;
-    organizerEmail: string;
-    startAt: string;
-    endAt: string;
-    allDay: boolean;
-    isOnline: boolean;
-    rsvpEnabled: boolean;
-    timezone: string;
-    language: string;
-    imageUrl: string;
-    calendarId: string | null;
+    title: string; description: string; location: string; organizerEmail: string;
+    startAt: string; endAt: string; allDay: boolean; isOnline: boolean; rsvpEnabled: boolean;
+    timezone: string; language: string; imageUrl: string; calendarId: string | null;
   }) => {
     setCreateEventError(null);
     startCreateEvent(async () => {
       const result = await createEvent(data);
-      if ("error" in result) {
-        setCreateEventError(T.eventForm.errors.limitReached);
-        return;
-      }
+      if ("error" in result) { setCreateEventError(T.eventForm.errors.limitReached); return; }
       const assignedCalendarId = data.calendarId ?? calendar.id;
       await assignEventToCalendar(result.id, assignedCalendarId);
       router.push(`/dashboard/events/${result.id}?calendar=${assignedCalendarId}`);
     });
   };
 
+  const publishTitle = !published && !emailVerified
+    ? T.calendarDetail.published.verifyEmailRequired
+    : published ? T.calendarDetail.published.onlineHint : T.calendarDetail.published.offlineHint;
+
   return (
     <>
-      {/* Fixed action bar */}
-      <div className="sticky top-16 z-40 border-b border-border/60 bg-background/95 backdrop-blur-sm">
-        <div className="mx-auto flex h-12 max-w-6xl items-center justify-between px-4 sm:px-6">
-          <Link
-            href="/dashboard/calendars"
-            className="inline-flex items-center gap-1.5 text-sm text-muted-foreground transition-colors hover:text-foreground"
-          >
-            <ArrowLeft className="h-4 w-4" />
-            <span className="hidden sm:inline">{T.calendarDetail.back}</span>
-          </Link>
-          <div className="flex items-center gap-2">
-            <Button
-              size="sm"
-              variant="outline"
-              className="gap-1.5 text-destructive hover:text-destructive"
-              onClick={handleDelete}
-              disabled={isDeleting}
-            >
-              <Trash2 className="h-3.5 w-3.5" />
-              <span className="hidden sm:inline">{T.calendars.delete}</span>
-            </Button>
-            <label
-              className={cn(
-                "flex items-center gap-1.5 rounded-lg border border-border/60 px-2 py-1 text-xs font-medium",
-                !published && !emailVerified && "opacity-60"
-              )}
-              title={
-                !published && !emailVerified
-                  ? T.calendarDetail.published.verifyEmailRequired
-                  : published
-                    ? T.calendarDetail.published.onlineHint
-                    : T.calendarDetail.published.offlineHint
-              }
-            >
-              <Switch
-                checked={published}
-                onCheckedChange={handleTogglePublished}
-                disabled={!published && !emailVerified}
+      <DashboardShell
+        sidebarItems={SECTIONS}
+        manageLabel={T.eventDashboard.manageCalendar}
+        backUrl="/dashboard/calendars"
+        backLabel={T.calendarDetail.back}
+        isSuperAdmin={isSuperAdmin}
+        onNewEvent={() => { setCreateEventError(null); setCreateEventOpen(true); }}
+      >
+        {/* ── HEADER ── */}
+        <div id="overview" className="relative overflow-hidden border-b border-line bg-white">
+          <div className="grid-texture pointer-events-none absolute inset-0" />
+          <div className="relative mx-auto max-w-[1400px] px-4 py-6 sm:px-8 lg:py-8">
+            <div className="flex flex-col gap-6 xl:flex-row xl:items-start">
+              <div className="flex min-w-0 flex-1 gap-4">
+                <div
+                  className="hidden h-16 w-16 shrink-0 place-items-center rounded-2xl text-white shadow-pop sm:grid"
+                  style={{ background: calendar.color ?? undefined }}
+                >
+                  <span className={cn("grid h-full w-full place-items-center rounded-2xl", !calendar.color && "bg-linear-to-br from-evvy to-coral")}>
+                    <CalendarRange className="h-7 w-7" strokeWidth={1.8} />
+                  </span>
+                </div>
+                <div className="min-w-0">
+                  <div className="flex flex-wrap items-center gap-2">
+                    <h1 className="truncate font-display text-2xl font-extrabold tracking-tight sm:text-3xl">{calendar.name}</h1>
+                    {published ? (
+                      <span className="inline-flex items-center gap-1.5 rounded-full bg-mint/15 px-2.5 py-1 text-xs font-semibold text-mint">
+                        <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-mint" />{T.calendarDetail.published.online}
+                      </span>
+                    ) : (
+                      <span className="inline-flex items-center gap-1.5 rounded-full border border-line bg-paper px-2.5 py-1 text-xs font-semibold text-inksoft">
+                        <span className="h-1.5 w-1.5 rounded-full bg-inksoft/50" />{T.calendarDetail.published.offline}
+                      </span>
+                    )}
+                  </div>
+                  {calendar.description && <p className="mt-2 text-sm text-inksoft/90">{calendar.description}</p>}
+                  {deleteError && <p className="mt-2 text-sm text-coral">{deleteError}</p>}
+                </div>
+              </div>
+
+              {/* actions */}
+              <div className="flex shrink-0 flex-wrap items-center gap-2 xl:justify-end">
+                <label className="flex h-9 cursor-pointer select-none items-center gap-2 rounded-lg border border-line bg-white px-3 text-sm font-medium" title={publishTitle}>
+                  {isTogglingPublished && <span className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-evvy border-t-transparent" />}
+                  <span className="text-inksoft">{T.common.online}</span>
+                  <EvvySwitch checked={published} disabled={(!published && !emailVerified) || isTogglingPublished} onCheckedChange={handleTogglePublished} />
+                </label>
+                <a href={publicUrl} target="_blank" rel="noopener noreferrer" className="inline-flex h-9 items-center gap-1.5 rounded-lg border border-line bg-white px-3 text-sm font-medium transition hover:bg-paper">
+                  <ExternalLink className="h-[15px] w-[15px]" />{T.common.open}
+                </a>
+                <button onClick={() => setEditOpen(true)} className="inline-flex h-9 items-center gap-1.5 rounded-lg bg-evvy px-3.5 text-sm font-semibold text-white shadow-card transition hover:bg-evvy-deep">
+                  <Pencil className="h-[15px] w-[15px]" />{T.calendars.edit}
+                </button>
+                <button onClick={handleDelete} disabled={isDeleting} title={T.calendars.delete}
+                  className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-line bg-white text-coral transition hover:bg-coral/5 disabled:opacity-50">
+                  <Trash2 className="h-4 w-4" />
+                </button>
+              </div>
+            </div>
+
+            {/* KPI strip */}
+            <div className="mt-7 grid grid-cols-3 gap-3">
+              <div data-reveal className="rounded-xl2 border border-line bg-paper/70 p-4">
+                <p className="text-xs font-medium text-inksoft">{T.dashboardDetail.sidebar.events}</p>
+                <p className="mt-1 font-display text-2xl font-bold">{events.length}</p>
+              </div>
+              <div data-reveal className="rounded-xl2 border border-line bg-paper/70 p-4">
+                <p className="text-xs font-medium text-inksoft">{T.eventDashboard.kpiPublished}</p>
+                <p className="mt-1 font-display text-2xl font-bold text-mint">{publishedCount}</p>
+              </div>
+              <div data-reveal className="rounded-xl2 border border-line bg-paper/70 p-4">
+                <p className="text-xs font-medium text-inksoft">{T.eventDashboard.kpiDrafts}</p>
+                <p className="mt-1 font-display text-2xl font-bold text-inksoft/60">{draftCount}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* ── CONTENT ── */}
+        <div className="mx-auto max-w-[1400px] space-y-8 px-4 py-8 sm:px-8">
+          {/* Public link */}
+          <section data-reveal id="public-link" className="scroll-mt-24 rounded-xl2 border border-line bg-white p-5 shadow-card">
+            <div className="flex items-center gap-3">
+              <span className="grid h-9 w-9 place-items-center rounded-lg bg-evvy-soft text-evvy"><Link2 className="h-[18px] w-[18px]" /></span>
+              <div>
+                <h2 className="font-display text-lg font-bold leading-none">{T.eventDashboard.shareTitle}</h2>
+                <p className="mt-1 text-xs text-inksoft">{T.eventDetail.publicLink.title}</p>
+              </div>
+            </div>
+            <div className="mt-4 flex items-center gap-2">
+              <div className="h-10 min-w-0 flex-1 truncate rounded-lg border border-line bg-paper/60 px-3 text-sm leading-10 text-inksoft">{host}/c/{calendar.slug || calendar.id}</div>
+              <CopyButton value={publicUrl} toast={T.common.copied} className="inline-flex h-10 shrink-0 items-center gap-1.5 rounded-lg bg-evvy px-3 text-sm font-medium text-white transition hover:bg-evvy-deep">
+                <Copy className="h-3.5 w-3.5" />{T.common.copy}
+              </CopyButton>
+            </div>
+            <div className="evvy-theme mt-4 flex items-center gap-2">
+              <span className="mr-1 text-xs text-inksoft">{T.eventDetail.publicLink.share}</span>
+              <SocialShareLinks url={publicUrl} title={calendar.name} />
+            </div>
+            <div className="evvy-theme mt-2">
+              <CalendarSlugSection calendarId={calendar.id} plan={plan} appUrl={appUrl} slug={calendar.slug} />
+            </div>
+          </section>
+
+          {/* QR code */}
+          <section data-reveal id="qr-code" className="scroll-mt-24 rounded-xl2 border border-line bg-white p-5 shadow-card">
+            <div className="mb-4 flex items-center gap-3">
+              <span className="grid h-9 w-9 place-items-center rounded-lg bg-evvy-soft text-evvy"><QrCode className="h-[18px] w-[18px]" /></span>
+              <div>
+                <h2 className="font-display text-lg font-bold leading-none">{T.eventDetail.qrCode.title}</h2>
+                <p className="mt-1 text-xs text-inksoft">{T.calendarDetail.qrCode.subtitle}</p>
+              </div>
+            </div>
+            <div className="flex items-center gap-4">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={`${appUrl}/api/calendars/${calendar.id}/qrcode?format=png`} alt={T.eventDetail.qrCode.title} width={96} height={96} className="shrink-0 rounded-xl border border-line bg-white p-2" />
+              <div className="flex flex-col gap-2">
+                <a href={`${appUrl}/api/calendars/${calendar.id}/qrcode?format=png`} download className="inline-flex h-9 items-center gap-1.5 rounded-lg border border-line px-3 text-sm font-medium transition hover:bg-paper">
+                  <Download className="h-3.5 w-3.5" />{T.eventDetail.qrCode.downloadPng}
+                </a>
+                <a href={`${appUrl}/api/calendars/${calendar.id}/qrcode?format=svg`} download className="inline-flex h-9 items-center gap-1.5 rounded-lg border border-line px-3 text-sm font-medium transition hover:bg-paper">
+                  <Download className="h-3.5 w-3.5" />{T.eventDetail.qrCode.downloadSvg}
+                </a>
+              </div>
+            </div>
+          </section>
+
+          {/* Branding */}
+          <section data-reveal id="branding" className="scroll-mt-24 rounded-xl2 border border-line bg-white p-5 shadow-card">
+            <div className="mb-4 flex items-center gap-3">
+              <span className="grid h-9 w-9 place-items-center rounded-lg bg-evvy-soft text-evvy"><Palette className="h-[18px] w-[18px]" /></span>
+              <div>
+                <h2 className="font-display text-lg font-bold leading-none">{T.eventDetail.branding.title}</h2>
+                <p className="mt-1 text-xs text-inksoft">{T.eventDashboard.brandingSubtitle}</p>
+              </div>
+            </div>
+            <div className="evvy-theme">
+              <CalendarBrandingSection
+                calendarId={calendar.id}
+                plan={plan}
+                brandingEnabled={calendar.brandingEnabled}
+                brandLogoUrl={calendar.brandLogoUrl}
+                brandLogoSize={calendar.brandLogoSize}
+                brandLogoTransparentBg={calendar.brandLogoTransparentBg}
+                brandLogoRounded={calendar.brandLogoRounded}
+                brandColor={calendar.brandColor}
+                brandTextColor={calendar.brandTextColor}
+                brandCardColor={calendar.brandCardColor}
+                brandIconBackgroundColor={calendar.brandIconBackgroundColor}
+                brandBackgroundColor={calendar.brandBackgroundColor}
+                brandBackgroundImageUrl={calendar.brandBackgroundImageUrl}
+                initialPresets={brandingPresets}
               />
-              <span className={cn(published ? "text-foreground" : "text-muted-foreground")}>
-                {published ? T.calendarDetail.published.online : T.calendarDetail.published.offline}
-              </span>
-            </label>
-            <Button
-              size="sm"
-              variant="outline"
-              className="gap-1.5"
-              nativeButton={false}
-              render={<a href={publicUrl} target="_blank" rel="noopener noreferrer" />}
-            >
-              <ExternalLink className="h-3.5 w-3.5" />
-              <span className="hidden sm:inline">{T.common.open}</span>
-            </Button>
-            <Button size="sm" variant="outline" className="gap-1.5" onClick={() => setEditOpen(true)}>
-              <Pencil className="h-3.5 w-3.5" />
-              <span className="hidden sm:inline">{T.calendars.edit}</span>
-            </Button>
-            <Button
-              size="sm"
-              className="gap-1.5"
-              onClick={() => { setCreateEventError(null); setCreateEventOpen(true); }}
-            >
-              <Plus className="h-3.5 w-3.5" />
-              <span className="hidden sm:inline">{T.calendar.newEvent}</span>
-            </Button>
-          </div>
-        </div>
-
-        {/* Mobile section navigation */}
-        <nav ref={mobileNavRef} className="flex gap-1 overflow-x-auto px-4 pb-2 sm:px-6 lg:hidden">
-          {SIDEBAR_SECTIONS.map(({ id, labelKey, icon: Icon }) => (
-            <a
-              key={id}
-              href={`#${id}`}
-              className={cn(
-                "flex shrink-0 items-center gap-1.5 whitespace-nowrap rounded-lg px-3 py-1.5 text-xs transition-colors",
-                activeSection === id
-                  ? "bg-primary/10 text-primary font-medium"
-                  : "text-muted-foreground hover:bg-muted hover:text-foreground"
-              )}
-            >
-              <Icon className="h-3.5 w-3.5 shrink-0" />
-              {T.dashboardDetail.sidebar[labelKey]}
-            </a>
-          ))}
-        </nav>
-      </div>
-
-    <div className="mx-auto max-w-6xl px-4 pt-4 pb-6 sm:px-6 sm:pt-6 sm:pb-8 lg:flex lg:items-start lg:gap-8">
-      {/* Sidebar navigation */}
-      <aside className="hidden shrink-0 lg:sticky lg:top-28 lg:block lg:w-44">
-        <nav className="space-y-0.5">
-          {SIDEBAR_SECTIONS.map(({ id, labelKey, icon: Icon }) => (
-            <a
-              key={id}
-              href={`#${id}`}
-              className={cn(
-                "flex items-center gap-2 rounded-lg px-3 py-1.5 text-sm transition-colors",
-                activeSection === id
-                  ? "bg-primary/10 text-primary font-medium"
-                  : "text-muted-foreground hover:bg-muted hover:text-foreground"
-              )}
-            >
-              <Icon className="h-4 w-4 shrink-0" />
-              {T.dashboardDetail.sidebar[labelKey]}
-            </a>
-          ))}
-        </nav>
-      </aside>
-
-      <div className="min-w-0 max-w-4xl flex-1 space-y-6 sm:space-y-8">
-        {deleteError && <p className="text-sm text-destructive">{deleteError}</p>}
-
-        {/* Info */}
-        <div id="info" className="scroll-mt-24">
-          <h1 className="text-2xl font-bold tracking-tight text-foreground sm:text-3xl">{calendar.name}</h1>
-          {calendar.description && (
-            <p className="mt-3 text-sm leading-relaxed text-foreground/70">{calendar.description}</p>
-          )}
-        </div>
-
-        {/* Public link */}
-        <section id="public-link" className="scroll-mt-24 space-y-3 rounded-xl border border-border/60 p-4 sm:p-5">
-          <h2 className="text-sm font-semibold text-foreground">{T.eventDetail.publicLink.title}</h2>
-          <div className="flex flex-wrap items-center gap-2">
-            <code className="flex-1 min-w-0 truncate rounded-md border border-border/60 bg-muted/40 px-3 py-1.5 text-xs">
-              {publicUrl}
-            </code>
-            <div className="flex items-center gap-1.5 shrink-0">
-              <CopyButton value={publicUrl} label={T.common.copy} copiedLabel={T.common.copied} />
-              <Button
-                size="sm"
-                className="gap-1.5"
-                nativeButton={false}
-                render={<a href={publicUrl} target="_blank" rel="noopener noreferrer" />}
-              >
-                <ExternalLink className="h-3.5 w-3.5" />
-                {T.common.open}
-              </Button>
             </div>
-          </div>
+          </section>
 
-          <div className="flex items-center gap-2">
-            <span className="text-xs text-muted-foreground">{T.eventDetail.publicLink.share}</span>
-            <SocialShareLinks url={publicUrl} title={calendar.name} />
-          </div>
-
-          <CalendarSlugSection calendarId={calendar.id} plan={plan} appUrl={appUrl} slug={calendar.slug} />
-        </section>
-
-        {/* QR code */}
-        <section id="qr-code" className="scroll-mt-24 space-y-3 rounded-xl border border-border/60 p-4 sm:p-5">
-          <div>
-            <h2 className="text-sm font-semibold text-foreground">{T.eventDetail.qrCode.title}</h2>
-            <p className="text-xs text-muted-foreground mt-0.5">{T.calendarDetail.qrCode.subtitle}</p>
-          </div>
-          <div className="flex flex-wrap items-center gap-4">
-            <img
-              src={`${appUrl}/api/calendars/${calendar.id}/qrcode?format=png`}
-              alt={T.eventDetail.qrCode.title}
-              width={120}
-              height={120}
-              className="shrink-0 rounded-lg border border-border/60 bg-white p-2"
-            />
-            <div className="flex flex-col gap-2">
-              <Button
-                variant="outline"
-                size="sm"
-                className="gap-1.5"
-                nativeButton={false}
-                render={<a href={`${appUrl}/api/calendars/${calendar.id}/qrcode?format=png`} download />}
-              >
-                <Download className="h-3.5 w-3.5" />
-                {T.eventDetail.qrCode.downloadPng}
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                className="gap-1.5"
-                nativeButton={false}
-                render={<a href={`${appUrl}/api/calendars/${calendar.id}/qrcode?format=svg`} download />}
-              >
-                <Download className="h-3.5 w-3.5" />
-                {T.eventDetail.qrCode.downloadSvg}
-              </Button>
+          {/* Events */}
+          <section data-reveal id="events" className="scroll-mt-24 rounded-xl2 border border-line bg-white p-5 shadow-card">
+            <div className="mb-4 flex flex-wrap items-center gap-3">
+              <span className="grid h-9 w-9 place-items-center rounded-lg bg-evvy-soft text-evvy"><CalendarRange className="h-[18px] w-[18px]" /></span>
+              <div>
+                <h2 className="font-display text-lg font-bold leading-none">{T.dashboardDetail.sidebar.events}</h2>
+                <p className="mt-1 text-xs text-inksoft">{calendar.name}</p>
+              </div>
+              <button onClick={() => { setCreateEventError(null); setCreateEventOpen(true); }}
+                className="ml-auto inline-flex h-9 items-center gap-1.5 rounded-lg bg-evvy px-3 text-sm font-medium text-white shadow-card transition hover:bg-evvy-deep">
+                <Plus className="h-4 w-4" />{T.calendar.newEvent}
+              </button>
             </div>
-          </div>
-        </section>
-
-        {/* Branding */}
-        <section id="branding" className="scroll-mt-24 space-y-3 rounded-xl border border-border/60 p-4 sm:p-5">
-          <div className="flex items-center gap-2">
-            <Palette className="h-4 w-4 text-muted-foreground" />
-            <h2 className="text-sm font-semibold text-foreground">{T.eventDetail.branding.title}</h2>
-          </div>
-          <CalendarBrandingSection
-            calendarId={calendar.id}
-            plan={plan}
-            brandingEnabled={calendar.brandingEnabled}
-            brandLogoUrl={calendar.brandLogoUrl}
-            brandLogoSize={calendar.brandLogoSize}
-            brandLogoTransparentBg={calendar.brandLogoTransparentBg}
-            brandLogoRounded={calendar.brandLogoRounded}
-            brandColor={calendar.brandColor}
-            brandTextColor={calendar.brandTextColor}
-            brandCardColor={calendar.brandCardColor}
-            brandIconBackgroundColor={calendar.brandIconBackgroundColor}
-            brandBackgroundColor={calendar.brandBackgroundColor}
-            brandBackgroundImageUrl={calendar.brandBackgroundImageUrl}
-            initialPresets={brandingPresets}
-          />
-        </section>
-
-        {/* Events */}
-        <section id="events" className="scroll-mt-24 space-y-3 rounded-xl border border-border/60 p-4 sm:p-5">
-          <div className="flex items-center gap-2">
-            <CalendarRange className="h-4 w-4 text-muted-foreground" />
-            <h2 className="text-sm font-semibold text-foreground">{T.dashboardDetail.sidebar.events}</h2>
-          </div>
-          {deleteEventError && <p className="text-sm text-destructive">{deleteEventError}</p>}
-          {events.length === 0 ? (
-            <div className="flex flex-col items-center justify-center gap-2 rounded-xl border border-dashed border-border/60 py-12 text-center">
-              <CalendarX2 className="h-6 w-6 text-muted-foreground/50" />
-              <p className="text-sm text-muted-foreground">{T.calendarDetail.noEvents}</p>
-            </div>
-          ) : (
-            <>
-              <div className="space-y-2">
-                {pagedEvents.map((ev) => {
-                  const start = new Date(ev.startAt);
-                  const day = new Intl.DateTimeFormat(locale, { timeZone: ev.timezone, day: "2-digit" }).format(start);
-                  const month = new Intl.DateTimeFormat(locale, { timeZone: ev.timezone, month: "short" }).format(start).toUpperCase();
-                  const dateLabel = ev.allDay
-                    ? new Intl.DateTimeFormat(locale, { timeZone: ev.timezone, weekday: "short", day: "numeric", month: "short", year: "numeric" }).format(start)
-                    : `${new Intl.DateTimeFormat(locale, { timeZone: ev.timezone, weekday: "short", day: "numeric", month: "short", year: "numeric" }).format(start)} · ${new Intl.DateTimeFormat(locale, { timeZone: ev.timezone, hour: "2-digit", minute: "2-digit" }).format(start)}`;
-
-                  return (
-                    <div
-                      key={ev.id}
-                      className="flex items-center gap-3 rounded-xl border border-border/60 bg-background p-3 transition-colors hover:bg-muted/20"
-                    >
-                      <Link href={`/dashboard/events/${ev.id}?calendar=${calendar.id}`} className="grid min-w-0 flex-1 grid-cols-2 items-center gap-2 sm:flex sm:gap-3">
-                        <div className="flex min-w-0 items-center gap-3">
-                          <div className="flex w-12 shrink-0 flex-col items-center justify-center rounded-lg bg-muted/50 py-1.5">
-                            <span className="text-[10px] font-medium uppercase text-muted-foreground">{month}</span>
-                            <span className="text-base font-bold leading-none text-foreground">{day}</span>
+            {deleteEventError && <p className="mb-3 text-sm text-coral">{deleteEventError}</p>}
+            {events.length === 0 ? (
+              <div className="flex flex-col items-center justify-center gap-2 rounded-xl border border-dashed border-line py-12 text-center">
+                <CalendarX2 className="h-6 w-6 text-inksoft/50" />
+                <p className="text-sm text-inksoft">{T.calendarDetail.noEvents}</p>
+              </div>
+            ) : (
+              <>
+                <div className="space-y-2">
+                  {pagedEvents.map((ev) => {
+                    const start = new Date(ev.startAt);
+                    const day = new Intl.DateTimeFormat(locale, { timeZone: ev.timezone, day: "2-digit" }).format(start);
+                    const month = new Intl.DateTimeFormat(locale, { timeZone: ev.timezone, month: "short" }).format(start).toUpperCase();
+                    const dateLabel = ev.allDay
+                      ? new Intl.DateTimeFormat(locale, { timeZone: ev.timezone, weekday: "short", day: "numeric", month: "short", year: "numeric" }).format(start)
+                      : `${new Intl.DateTimeFormat(locale, { timeZone: ev.timezone, weekday: "short", day: "numeric", month: "short", year: "numeric" }).format(start)} · ${new Intl.DateTimeFormat(locale, { timeZone: ev.timezone, hour: "2-digit", minute: "2-digit" }).format(start)}`;
+                    return (
+                      <div key={ev.id} className="flex items-center gap-3 rounded-xl border border-line bg-white p-3 transition hover:bg-paper/60">
+                        <Link href={`/dashboard/events/${ev.id}?calendar=${calendar.id}`} className="flex min-w-0 flex-1 items-center gap-3">
+                          <div className="flex w-12 shrink-0 flex-col items-center justify-center rounded-lg bg-paper py-1.5">
+                            <span className="text-[10px] font-medium uppercase text-inksoft">{month}</span>
+                            <span className="font-display text-base font-bold leading-none text-ink">{day}</span>
                           </div>
                           <div className="min-w-0 flex-1">
                             <div className="flex items-center gap-1.5">
-                              <p className="truncate text-sm font-medium text-foreground">{ev.title}</p>
-                              <Badge
-                                variant={ev.published ? "secondary" : "outline"}
-                                className={cn("shrink-0", !ev.published && "text-muted-foreground")}
-                              >
+                              <p className="truncate text-sm font-medium text-ink">{ev.title}</p>
+                              <span className={cn("shrink-0 rounded-full px-2 py-0.5 text-[11px] font-semibold", ev.published ? "bg-mint/15 text-mint" : "border border-line bg-paper text-inksoft")}>
                                 {ev.published ? T.common.online : T.common.offline}
-                              </Badge>
+                              </span>
                             </div>
-                            <p className="hidden truncate text-xs text-muted-foreground sm:block">{dateLabel}</p>
+                            <p className="truncate text-xs text-inksoft">{dateLabel}</p>
                           </div>
-                        </div>
-                        <div className="min-w-0 sm:hidden">
-                          <p className="truncate text-xs text-muted-foreground">{dateLabel}</p>
-                          <p className="truncate text-xs text-muted-foreground">{ev.timezone}</p>
-                        </div>
-                      </Link>
-                      {plan === "premium" && (
-                        <Button
-                          variant="ghost"
-                          size="icon-sm"
-                          onClick={() => handleDeleteEvent(ev.id)}
-                          disabled={isDeletingEvent && deletingEventId === ev.id}
-                          aria-label={T.calendars.delete}
-                          className="shrink-0 text-muted-foreground hover:bg-destructive/10 hover:text-destructive"
-                        >
-                          <Trash2 className="h-3.5 w-3.5" />
-                        </Button>
-                      )}
-                    </div>
-                  );
-                })}
-              </div>
-
-              {eventsPageCount > 1 && (
-                <div className="flex items-center justify-between gap-3 pt-1">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="gap-1.5"
-                    disabled={eventsPage <= 1}
-                    onClick={() => setEventsPage((p) => Math.max(1, p - 1))}
-                  >
-                    <ChevronLeft className="h-3.5 w-3.5" />
-                    {T.calendarDetail.pagination.previous}
-                  </Button>
-                  <p className="text-xs text-muted-foreground">
-                    {T.calendarDetail.pagination.pageInfo(eventsPage, eventsPageCount)}
-                  </p>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="gap-1.5"
-                    disabled={eventsPage >= eventsPageCount}
-                    onClick={() => setEventsPage((p) => Math.min(eventsPageCount, p + 1))}
-                  >
-                    {T.calendarDetail.pagination.next}
-                    <ChevronRight className="h-3.5 w-3.5" />
-                  </Button>
+                        </Link>
+                        {plan === "premium" && (
+                          <button onClick={() => handleDeleteEvent(ev.id)} disabled={isDeletingEvent && deletingEventId === ev.id}
+                            aria-label={T.calendars.delete} className="shrink-0 rounded-lg p-1.5 text-inksoft/50 transition hover:text-coral disabled:opacity-40">
+                            <Trash2 className="h-3.5 w-3.5" />
+                          </button>
+                        )}
+                      </div>
+                    );
+                  })}
                 </div>
-              )}
-            </>
-          )}
-        </section>
-      </div>
+
+                {eventsPageCount > 1 && (
+                  <div className="mt-3 flex items-center justify-between gap-3">
+                    <button type="button" disabled={currentPage <= 1} onClick={() => setEventsPage((p) => Math.max(1, p - 1))}
+                      className="inline-flex h-8 items-center gap-1 rounded-lg border border-line px-3 text-xs font-medium transition hover:bg-paper disabled:opacity-40">
+                      <ChevronLeft className="h-3.5 w-3.5" />{T.calendarDetail.pagination.previous}
+                    </button>
+                    <p className="text-xs text-inksoft">{T.calendarDetail.pagination.pageInfo(currentPage, eventsPageCount)}</p>
+                    <button type="button" disabled={currentPage >= eventsPageCount} onClick={() => setEventsPage((p) => Math.min(eventsPageCount, p + 1))}
+                      className="inline-flex h-8 items-center gap-1 rounded-lg border border-line px-3 text-xs font-medium transition hover:bg-paper disabled:opacity-40">
+                      {T.calendarDetail.pagination.next}<ChevronRight className="h-3.5 w-3.5" />
+                    </button>
+                  </div>
+                )}
+              </>
+            )}
+          </section>
+
+          <div className="h-2" />
+        </div>
+      </DashboardShell>
 
       <CalendarDialog
         open={editOpen}
@@ -582,7 +422,6 @@ export function CalendarDetail({ calendar, events, calendars, appUrl, plan, emai
         isPending={isCreatingEvent}
         error={createEventError}
       />
-    </div>
     </>
   );
 }

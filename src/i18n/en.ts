@@ -540,6 +540,9 @@ export const en = {
     statsBreakdown: (n: number) => `Breakdown by service — ${n} clicks`,
     attachmentQuestions: "Attachments & questions",
     manageEvent: "Manage event",
+    manageCalendar: "Manage calendar",
+    kpiPublished: "Published",
+    kpiDrafts: "Drafts",
   },
 
   rsvpSection: {

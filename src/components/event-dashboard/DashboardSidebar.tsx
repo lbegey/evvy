@@ -17,11 +17,13 @@ interface Props {
   activeId: string;
   onNavigate: (id: string) => void;
   backUrl: string;
+  backLabel: string;
+  manageLabel: string;
   isOpen: boolean;
   onClose: () => void;
 }
 
-export function EventSidebar({ items, activeId, onNavigate, backUrl, isOpen, onClose }: Props) {
+export function DashboardSidebar({ items, activeId, onNavigate, backUrl, backLabel, manageLabel, isOpen, onClose }: Props) {
   const { T } = useLanguage();
 
   return (
@@ -33,14 +35,14 @@ export function EventSidebar({ items, activeId, onNavigate, backUrl, isOpen, onC
       )}
     >
       <div className="flex h-16 items-center justify-between border-b border-line px-4 lg:hidden">
-        <span className="font-display font-bold">Menu</span>
+        <span className="font-display font-bold">{T.dashboardDetail.sidebar.events}</span>
         <button onClick={onClose} className="rounded-lg p-2 text-inksoft hover:bg-paper" aria-label="Close">
           <X className="h-[18px] w-[18px]" />
         </button>
       </div>
 
       <div className="px-4 pb-3 pt-5">
-        <p className="px-2 text-[11px] font-semibold uppercase tracking-wider text-inksoft/70">{T.eventDashboard.manageEvent}</p>
+        <p className="px-2 text-[11px] font-semibold uppercase tracking-wider text-inksoft/70">{manageLabel}</p>
       </div>
 
       <nav className="flex-1 space-y-0.5 overflow-y-auto px-3 pb-6 text-sm">
@@ -68,7 +70,7 @@ export function EventSidebar({ items, activeId, onNavigate, backUrl, isOpen, onC
 
       <div className="border-t border-line p-3">
         <Link href={backUrl} className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-inksoft transition hover:bg-paper">
-          <ArrowLeft className="h-4 w-4" />{T.eventDetail.backToCalendar}
+          <ArrowLeft className="h-4 w-4" />{backLabel}
         </Link>
       </div>
     </aside>

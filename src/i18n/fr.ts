@@ -542,6 +542,9 @@ export const fr: Translations = {
     statsBreakdown: (n: number) => `Répartition par service — ${n} clics`,
     attachmentQuestions: "Pièces & questions",
     manageEvent: "Gérer l'événement",
+    manageCalendar: "Gérer le calendrier",
+    kpiPublished: "Publiés",
+    kpiDrafts: "Brouillons",
   },
 
   rsvpSection: {
