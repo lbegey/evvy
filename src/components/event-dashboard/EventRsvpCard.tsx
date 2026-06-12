@@ -2,14 +2,14 @@
 
 import { Fragment, useMemo, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { Users, Download, Search, Trash2, ChevronLeft, ChevronRight, HelpCircle } from "lucide-react";
+import { Users, Download, Search, Trash2, ChevronLeft, ChevronRight, HelpCircle, Loader2 } from "lucide-react";
 import { toggleRsvp, deleteRsvp, updateRsvpSettings } from "@/app/actions/events";
 import { EventQuestionsSection, type RsvpQuestion } from "@/components/EventQuestionsSection";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { cn } from "@/lib/utils";
 import { EvvySwitch } from "./EvvySwitch";
 
-const PAGE_SIZE = 10;
+const PAGE_SIZE = 4;
 const AVATAR_STYLES = [
   "bg-coral/15 text-coral",
   "bg-mint/15 text-mint",
@@ -83,6 +83,7 @@ export function EventRsvpCard({ eventId, plan, rsvpEnabled, rsvpLimit, rsvpDeadl
   const { T, lang } = useLanguage();
   const locale = lang === "fr" ? "fr-FR" : "en-US";
   const [, startTransition] = useTransition();
+  const [isToggling, startToggle] = useTransition();
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
   const [deletingId, setDeletingId] = useState<string | null>(null);
@@ -114,7 +115,7 @@ export function EventRsvpCard({ eventId, plan, rsvpEnabled, rsvpLimit, rsvpDeadl
   };
 
   const handleToggle = (next: boolean) => {
-    startTransition(async () => { await toggleRsvp(eventId, next); router.refresh(); });
+    startToggle(async () => { await toggleRsvp(eventId, next); router.refresh(); });
   };
 
   const handleSaveSettings = () => {
@@ -151,8 +152,9 @@ export function EventRsvpCard({ eventId, plan, rsvpEnabled, rsvpLimit, rsvpDeadl
         </div>
         <div className="ml-auto flex items-center gap-2">
           <label className="flex items-center gap-2 text-sm text-inksoft">
+            {isToggling && <Loader2 className="h-3.5 w-3.5 animate-spin text-evvy" />}
             <span>{rsvpEnabled ? T.rsvpSection.enabled : T.rsvpSection.disabled}</span>
-            <EvvySwitch checked={rsvpEnabled} onCheckedChange={handleToggle} />
+            <EvvySwitch checked={rsvpEnabled} onCheckedChange={handleToggle} disabled={isToggling} />
           </label>
           <a
             href={`/api/events/${eventId}/rsvp/export`}
@@ -229,7 +231,7 @@ export function EventRsvpCard({ eventId, plan, rsvpEnabled, rsvpLimit, rsvpDeadl
                       <th className="px-3 py-2" />
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-line">
+                  <tbody>
                     {paginated.map((r, i) => {
                       const cfg = STATUS[r.status] ?? { label: r.status, className: "text-inksoft bg-paper" };
                       const answers = questions
@@ -237,7 +239,7 @@ export function EventRsvpCard({ eventId, plan, rsvpEnabled, rsvpLimit, rsvpDeadl
                         .filter((x): x is { q: RsvpQuestion; answer: RsvpAnswer } => Boolean(x.answer && x.answer.value !== ""));
                       return (
                         <Fragment key={r.id}>
-                          <tr className={cn("transition hover:bg-paper/60", answers.length > 0 && "[&>td]:border-b-0")}>
+                          <tr className={cn("transition hover:bg-paper/60", i > 0 && "[&>td]:border-t [&>td]:border-line")}>
                             <td className="px-3 py-3">
                               <div className="flex items-center gap-2.5">
                                 <span className={cn("grid h-8 w-8 place-items-center rounded-full text-xs font-bold", AVATAR_STYLES[i % AVATAR_STYLES.length])}>{initials(r.name)}</span>
@@ -267,10 +269,10 @@ export function EventRsvpCard({ eventId, plan, rsvpEnabled, rsvpLimit, rsvpDeadl
                           </tr>
                           {answers.length > 0 && (
                             <tr>
-                              <td colSpan={5} className="px-3 pb-3">
-                                <div className="ml-[42px] flex flex-wrap gap-1.5">
+                              <td colSpan={5} className="px-3 pb-3 pt-2">
+                                <div className="flex flex-wrap gap-1.5">
                                   {answers.map(({ q, answer }) => (
-                                    <span key={q.id} className="inline-flex items-center gap-1 rounded-lg bg-paper px-2 py-1 text-[11px]">
+                                    <span key={q.id} className="inline-flex items-center gap-1 rounded-lg border border-line bg-paper px-2 py-1 text-[11px]">
                                       <span className="font-medium text-inksoft/80">{q.label}:</span>
                                       <span className="text-ink">{formatAnswerValue(q.type, answer.value)}</span>
                                     </span>

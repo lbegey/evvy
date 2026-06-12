@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState, useTransition } from "react";
+import { useEffect, useRef, useState, useTransition, type CSSProperties } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Palette, RotateCcw, Loader2 } from "lucide-react";
@@ -153,11 +153,22 @@ export function EventBrandingCard(props: Props) {
     brandBackgroundColor: backgroundColor || null, brandBackgroundImageUrl: backgroundImageUrl || null,
   };
 
-  const safe = (v: string, fallback: string) => (/^#[0-9a-fA-F]{3,8}$/.test(v.trim()) ? v.trim() : fallback);
-  const accentColor = safe(color, "#6366f1");
-  const pageColor = safe(backgroundColor, "#f4f4f5");
-  const cardCol = safe(cardColor, "#ffffff");
-  const textCol = safe(textColor, "#111111");
+  // Mirror the real public page: only apply a brand color when it's valid, otherwise
+  // fall back to the default app theme (no invented colors).
+  const valid = (s: string) => (/^#[0-9a-fA-F]{3,8}$/.test(s.trim()) ? s.trim() : null);
+  const cAccent = valid(color);
+  const cText = valid(textColor);
+  const cCard = valid(cardColor);
+  const cBg = valid(backgroundColor);
+  const previewStyle = {
+    ...(cAccent ? { "--primary": cAccent, "--border": cAccent, "--ring": cAccent } : {}),
+    ...(cText ? {
+      "--foreground": cText, "--card-foreground": cText, "--muted-foreground": cText,
+      "--primary-foreground": cText, "--secondary-foreground": cText, "--accent-foreground": cText,
+    } : {}),
+    ...(cCard ? { "--card": cCard, "--background": cCard } : {}),
+    ...(cBg ? { backgroundColor: cBg } : {}),
+  } as CSSProperties;
 
   return (
     <section data-reveal id="branding" className="scroll-mt-24">
@@ -203,7 +214,7 @@ export function EventBrandingCard(props: Props) {
                   <label className="text-xs font-medium text-inksoft">{T.eventDetail.branding.logo}</label>
                   <div className="mt-1.5">
                     <ImageDropzone value={logoUrl} onChange={(v) => { setLogoUrl(v); persist({ logoUrl: v }); }}
-                      previewClassName={cn("h-24 w-auto max-w-full rounded-lg object-contain p-2", !logoTransparentBg && "border border-line bg-paper")} />
+                      previewClassName="mx-auto block h-24 w-auto max-w-full rounded-lg border border-line bg-paper object-contain p-2" />
                   </div>
                 </div>
                 <div>
@@ -249,38 +260,41 @@ export function EventBrandingCard(props: Props) {
               </div>
             </div>
 
-            {/* live preview */}
+            {/* live preview — faithful mini-replica of the public event page */}
             <div className="lg:col-span-2">
               <p className="mb-1.5 text-xs font-medium text-inksoft">{T.eventDashboard.livePreview}</p>
-              <div
-                className="overflow-hidden rounded-xl2 border border-line bg-cover bg-center"
-                style={{ background: pageColor, ...(backgroundImageUrl ? { backgroundImage: `url(${backgroundImageUrl})` } : {}) }}
-              >
-                <div className="h-16" style={{ backgroundImage: `linear-gradient(135deg, ${accentColor}, #ff7a59)` }} />
-                <div className="-mt-7 mx-4 rounded-xl border border-line p-4 shadow-card" style={{ background: cardCol }}>
-                  {logoUrl && (
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img
-                      src={logoUrl}
-                      alt=""
-                      className="mb-2 w-auto object-contain"
-                      style={{ height: Math.min(logoSize, 40), borderRadius: logoRounded ? 8 : 0, background: logoTransparentBg ? "transparent" : "#fff" }}
-                    />
-                  )}
-                  <p className="font-display text-base font-bold" style={{ color: textCol }}>{previewTitle}</p>
-                  <p className="mt-1 text-xs" style={{ color: textCol, opacity: 0.6 }}>{previewMeta}</p>
-                  <button type="button" className="mt-3 h-9 w-full rounded-lg text-sm font-semibold text-white" style={{ background: accentColor }}>
-                    {T.rsvpForm.attending.replace(/^✓\s*/, "")}
-                  </button>
+              <div className="relative isolate overflow-hidden rounded-xl2 border border-line bg-muted/20 p-4" style={previewStyle}>
+                {backgroundImageUrl && (
+                  <div
+                    aria-hidden
+                    className="pointer-events-none absolute inset-0 -z-10 scale-110 bg-cover bg-center blur-sm"
+                    style={{ backgroundImage: `url(${JSON.stringify(backgroundImageUrl)})` }}
+                  />
+                )}
+                {logoUrl && (
+                  <div className="mb-2 flex justify-center">
+                    <span className={cn("inline-flex", logoRounded && "overflow-hidden rounded-lg")} style={!logoTransparentBg ? { backgroundColor: cCard ?? "#ffffff" } : undefined}>
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img src={logoUrl} alt="" style={{ maxWidth: Math.min(logoSize, 120), width: "100%" }} className={cn("h-auto object-contain", logoRounded && "rounded-lg")} />
+                    </span>
+                  </div>
+                )}
+                <div className="overflow-hidden rounded-xl border border-border/60 bg-background shadow-card">
+                  <div className="p-4">
+                    <p className="font-display text-base font-bold text-foreground">{previewTitle}</p>
+                    <p className="mt-1 text-xs text-muted-foreground">{previewMeta}</p>
+                    <button type="button" className="mt-3 h-9 w-full rounded-lg bg-primary text-sm font-semibold text-primary-foreground">
+                      {T.rsvpForm.attending.replace(/^✓\s*/, "")}
+                    </button>
+                  </div>
                 </div>
-                <div className="p-4 pt-3 text-[11px]" style={{ color: textCol, opacity: 0.55 }}>{T.eventDashboard.poweredBy}</div>
               </div>
-              <div className="mt-3 flex items-center gap-2">
+              <div className="mt-3 flex flex-wrap items-center gap-2">
                 <button type="button" onClick={onReset} disabled={isResetting || !hasCustom}
                   className="inline-flex h-9 items-center gap-1.5 rounded-lg border border-line px-3 text-sm font-medium transition hover:bg-paper disabled:opacity-40">
                   {isResetting ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <RotateCcw className="h-3.5 w-3.5" />}{T.branding.reset}
                 </button>
-                <SaveBrandingPresetButton currentData={currentPresetData} onSaved={refreshPresets} size="sm" />
+                <SaveBrandingPresetButton currentData={currentPresetData} onSaved={refreshPresets} size="sm" className="h-9 border-line hover:bg-paper" />
               </div>
             </div>
           </div>

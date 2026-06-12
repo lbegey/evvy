@@ -20,8 +20,10 @@ export function DashboardChrome({ navbar, banner, children }: DashboardChromePro
     return <>{children}</>;
   }
 
+  // Non-event dashboard pages adopt the new palette + font via the evvy-theme
+  // token remap (low-risk: only color/radius/font values change, not layout).
   return (
-    <div className="flex min-h-screen flex-col">
+    <div className="evvy-theme flex min-h-screen flex-col">
       {navbar}
       {banner}
       <main className="flex-1">{children}</main>

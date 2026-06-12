@@ -45,7 +45,7 @@ export function UserSettingsPopover({ user, initials, isSuperAdmin }: Props) {
         <Popover.Positioner side="bottom" align="end" sideOffset={8} className="z-[60]">
           <Popover.Popup
             className={cn(
-              "w-56 rounded-xl border border-border/60 bg-background p-1 shadow-xl",
+              "evvy-theme w-56 rounded-xl border border-border/60 bg-background p-1 shadow-pop",
               "origin-[var(--transform-origin)]",
               "transition-[transform,opacity] duration-150",
               "data-[starting-style]:opacity-0 data-[starting-style]:scale-95",
