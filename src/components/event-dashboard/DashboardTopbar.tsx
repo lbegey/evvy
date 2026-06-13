@@ -26,8 +26,15 @@ export function DashboardTopbar({ isSuperAdmin, isLoggedIn, onMenuClick }: Props
   const navLink = (active: boolean) =>
     cn("rounded-lg px-3 py-1.5 transition", active ? "bg-paper font-medium text-ink" : "text-inksoft hover:bg-paper hover:text-ink");
 
+  const mobileTab = (active: boolean) =>
+    cn(
+      "flex-1 border-b-2 px-3 py-2.5 text-center text-sm font-medium transition",
+      active ? "border-evvy text-evvy" : "border-transparent text-inksoft hover:text-ink"
+    );
+
   return (
-    <header className="z-40 flex h-16 shrink-0 items-center gap-3 border-b border-line bg-white px-4 sm:px-6">
+    <header className="z-40 shrink-0 border-b border-line bg-white">
+      <div className="flex h-16 items-center gap-3 px-4 sm:px-6">
       {onMenuClick && (
         <button onClick={onMenuClick} className="-ml-1 rounded-lg p-2 text-inksoft hover:bg-paper lg:hidden" aria-label="Menu">
           <Menu className="h-5 w-5" />
@@ -91,6 +98,22 @@ export function DashboardTopbar({ isSuperAdmin, isLoggedIn, onMenuClick }: Props
 
         <NavbarUserMenu isSuperAdmin={isSuperAdmin} />
       </div>
+      </div>
+
+      {/* Secondary nav — mobile only, kept visible under the sticky topbar so
+          Events/Calendars (or the marketing links) stay reachable on phones. */}
+      {isLoggedIn ? (
+        <nav className="flex border-t border-line px-2 md:hidden">
+          <Link href="/dashboard" className={mobileTab(onEvents)}>{T.nav.events}</Link>
+          <Link href="/dashboard/calendars" className={mobileTab(onCalendars)}>{T.nav.calendars}</Link>
+        </nav>
+      ) : (
+        <nav className="flex border-t border-line px-2 md:hidden">
+          <Link href="/#features" className={mobileTab(false)}>{T.landing.nav.features}</Link>
+          <Link href="/#pricing" className={mobileTab(false)}>{T.landing.nav.pricing}</Link>
+          <Link href="/#faq" className={mobileTab(false)}>{T.landing.nav.faq}</Link>
+        </nav>
+      )}
     </header>
   );
 }
