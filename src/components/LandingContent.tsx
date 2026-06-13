@@ -82,7 +82,7 @@ function RsvpMock({ m }: { m: { yes: string; maybe: string; no: string; confirm:
     <MockFrame>
       <div className="space-y-2.5">
         <div className="grid grid-cols-3 gap-2">
-          <div className="flex h-9 items-center justify-center gap-1.5 rounded-lg bg-mint/15 text-xs font-semibold text-mint ring-1 ring-mint/30">
+          <div className="flex h-9 items-center justify-center gap-1.5 rounded-lg bg-mint/15 text-xs font-semibold text-mint-ink ring-1 ring-mint/30">
             <span className="text-base leading-none">✓</span> {m.yes}
           </div>
           <div className="flex h-9 items-center justify-center gap-1.5 rounded-lg border border-line bg-paper text-xs font-medium text-inksoft">
@@ -290,7 +290,7 @@ function HeroRsvpCardMock({ m }: { m: HeroMockupCopy }) {
     <div className="w-[210px] rounded-2xl border border-line bg-white p-4 shadow-pop">
       <p className="text-sm font-semibold text-ink">{m.rsvpQuestion}</p>
       <div className="mt-3 grid grid-cols-3 gap-1.5">
-        <div className="flex h-9 flex-col items-center justify-center gap-0.5 rounded-lg bg-mint/15 text-[10px] font-semibold text-mint ring-1 ring-mint/30">
+        <div className="flex h-9 flex-col items-center justify-center gap-0.5 rounded-lg bg-mint/15 text-[10px] font-semibold text-mint-ink ring-1 ring-mint/30">
           <Check className="h-3.5 w-3.5" />
           {m.yes}
         </div>
@@ -582,7 +582,7 @@ export function LandingContent({ demoCalendar }: LandingContentProps) {
             </div>
 
             <p
-              className="mt-5 inline-flex items-center gap-1.5 text-xs font-medium text-mint animate-fade-in-up"
+              className="mt-5 inline-flex items-center gap-1.5 text-xs font-medium text-mint-ink animate-fade-in-up"
               style={{ animationDelay: "0.4s" }}
             >
               <CheckCircle2 className="h-3.5 w-3.5 shrink-0" />
@@ -813,7 +813,7 @@ export function LandingContent({ demoCalendar }: LandingContentProps) {
               >
                 {T.landing.pricing.premium.cta}
               </Button>
-              <p className="mt-3 inline-flex items-center justify-center gap-1.5 text-center text-xs font-medium text-mint">
+              <p className="mt-3 inline-flex items-center justify-center gap-1.5 text-center text-xs font-medium text-mint-ink">
                 <CheckCircle2 className="h-3.5 w-3.5 shrink-0" />
                 {T.landing.hero.microText}
               </p>

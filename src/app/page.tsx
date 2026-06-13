@@ -5,6 +5,24 @@ import { db } from "@/lib/db";
 
 export const dynamic = "force-dynamic";
 
+const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? "https://evvycal.app";
+
+const SITE_JSON_LD = [
+  {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    name: "Evvy",
+    url: APP_URL,
+    logo: `${APP_URL}/icon.svg`,
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    name: "Evvy",
+    url: APP_URL,
+  },
+];
+
 export default async function Home() {
   const calendar = await db.calendar.findFirst({
     where: { slug: "demo-tech-conferences-2030" },
@@ -36,6 +54,7 @@ export default async function Home() {
       className="evvy-theme flex min-h-full flex-col bg-white text-ink"
       style={{ fontFamily: "var(--font-inter), Inter, system-ui, sans-serif" }}
     >
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(SITE_JSON_LD) }} />
       <SiteHeader />
       <LandingContent demoCalendar={demoCalendar} />
       <Footer />
