@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { Menu, Plus, CalendarPlus } from "lucide-react";
 import { Logo } from "@/components/Logo";
 import { NavbarUserMenu } from "@/components/NavbarUserMenu";
@@ -19,7 +19,16 @@ interface Props {
 export function DashboardTopbar({ isSuperAdmin, isLoggedIn, onMenuClick }: Props) {
   const { lang, setLanguage, T } = useLanguage();
   const pathname = usePathname() ?? "";
+  const router = useRouter();
   const createDialogs = useCreateDialogs();
+
+  // On locale-routed marketing pages (/en, /fr) switching language also navigates
+  // to the sibling locale URL so the URL and rendered language stay in sync.
+  const switchLanguage = (target: "en" | "fr") => {
+    setLanguage(target);
+    const m = pathname.match(/^\/(en|fr)(\/.*)?$/);
+    if (m) router.push(`/${target}${m[2] ?? ""}`);
+  };
   const onCalendars = pathname.startsWith("/dashboard/calendars");
   const onEvents = pathname.startsWith("/dashboard") && !onCalendars;
 
@@ -44,7 +53,7 @@ export function DashboardTopbar({ isSuperAdmin, isLoggedIn, onMenuClick }: Props
         </button>
       )}
 
-      <Link href={isLoggedIn ? "/dashboard" : "/"} className="shrink-0 transition-opacity hover:opacity-80">
+      <Link href={isLoggedIn ? "/dashboard" : `/${lang}`} className="shrink-0 transition-opacity hover:opacity-80">
         <Logo size="md" />
       </Link>
 
@@ -63,7 +72,7 @@ export function DashboardTopbar({ isSuperAdmin, isLoggedIn, onMenuClick }: Props
         {/* Language switch — always visible (flag on mobile, flag + label on larger screens) */}
         <div className="flex items-center rounded-lg border border-line p-0.5 text-xs font-medium">
           <button
-            onClick={() => setLanguage("en")}
+            onClick={() => switchLanguage("en")}
             aria-label="English"
             aria-pressed={lang === "en"}
             className={cn(focusRing, "flex items-center gap-1 rounded-md px-2 py-1 transition", lang === "en" ? "bg-evvy-soft text-evvy-deep" : "text-inksoft hover:text-ink")}
@@ -71,7 +80,7 @@ export function DashboardTopbar({ isSuperAdmin, isLoggedIn, onMenuClick }: Props
             <span className="fi fi-gb text-base" /><span className="hidden sm:inline">EN</span>
           </button>
           <button
-            onClick={() => setLanguage("fr")}
+            onClick={() => switchLanguage("fr")}
             aria-label="Français"
             aria-pressed={lang === "fr"}
             className={cn(focusRing, "flex items-center gap-1 rounded-md px-2 py-1 transition", lang === "fr" ? "bg-evvy-soft text-evvy-deep" : "text-inksoft hover:text-ink")}
@@ -114,9 +123,9 @@ export function DashboardTopbar({ isSuperAdmin, isLoggedIn, onMenuClick }: Props
         </nav>
       ) : (
         <nav className="flex border-t border-line px-2 md:hidden">
-          <Link href="/#features" className={mobileTab(false)}>{T.landing.nav.features}</Link>
-          <Link href="/#pricing" className={mobileTab(false)}>{T.landing.nav.pricing}</Link>
-          <Link href="/#faq" className={mobileTab(false)}>{T.landing.nav.faq}</Link>
+          <Link href={`/${lang}#features`} className={mobileTab(false)}>{T.landing.nav.features}</Link>
+          <Link href={`/${lang}#pricing`} className={mobileTab(false)}>{T.landing.nav.pricing}</Link>
+          <Link href={`/${lang}#faq`} className={mobileTab(false)}>{T.landing.nav.faq}</Link>
         </nav>
       )}
     </header>

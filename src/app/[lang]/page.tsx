@@ -1,7 +1,9 @@
+import type { Metadata } from "next";
 import { SiteHeader } from "@/components/SiteHeader";
 import { Footer } from "@/components/Footer";
 import { LandingContent } from "@/components/LandingContent";
 import { db } from "@/lib/db";
+import { localeAlternates, type Locale } from "@/lib/i18n";
 
 export const dynamic = "force-dynamic";
 
@@ -22,6 +24,11 @@ const SITE_JSON_LD = [
     url: APP_URL,
   },
 ];
+
+export async function generateMetadata({ params }: { params: Promise<{ lang: string }> }): Promise<Metadata> {
+  const { lang } = await params;
+  return { alternates: localeAlternates(lang as Locale, "") };
+}
 
 export default async function Home() {
   const calendar = await db.calendar.findFirst({

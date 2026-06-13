@@ -72,7 +72,7 @@ export default async function RootLayout({
       className={`${geistMono.variable} ${inter.variable} ${bricolage.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
-        <LanguageProvider>
+        <LanguageProvider initialLang={lang}>
           {children}
           <CookieBanner />
         </LanguageProvider>

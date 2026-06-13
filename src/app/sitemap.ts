@@ -9,12 +9,27 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     db.calendar.findMany({ select: { id: true, slug: true, updatedAt: true } }),
   ]);
 
-  const staticPages: MetadataRoute.Sitemap = [
-    { url: APP_URL,                   lastModified: new Date(), changeFrequency: "weekly",  priority: 1.0 },
-    { url: `${APP_URL}/contact`,      lastModified: new Date(), changeFrequency: "monthly", priority: 0.3 },
-    { url: `${APP_URL}/privacy`,      lastModified: new Date(), changeFrequency: "monthly", priority: 0.2 },
-    { url: `${APP_URL}/terms`,        lastModified: new Date(), changeFrequency: "monthly", priority: 0.2 },
+  // Marketing pages are locale-routed (/en, /fr) — emit both with hreflang alternates.
+  const marketing: { path: string; changeFrequency: "weekly" | "monthly"; priority: number }[] = [
+    { path: "",         changeFrequency: "weekly",  priority: 1.0 },
+    { path: "/contact", changeFrequency: "monthly", priority: 0.3 },
+    { path: "/privacy", changeFrequency: "monthly", priority: 0.2 },
+    { path: "/terms",   changeFrequency: "monthly", priority: 0.2 },
   ];
+  const staticPages: MetadataRoute.Sitemap = marketing.flatMap(({ path, changeFrequency, priority }) =>
+    (["en", "fr"] as const).map((lang) => ({
+      url: `${APP_URL}/${lang}${path}`,
+      lastModified: new Date(),
+      changeFrequency,
+      priority,
+      alternates: {
+        languages: {
+          en: `${APP_URL}/en${path}`,
+          fr: `${APP_URL}/fr${path}`,
+        },
+      },
+    }))
+  );
 
   const eventPages: MetadataRoute.Sitemap = events.map((e) => ({
     url: `${APP_URL}/e/${e.slug ?? e.id}`,

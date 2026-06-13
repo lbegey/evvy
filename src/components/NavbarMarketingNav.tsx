@@ -3,17 +3,17 @@
 import { useLanguage } from "@/contexts/LanguageContext";
 
 export function NavbarMarketingNav() {
-  const { T } = useLanguage();
+  const { T, lang } = useLanguage();
 
   return (
-    <nav className="hidden items-center gap-5 text-sm font-medium text-muted-foreground sm:flex">
-      <a href="/#features" className="cursor-pointer transition-colors hover:text-foreground">
+    <nav className="hidden items-center gap-5 text-sm font-medium text-inksoft sm:flex">
+      <a href={`/${lang}#features`} className="cursor-pointer transition-colors hover:text-ink">
         {T.landing.nav.features}
       </a>
-      <a href="/#pricing" className="cursor-pointer transition-colors hover:text-foreground">
+      <a href={`/${lang}#pricing`} className="cursor-pointer transition-colors hover:text-ink">
         {T.landing.nav.pricing}
       </a>
-      <a href="/#faq" className="cursor-pointer transition-colors hover:text-foreground">
+      <a href={`/${lang}#faq`} className="cursor-pointer transition-colors hover:text-ink">
         {T.landing.nav.faq}
       </a>
     </nav>

@@ -26,12 +26,22 @@ const LanguageContext = createContext<LanguageContextType>({
   setLanguage: () => {},
 });
 
-export function LanguageProvider({ children }: { children: ReactNode }) {
-  const [lang, setLang] = useState<Language>("en");
+interface LanguageProviderProps {
+  children: ReactNode;
+  /** Seed the initial language (SSR-correct). From the cookie at the root, or the route locale. */
+  initialLang?: Language;
+  /** Lock to `initialLang` — used on locale-routed pages where the URL is authoritative. */
+  lock?: boolean;
+}
+
+export function LanguageProvider({ children, initialLang, lock }: LanguageProviderProps) {
+  const [lang, setLang] = useState<Language>(initialLang ?? "en");
 
   // Init: read from localStorage, then auto-detect, then sync from DB if logged in
-  // (the server actions below check the session server-side and no-op when signed out)
+  // (the server actions below check the session server-side and no-op when signed out).
+  // Skipped when `lock` is set so the URL locale stays authoritative.
   useEffect(() => {
+    if (lock) return;
     const stored = localStorage.getItem("minical_lang") as Language | null;
     if (stored === "en" || stored === "fr") {
       setLang(stored);
@@ -49,7 +59,7 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
         }
       })
       .catch(() => {});
-  }, []);
+  }, [lock]);
 
   const setLanguage = useCallback((newLang: Language) => {
     setLang(newLang);
