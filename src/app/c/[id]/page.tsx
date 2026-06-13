@@ -39,7 +39,7 @@ export async function generateMetadata({
     description: desc,
     alternates: { canonical: url },
     openGraph: { title: calendar.name, description: desc, url, type: "website" },
-    twitter: { card: "summary", title: calendar.name, description: desc },
+    twitter: { card: "summary_large_image", title: calendar.name, description: desc },
   };
 }
 
@@ -234,8 +234,24 @@ export default async function PublicCalendarPage({
   );
   const liveSignature = `${calendar.updatedAt.toISOString()}|${latestEventUpdatedAt?.toISOString() ?? ""}|${calendar.events.length}`;
 
+  const calendarJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    name: calendar.name,
+    ...(calendar.description ? { description: calendar.description } : {}),
+    url: `${APP_URL}/c/${calendar.slug ?? calendar.id}`,
+    numberOfItems: calendar.events.length,
+    itemListElement: calendar.events.slice(0, 50).map((e, i) => ({
+      "@type": "ListItem",
+      position: i + 1,
+      url: `${APP_URL}/e/${e.slug ?? e.id}`,
+      name: e.title,
+    })),
+  };
+
   return (
     <>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(calendarJsonLd) }} />
       {isCreator && (
         <div
           className={cn(

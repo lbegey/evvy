@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import {
   CheckCircle2,
@@ -156,7 +157,7 @@ function PublicCalendarMock({ lang }: { lang: "fr" | "en" }) {
           <div className="flex items-center gap-2">
             {SHARE_LOGOS.map((s) => (
               <span key={s.key} className="rounded-md p-0.5">
-                <img src={s.logo} alt={s.name} width={26} height={26} className="rounded" />
+                <Image src={s.logo} alt={s.name} width={26} height={26} className="rounded" />
               </span>
             ))}
           </div>
@@ -182,7 +183,7 @@ function SharingMock({ m }: { m: { addToCalendar: string } }) {
         <div className="flex items-center gap-2 sm:gap-3">
           {SHARE_LOGOS.map((s) => (
             <span key={s.key} className="rounded-lg p-1">
-              <img src={s.logo} alt={s.name} width={36} height={36} className="rounded" />
+              <Image src={s.logo} alt={s.name} width={36} height={36} className="rounded" />
             </span>
           ))}
         </div>
@@ -275,7 +276,7 @@ function HeroEventCardMock({ m }: { m: HeroMockupCopy }) {
         <div className="mt-2 flex items-center gap-2">
           {SHARE_LOGOS.map((s) => (
             <span key={s.key} className="rounded-lg p-0.5">
-              <img src={s.logo} alt={s.name} width={28} height={28} className="rounded" />
+              <Image src={s.logo} alt={s.name} width={28} height={28} className="rounded" />
             </span>
           ))}
         </div>
@@ -589,8 +590,14 @@ export function LandingContent({ demoCalendar }: LandingContentProps) {
             </p>
           </div>
 
-          <div className="hidden animate-fade-in-up lg:block" style={{ animationDelay: "0.3s" }}>
-            <HeroMockupComposition m={T.landing.hero.mockup} />
+          <div className="animate-fade-in-up" style={{ animationDelay: "0.3s" }}>
+            <div className="hidden lg:block">
+              <HeroMockupComposition m={T.landing.hero.mockup} />
+            </div>
+            {/* Compact single-card mockup so phone visitors still see the product */}
+            <div className="mx-auto mt-2 max-w-sm lg:hidden">
+              <HeroEventCardMock m={T.landing.hero.mockup} />
+            </div>
           </div>
         </div>
       </section>

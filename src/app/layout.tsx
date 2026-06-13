@@ -1,22 +1,18 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono, Inter, Bricolage_Grotesque } from "next/font/google";
+import { Geist_Mono, Inter, Bricolage_Grotesque } from "next/font/google";
+import { cookies } from "next/headers";
 import "./globals.css";
 import { LanguageProvider } from "@/contexts/LanguageContext";
 import { CookieBanner } from "@/components/CookieBanner";
-
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
 
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
 });
 
-// Used by the redesigned event dashboard and its (portaled) dialogs.
-const inter = Inter({ variable: "--font-inter", subsets: ["latin"] });
-const bricolage = Bricolage_Grotesque({ variable: "--font-bricolage", subsets: ["latin"] });
+// Inter is the single sans-serif across the app; Bricolage is the display face.
+const inter = Inter({ variable: "--font-inter", subsets: ["latin"], display: "swap" });
+const bricolage = Bricolage_Grotesque({ variable: "--font-bricolage", subsets: ["latin"], display: "swap" });
 
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? "https://evvycal.app";
 
@@ -51,15 +47,17 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const lang = (await cookies()).get("minical_lang")?.value === "fr" ? "fr" : "en";
+
   return (
     <html
-      lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} ${inter.variable} ${bricolage.variable} h-full antialiased`}
+      lang={lang}
+      className={`${geistMono.variable} ${inter.variable} ${bricolage.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
         <LanguageProvider>

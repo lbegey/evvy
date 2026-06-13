@@ -23,11 +23,14 @@ export function DashboardTopbar({ isSuperAdmin, isLoggedIn, onMenuClick }: Props
   const onCalendars = pathname.startsWith("/dashboard/calendars");
   const onEvents = pathname.startsWith("/dashboard") && !onCalendars;
 
+  const focusRing = "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-evvy/50 focus-visible:ring-offset-1";
+
   const navLink = (active: boolean) =>
-    cn("rounded-lg px-3 py-1.5 transition", active ? "bg-paper font-medium text-ink" : "text-inksoft hover:bg-paper hover:text-ink");
+    cn(focusRing, "rounded-lg px-3 py-1.5 transition", active ? "bg-paper font-medium text-ink" : "text-inksoft hover:bg-paper hover:text-ink");
 
   const mobileTab = (active: boolean) =>
     cn(
+      focusRing,
       "flex-1 border-b-2 px-3 py-2.5 text-center text-sm font-medium transition",
       active ? "border-evvy text-evvy" : "border-transparent text-inksoft hover:text-ink"
     );
@@ -36,7 +39,7 @@ export function DashboardTopbar({ isSuperAdmin, isLoggedIn, onMenuClick }: Props
     <header className="z-40 shrink-0 border-b border-line bg-white">
       <div className="flex h-16 items-center gap-3 px-4 sm:px-6">
       {onMenuClick && (
-        <button onClick={onMenuClick} className="-ml-1 rounded-lg p-2 text-inksoft hover:bg-paper lg:hidden" aria-label="Menu">
+        <button onClick={onMenuClick} className={cn(focusRing, "-ml-1 rounded-lg p-2 text-inksoft hover:bg-paper lg:hidden")} aria-label="Menu">
           <Menu className="h-5 w-5" />
         </button>
       )}
@@ -57,21 +60,23 @@ export function DashboardTopbar({ isSuperAdmin, isLoggedIn, onMenuClick }: Props
       )}
 
       <div className="ml-auto flex items-center gap-1.5 sm:gap-2">
-        {/* Language switch — always visible (flags on mobile, flag + label on larger screens) */}
+        {/* Language switch — always visible (flag on mobile, flag + label on larger screens) */}
         <div className="flex items-center rounded-lg border border-line p-0.5 text-xs font-medium">
           <button
             onClick={() => setLanguage("en")}
             aria-label="English"
-            className={cn("rounded-md px-2 py-1 transition", lang === "en" ? "bg-evvy-soft text-evvy-deep" : "text-inksoft hover:text-ink")}
+            aria-pressed={lang === "en"}
+            className={cn(focusRing, "flex items-center gap-1 rounded-md px-2 py-1 transition", lang === "en" ? "bg-evvy-soft text-evvy-deep" : "text-inksoft hover:text-ink")}
           >
-            🇬🇧<span className="hidden sm:inline"> EN</span>
+            <span className="fi fi-gb text-base" /><span className="hidden sm:inline">EN</span>
           </button>
           <button
             onClick={() => setLanguage("fr")}
             aria-label="Français"
-            className={cn("rounded-md px-2 py-1 transition", lang === "fr" ? "bg-evvy-soft text-evvy-deep" : "text-inksoft hover:text-ink")}
+            aria-pressed={lang === "fr"}
+            className={cn(focusRing, "flex items-center gap-1 rounded-md px-2 py-1 transition", lang === "fr" ? "bg-evvy-soft text-evvy-deep" : "text-inksoft hover:text-ink")}
           >
-            🇫🇷<span className="hidden sm:inline"> FR</span>
+            <span className="fi fi-fr text-base" /><span className="hidden sm:inline">FR</span>
           </button>
         </div>
 
@@ -80,7 +85,7 @@ export function DashboardTopbar({ isSuperAdmin, isLoggedIn, onMenuClick }: Props
             <button
               onClick={() => createDialogs.openCreateEvent()}
               aria-label={T.calendar.newEvent}
-              className="inline-flex h-9 items-center gap-1.5 rounded-lg bg-evvy px-2.5 text-sm font-medium text-white shadow-card transition hover:bg-evvy-deep sm:px-3"
+              className={cn(focusRing, "inline-flex h-9 items-center gap-1.5 rounded-lg bg-evvy px-2.5 text-sm font-medium text-white shadow-card transition hover:bg-evvy-deep sm:px-3")}
             >
               <Plus className="h-4 w-4 shrink-0" />
               <span className="hidden lg:inline">{T.calendar.newEvent}</span>
@@ -88,7 +93,7 @@ export function DashboardTopbar({ isSuperAdmin, isLoggedIn, onMenuClick }: Props
             <button
               onClick={() => createDialogs.openCreateCalendar()}
               aria-label={T.calendar.newCalendar}
-              className="inline-flex h-9 items-center gap-1.5 rounded-lg border border-line bg-white px-2.5 text-sm font-medium text-ink transition hover:bg-paper sm:px-3"
+              className={cn(focusRing, "inline-flex h-9 items-center gap-1.5 rounded-lg border border-line bg-white px-2.5 text-sm font-medium text-ink transition hover:bg-paper sm:px-3")}
             >
               <CalendarPlus className="h-4 w-4 shrink-0" />
               <span className="hidden lg:inline">{T.calendar.newCalendar}</span>
