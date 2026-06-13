@@ -758,7 +758,7 @@ export function LandingContent({ demoCalendar }: LandingContentProps) {
             <p className="mt-3 leading-relaxed text-inksoft">{T.landing.pricing.subtitle}</p>
           </div>
 
-          <div className="mx-auto mt-10 grid max-w-3xl items-start gap-6 sm:grid-cols-2">
+          <div className="mx-auto mt-10 grid max-w-3xl items-stretch gap-6 sm:grid-cols-2">
             <div className="flex flex-col rounded-xl2 border border-line bg-white p-6 shadow-card">
               <h3 className="font-display text-base font-semibold text-ink">{T.landing.pricing.free.name}</h3>
               <p className="mt-1 text-xs text-inksoft">{T.landing.pricing.free.tagline}</p>

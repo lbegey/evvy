@@ -169,7 +169,7 @@ export const en = {
       },
       premium: {
         name: "Premium",
-        price: "€6",
+        price: "€10",
         period: "/ month",
         tagline: "Everything unlocked, nothing held back",
         bullets: [
@@ -695,7 +695,7 @@ export const en = {
     },
     premiumPlan: {
       name: "Premium",
-      price: "€6 / month",
+      price: "€10 / month",
       tagline: "Everything unlocked, nothing held back",
     },
     compare: {

@@ -171,7 +171,7 @@ export const fr: Translations = {
       },
       premium: {
         name: "Premium",
-        price: "6 €",
+        price: "10 €",
         period: "/ mois",
         tagline: "Tout est débloqué, sans limites",
         bullets: [
@@ -697,7 +697,7 @@ export const fr: Translations = {
     },
     premiumPlan: {
       name: "Premium",
-      price: "6 € / mois",
+      price: "10 € / mois",
       tagline: "Tout est débloqué, sans limites",
     },
     compare: {
