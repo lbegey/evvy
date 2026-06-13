@@ -17,6 +17,8 @@ import { cn } from "@/lib/utils";
 import { en } from "@/i18n/en";
 import { fr } from "@/i18n/fr";
 
+import Image from "next/image";
+
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? "https://evvycal.app";
 
 /** Truncate on a word boundary with an ellipsis (avoids cutting mid-word). */
@@ -469,7 +471,7 @@ export default async function PublicEventPage({
                     className="cursor-pointer rounded-lg p-1"
                     style={brandIconBackgroundColor ? { backgroundColor: brandIconBackgroundColor } : undefined}
                   >
-                    <img src={s.logo} alt={s.name} width={36} height={36} className="rounded" />
+                    <Image src={s.logo} alt={s.name} width={36} height={36} className="rounded" />
                   </a>
                 ))}
               </div>

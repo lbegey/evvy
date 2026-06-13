@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import type { CSSProperties } from "react";
 import type { Metadata } from "next";
 import { cookies, headers } from "next/headers";
@@ -342,7 +343,7 @@ export default async function PublicCalendarPage({
                         className="cursor-pointer rounded-lg p-1"
                         style={brandIconBackgroundColor ? { backgroundColor: brandIconBackgroundColor } : undefined}
                       >
-                        <img src={s.logo} alt={s.name} width={36} height={36} className="rounded" />
+                        <Image src={s.logo} alt={s.name} width={36} height={36} className="rounded" />
                       </a>
                     ))}
                   </div>
