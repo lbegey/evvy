@@ -19,6 +19,12 @@ import { fr } from "@/i18n/fr";
 
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? "https://evvycal.app";
 
+/** Truncate on a word boundary with an ellipsis (avoids cutting mid-word). */
+function truncate(s: string, max: number): string {
+  if (s.length <= max) return s;
+  return s.slice(0, max - 1).replace(/\s+\S*$/, "").trimEnd() + "…";
+}
+
 export async function generateMetadata({
   params,
 }: {
@@ -34,7 +40,7 @@ export async function generateMetadata({
   const canonicalId = event.slug ?? id;
   const url = `${APP_URL}/e/${canonicalId}`;
   const desc = event.description
-    ? event.description.replace(/[#*_`[\]]/g, "").slice(0, 160)
+    ? truncate(event.description.replace(/[#*_`[\]]/g, "").trim(), 160)
     : [
         event.startAt.toLocaleDateString("en-US", { dateStyle: "long" }),
         event.isOnline ? "Online" : event.location,

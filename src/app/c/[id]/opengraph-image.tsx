@@ -5,6 +5,11 @@ export const alt = "Evvy calendar";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
+function truncate(s: string, max: number): string {
+  if (s.length <= max) return s;
+  return s.slice(0, max - 1).replace(/\s+\S*$/, "").trimEnd() + "…";
+}
+
 export default async function Image({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const calendar = await db.calendar
@@ -44,7 +49,7 @@ export default async function Image({ params }: { params: Promise<{ id: string }
           <div style={{ fontSize: 68, fontWeight: 800, lineHeight: 1.05, letterSpacing: -1 }}>{name}</div>
           {calendar?.description ? (
             <div style={{ fontSize: 30, color: "rgba(255,255,255,0.78)", maxWidth: 900 }}>
-              {calendar.description.slice(0, 120)}
+              {truncate(calendar.description, 120)}
             </div>
           ) : null}
         </div>
