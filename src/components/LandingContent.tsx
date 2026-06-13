@@ -65,11 +65,11 @@ function GoogleGlyph() {
 
 function MockFrame({ children, className }: { children: React.ReactNode; className?: string }) {
   return (
-    <div className={cn("overflow-hidden rounded-2xl border border-border/60 bg-card shadow-xl shadow-black/5", className)}>
-      <div className="flex items-center gap-1.5 border-b border-border/60 bg-muted/30 px-4 py-2.5">
-        <span className="h-2.5 w-2.5 rounded-full bg-border" />
-        <span className="h-2.5 w-2.5 rounded-full bg-border" />
-        <span className="h-2.5 w-2.5 rounded-full bg-border" />
+    <div className={cn("overflow-hidden rounded-2xl border border-line bg-white shadow-card", className)}>
+      <div className="flex items-center gap-1.5 border-b border-line bg-paper px-4 py-2.5">
+        <span className="h-2.5 w-2.5 rounded-full bg-line" />
+        <span className="h-2.5 w-2.5 rounded-full bg-line" />
+        <span className="h-2.5 w-2.5 rounded-full bg-line" />
       </div>
       <div className="p-5 sm:p-6">{children}</div>
     </div>
@@ -81,19 +81,19 @@ function RsvpMock({ m }: { m: { yes: string; maybe: string; no: string; confirm:
     <MockFrame>
       <div className="space-y-2.5">
         <div className="grid grid-cols-3 gap-2">
-          <div className="flex h-9 items-center justify-center gap-1.5 rounded-lg bg-emerald-500/15 text-xs font-semibold text-emerald-600 ring-1 ring-emerald-500/30">
+          <div className="flex h-9 items-center justify-center gap-1.5 rounded-lg bg-mint/15 text-xs font-semibold text-mint ring-1 ring-mint/30">
             <span className="text-base leading-none">✓</span> {m.yes}
           </div>
-          <div className="flex h-9 items-center justify-center gap-1.5 rounded-lg border border-border/60 bg-muted/30 text-xs font-medium text-muted-foreground">
+          <div className="flex h-9 items-center justify-center gap-1.5 rounded-lg border border-line bg-paper text-xs font-medium text-inksoft">
             <span className="text-base leading-none">?</span> {m.maybe}
           </div>
-          <div className="flex h-9 items-center justify-center gap-1.5 rounded-lg border border-border/60 bg-muted/30 text-xs font-medium text-muted-foreground">
+          <div className="flex h-9 items-center justify-center gap-1.5 rounded-lg border border-line bg-paper text-xs font-medium text-inksoft">
             <span className="text-base leading-none">✕</span> {m.no}
           </div>
         </div>
-        <div className="flex h-9 items-center rounded-lg border border-border/60 bg-muted/30 px-3 text-xs text-muted-foreground">Jane Doe</div>
-        <div className="flex h-9 items-center rounded-lg border border-border/60 bg-muted/30 px-3 text-xs text-muted-foreground">jane@example.com</div>
-        <div className="flex h-10 items-center justify-center rounded-lg bg-primary text-sm font-medium text-primary-foreground shadow-sm shadow-primary/20">
+        <div className="flex h-9 items-center rounded-lg border border-line bg-paper px-3 text-xs text-inksoft">Jane Doe</div>
+        <div className="flex h-9 items-center rounded-lg border border-line bg-paper px-3 text-xs text-inksoft">jane@example.com</div>
+        <div className="flex h-10 items-center justify-center rounded-lg bg-evvy text-sm font-medium text-white shadow-card">
           {m.confirm}
         </div>
       </div>
@@ -101,7 +101,7 @@ function RsvpMock({ m }: { m: { yes: string; maybe: string; no: string; confirm:
   );
 }
 
-const MOCK_CALENDAR_COLOR = "#6366f1";
+const MOCK_CALENDAR_COLOR = "#5b4be6";
 const MOCK_EVENTS = [
   { month: { fr: "MAI", en: "MAY" }, day: "14", title: "Google I/O 2026", location: "Mountain View, CA" },
   { month: { fr: "JUIN", en: "JUN" }, day: "03", title: "VivaTech Paris 2026", location: "Paris, France" },
@@ -110,14 +110,14 @@ const MOCK_EVENTS = [
 
 function PublicCalendarMock({ lang }: { lang: "fr" | "en" }) {
   return (
-    <div className="overflow-hidden rounded-2xl border border-border/60 bg-muted/20 shadow-xl shadow-black/5">
-      <div className="flex items-center gap-1.5 border-b border-border/60 bg-muted/30 px-4 py-2.5">
-        <span className="h-2.5 w-2.5 rounded-full bg-border" />
-        <span className="h-2.5 w-2.5 rounded-full bg-border" />
-        <span className="h-2.5 w-2.5 rounded-full bg-border" />
+    <div className="overflow-hidden rounded-2xl border border-line bg-paper shadow-card">
+      <div className="flex items-center gap-1.5 border-b border-line bg-paper px-4 py-2.5">
+        <span className="h-2.5 w-2.5 rounded-full bg-line" />
+        <span className="h-2.5 w-2.5 rounded-full bg-line" />
+        <span className="h-2.5 w-2.5 rounded-full bg-line" />
       </div>
       <div className="p-4 space-y-2.5">
-        <div className="rounded-2xl border border-border/60 bg-background px-4 py-3 shadow-sm">
+        <div className="rounded-2xl border border-line bg-white px-4 py-3 shadow-card">
           <div className="flex items-center gap-2">
             <span
               className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full"
@@ -125,7 +125,7 @@ function PublicCalendarMock({ lang }: { lang: "fr" | "en" }) {
             >
               <CalendarRange className="h-3.5 w-3.5" style={{ color: MOCK_CALENDAR_COLOR }} />
             </span>
-            <h4 className="text-sm font-bold tracking-tight text-foreground">
+            <h4 className="text-sm font-bold tracking-tight text-ink">
               {lang === "fr" ? "Conférences Tech 2026" : "Tech Conferences 2026"}
             </h4>
           </div>
@@ -135,15 +135,15 @@ function PublicCalendarMock({ lang }: { lang: "fr" | "en" }) {
           {MOCK_EVENTS.map((ev) => (
             <div
               key={ev.title}
-              className="flex items-center gap-3 rounded-xl border border-border/60 bg-background px-3 py-2.5 shadow-sm"
+              className="flex items-center gap-3 rounded-xl border border-line bg-white px-3 py-2.5 shadow-card"
             >
-              <div className="flex w-10 shrink-0 flex-col items-center justify-center rounded-lg bg-muted/50 py-1">
-                <span className="text-[9px] font-medium uppercase text-muted-foreground">{ev.month[lang]}</span>
-                <span className="text-sm font-bold leading-none text-foreground">{ev.day}</span>
+              <div className="flex w-10 shrink-0 flex-col items-center justify-center rounded-lg bg-paper py-1">
+                <span className="text-[9px] font-medium uppercase text-inksoft">{ev.month[lang]}</span>
+                <span className="text-sm font-bold leading-none text-ink">{ev.day}</span>
               </div>
               <div className="min-w-0">
-                <p className="truncate text-xs font-semibold text-foreground">{ev.title}</p>
-                <p className="mt-0.5 flex items-center gap-1 truncate text-[10px] text-muted-foreground">
+                <p className="truncate text-xs font-semibold text-ink">{ev.title}</p>
+                <p className="mt-0.5 flex items-center gap-1 truncate text-[10px] text-inksoft">
                   <MapPin className="h-2.5 w-2.5 shrink-0" />
                   {ev.location}
                 </p>
@@ -152,7 +152,7 @@ function PublicCalendarMock({ lang }: { lang: "fr" | "en" }) {
           ))}
         </div>
 
-        <div className="rounded-xl border border-border/60 bg-background px-3 py-2.5 shadow-sm">
+        <div className="rounded-xl border border-line bg-white px-3 py-2.5 shadow-card">
           <div className="flex items-center gap-2">
             {SHARE_LOGOS.map((s) => (
               <span key={s.key} className="rounded-md p-0.5">
@@ -178,7 +178,7 @@ function SharingMock({ m }: { m: { addToCalendar: string } }) {
   return (
     <MockFrame>
       <div className="flex flex-wrap items-center gap-3 sm:gap-4">
-        <p className="shrink-0 text-sm text-muted-foreground">{m.addToCalendar}</p>
+        <p className="shrink-0 text-sm text-inksoft">{m.addToCalendar}</p>
         <div className="flex items-center gap-2 sm:gap-3">
           {SHARE_LOGOS.map((s) => (
             <span key={s.key} className="rounded-lg p-1">
@@ -187,7 +187,7 @@ function SharingMock({ m }: { m: { addToCalendar: string } }) {
           ))}
         </div>
       </div>
-      <div className="mt-5 flex items-center gap-2 rounded-lg border border-border/60 bg-muted/30 px-3 py-2.5 text-xs text-muted-foreground">
+      <div className="mt-5 flex items-center gap-2 rounded-lg border border-line bg-paper px-3 py-2.5 text-xs text-inksoft">
         <Link2 className="h-3.5 w-3.5 shrink-0" />
         <span className="truncate">evvycal.app/e/conf-2026</span>
       </div>
@@ -212,7 +212,7 @@ function AmazonSmile() {
 
 function BrandingMock({ m }: { m: { customBrand: string; confirm: string; eventDate: string } }) {
   return (
-    <div className="overflow-hidden rounded-2xl border border-border/60 shadow-xl shadow-black/5" style={{ backgroundColor: "#0F1111" }}>
+    <div className="overflow-hidden rounded-2xl border border-white/10 shadow-pop" style={{ backgroundColor: "#0F1111" }}>
       <div className="flex items-center gap-3 px-5 py-4 text-white" style={{ backgroundColor: "#131921" }}>
         <span className="flex flex-col leading-none">
           <span className="text-lg font-bold tracking-tight text-white">amazon</span>
@@ -253,25 +253,25 @@ interface HeroMockupCopy {
   startsIn: string;
 }
 
-const RSVP_AVATAR_COLORS = ["#6366f1", "#22c55e", "#f97316", "#ec4899"];
+const RSVP_AVATAR_COLORS = ["#5b4be6", "#1fb877", "#ff7a59", "#ec4899"];
 
 function HeroEventCardMock({ m }: { m: HeroMockupCopy }) {
   return (
-    <div className="w-full max-w-sm rounded-2xl border border-border/60 bg-card p-5 shadow-xl shadow-black/10 sm:p-6">
-      <p className="text-[11px] font-semibold uppercase tracking-wide text-blue-600">{m.tag}</p>
-      <h3 className="mt-2 text-xl font-bold tracking-tight text-foreground sm:text-2xl">{m.eventTitle}</h3>
+    <div className="w-full max-w-sm rounded-2xl border border-line bg-white p-5 shadow-pop sm:p-6">
+      <p className="text-[11px] font-semibold uppercase tracking-wide text-evvy">{m.tag}</p>
+      <h3 className="mt-2 font-display text-xl font-bold tracking-tight text-ink sm:text-2xl">{m.eventTitle}</h3>
       <div className="mt-3 space-y-1.5">
-        <p className="flex items-center gap-2 text-sm text-muted-foreground">
-          <CalendarRange className="h-4 w-4 shrink-0 text-blue-600" />
+        <p className="flex items-center gap-2 text-sm text-inksoft">
+          <CalendarRange className="h-4 w-4 shrink-0 text-evvy" />
           {m.eventDate}
         </p>
-        <p className="flex items-center gap-2 text-sm text-muted-foreground">
-          <MapPin className="h-4 w-4 shrink-0 text-blue-600" />
+        <p className="flex items-center gap-2 text-sm text-inksoft">
+          <MapPin className="h-4 w-4 shrink-0 text-evvy" />
           {m.eventLocation}
         </p>
       </div>
-      <div className="mt-4 border-t border-border/60 pt-4">
-        <p className="text-xs font-medium text-muted-foreground">{m.addToCalendar}</p>
+      <div className="mt-4 border-t border-line pt-4">
+        <p className="text-xs font-medium text-inksoft">{m.addToCalendar}</p>
         <div className="mt-2 flex items-center gap-2">
           {SHARE_LOGOS.map((s) => (
             <span key={s.key} className="rounded-lg p-0.5">
@@ -286,18 +286,18 @@ function HeroEventCardMock({ m }: { m: HeroMockupCopy }) {
 
 function HeroRsvpCardMock({ m }: { m: HeroMockupCopy }) {
   return (
-    <div className="w-[210px] rounded-2xl border border-border/60 bg-card p-4 shadow-xl shadow-black/10">
-      <p className="text-sm font-semibold text-foreground">{m.rsvpQuestion}</p>
+    <div className="w-[210px] rounded-2xl border border-line bg-white p-4 shadow-pop">
+      <p className="text-sm font-semibold text-ink">{m.rsvpQuestion}</p>
       <div className="mt-3 grid grid-cols-3 gap-1.5">
-        <div className="flex h-9 flex-col items-center justify-center gap-0.5 rounded-lg bg-emerald-500/15 text-[10px] font-semibold text-emerald-600 ring-1 ring-emerald-500/30">
+        <div className="flex h-9 flex-col items-center justify-center gap-0.5 rounded-lg bg-mint/15 text-[10px] font-semibold text-mint ring-1 ring-mint/30">
           <Check className="h-3.5 w-3.5" />
           {m.yes}
         </div>
-        <div className="flex h-9 flex-col items-center justify-center gap-0.5 rounded-lg border border-border/60 bg-muted/30 text-[10px] font-medium text-muted-foreground">
+        <div className="flex h-9 flex-col items-center justify-center gap-0.5 rounded-lg border border-line bg-paper text-[10px] font-medium text-inksoft">
           <span className="text-xs leading-none">?</span>
           {m.maybe}
         </div>
-        <div className="flex h-9 flex-col items-center justify-center gap-0.5 rounded-lg border border-border/60 bg-muted/30 text-[10px] font-medium text-muted-foreground">
+        <div className="flex h-9 flex-col items-center justify-center gap-0.5 rounded-lg border border-line bg-paper text-[10px] font-medium text-inksoft">
           <X className="h-3.5 w-3.5" />
           {m.no}
         </div>
@@ -305,10 +305,10 @@ function HeroRsvpCardMock({ m }: { m: HeroMockupCopy }) {
       <div className="mt-3 flex items-center gap-2">
         <div className="flex -space-x-2">
           {RSVP_AVATAR_COLORS.map((c) => (
-            <span key={c} className="h-6 w-6 rounded-full border-2 border-card" style={{ backgroundColor: c }} />
+            <span key={c} className="h-6 w-6 rounded-full border-2 border-white" style={{ backgroundColor: c }} />
           ))}
         </div>
-        <span className="text-xs text-muted-foreground">{m.going}</span>
+        <span className="text-xs text-inksoft">{m.going}</span>
       </div>
     </div>
   );
@@ -316,7 +316,7 @@ function HeroRsvpCardMock({ m }: { m: HeroMockupCopy }) {
 
 function HeroStartsInBadge({ m }: { m: HeroMockupCopy }) {
   return (
-    <div className="inline-flex items-center gap-1.5 rounded-full bg-foreground px-4 py-2 text-xs font-medium text-background shadow-lg">
+    <div className="inline-flex items-center gap-1.5 rounded-full bg-ink px-4 py-2 text-xs font-medium text-white shadow-pop">
       <Clock className="h-3.5 w-3.5" />
       {m.startsIn}
     </div>
@@ -344,7 +344,7 @@ function HeroCalendarBackdrop() {
     <div aria-hidden className="pointer-events-none absolute inset-0 -z-10 overflow-hidden">
       <CalendarRange
         strokeWidth={1.5}
-        className="absolute bottom-0 left-[24%] h-[28rem] w-[28rem] -translate-x-1/2 translate-y-1/4 -rotate-[10deg] text-primary/[0.04] sm:h-[37rem] sm:w-[37rem] sm:text-primary/[0.07] lg:h-[43rem] lg:w-[43rem]"
+        className="absolute bottom-0 left-[24%] h-[28rem] w-[28rem] -translate-x-1/2 translate-y-1/4 -rotate-[10deg] text-evvy/[0.05] sm:h-[37rem] sm:w-[37rem] sm:text-evvy/[0.07] lg:h-[43rem] lg:w-[43rem]"
       />
     </div>
   );
@@ -355,25 +355,27 @@ const CALENDARS_BULLET_ICONS: LucideIcon[] = [Palette, Link2, CalendarPlus];
 const SHARING_BULLET_ICONS: LucideIcon[] = [Link2, Code2, PanelTop, CalendarRange];
 const BRANDING_BULLET_ICONS: LucideIcon[] = [ImageUp, Palette, Copy, EyeOff];
 
-function FeatureBadge({ children }: { children: string }) {
+function FeatureBullets({ bullets, icons, dark, cols2 }: { bullets: readonly string[]; icons: LucideIcon[]; dark?: boolean; cols2?: boolean }) {
   return (
-    <span className="inline-flex items-center rounded-full border border-primary/20 bg-primary/5 px-3 py-1 text-xs font-medium text-primary">
-      {children}
-    </span>
-  );
-}
-
-function FeatureBullets({ bullets, icons }: { bullets: readonly string[]; icons: LucideIcon[] }) {
-  return (
-    <div className="mt-6 flex flex-col gap-3">
+    <div className={cn("mt-6 grid gap-2.5", cols2 && "sm:grid-cols-2")}>
       {bullets.map((b, i) => {
         const Icon = icons[i] ?? CheckCircle2;
         return (
           <div
             key={b}
-            className="group flex items-start gap-3 rounded-xl border border-border/60 bg-background/60 p-3.5 text-sm text-foreground transition-all duration-200 hover:-translate-y-0.5 hover:border-primary/30 hover:shadow-md hover:shadow-primary/5"
+            className={cn(
+              "group flex items-start gap-3 rounded-xl border p-3.5 text-sm transition-all duration-200 hover:-translate-y-0.5",
+              dark
+                ? "border-white/10 bg-white/5 text-white/90 hover:border-white/25"
+                : "border-line bg-white text-ink hover:border-evvy/30 hover:shadow-card"
+            )}
           >
-            <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary transition-colors duration-200 group-hover:bg-primary group-hover:text-primary-foreground">
+            <span className={cn(
+              "flex h-8 w-8 shrink-0 items-center justify-center rounded-lg transition-colors duration-200",
+              dark
+                ? "bg-white/10 text-white group-hover:bg-white/20"
+                : "bg-evvy-soft text-evvy group-hover:bg-evvy group-hover:text-white"
+            )}>
               <Icon className="h-4 w-4" />
             </span>
             <span className="pt-1.5 leading-snug">{b}</span>
@@ -384,38 +386,107 @@ function FeatureBullets({ bullets, icons }: { bullets: readonly string[]; icons:
   );
 }
 
-function HighlightedTitle({ title, highlight }: { title: string; highlight: string }) {
+function HighlightedTitle({ title, highlight, highlightClass = "text-evvy" }: { title: string; highlight: string; highlightClass?: string }) {
   const idx = title.indexOf(highlight);
   if (idx === -1) return <>{title}</>;
   return (
     <>
       {title.slice(0, idx)}
-      <span className="text-blue-600">{highlight}</span>
+      <span className={highlightClass}>{highlight}</span>
       {title.slice(idx + highlight.length)}
     </>
+  );
+}
+
+function BentoEyebrow({ children, dark }: { children: string; dark?: boolean }) {
+  return (
+    <span
+      className={cn(
+        "mb-4 inline-flex items-center gap-2 self-start rounded-full border px-3 py-1 text-[11px] font-semibold uppercase tracking-wider",
+        dark ? "border-white/15 bg-white/5 text-white/75" : "border-line bg-paper text-inksoft"
+      )}
+    >
+      <span className={cn("h-1.5 w-1.5 rounded-full", dark ? "bg-[#9d90ff]" : "bg-evvy")} />
+      {children}
+    </span>
+  );
+}
+
+interface BentoTextProps {
+  className?: string;
+  eyebrow: string;
+  title: string;
+  highlight: string;
+  description: string;
+  bullets: readonly string[];
+  icons: LucideIcon[];
+  dark?: boolean;
+  cols2?: boolean;
+  delay?: number;
+}
+
+function BentoTextTile({ className, eyebrow, title, highlight, description, bullets, icons, dark, cols2, delay = 0 }: BentoTextProps) {
+  return (
+    <div
+      className={cn(
+        "flex animate-fade-in-up flex-col rounded-xl2 border p-6 shadow-card sm:p-8",
+        dark ? "border-ink bg-ink text-white" : "border-line bg-white",
+        className
+      )}
+      style={{ animationDelay: `${delay}s` }}
+    >
+      <BentoEyebrow dark={dark}>{eyebrow}</BentoEyebrow>
+      <h3 className="font-display text-2xl font-bold tracking-tight sm:text-3xl">
+        <HighlightedTitle title={title} highlight={highlight} highlightClass={dark ? "text-[#9d90ff]" : "text-evvy"} />
+      </h3>
+      <p className={cn("mt-3 leading-relaxed", dark ? "text-white/70" : "text-inksoft")}>{description}</p>
+      <div className="mt-auto">
+        <FeatureBullets bullets={bullets} icons={icons} dark={dark} cols2={cols2} />
+      </div>
+    </div>
+  );
+}
+
+function BentoMockTile({ className, tone = "tint", children, delay = 0 }: { className?: string; tone?: "tint" | "dark"; children: React.ReactNode; delay?: number }) {
+  return (
+    <div
+      className={cn(
+        "flex animate-fade-in-up items-center justify-center rounded-xl2 border p-6 shadow-card sm:p-8",
+        tone === "dark" ? "border-ink bg-ink" : "border-line bg-paper",
+        className
+      )}
+      style={{ animationDelay: `${delay}s` }}
+    >
+      <div className="w-full">{children}</div>
+    </div>
   );
 }
 
 function FaqItem({ question, answer, defaultOpen }: { question: string; answer: string; defaultOpen?: boolean }) {
   const [open, setOpen] = useState(!!defaultOpen);
   return (
-    <div className="border-b border-border/60">
+    <div className="border-b border-line">
       <button
         type="button"
         onClick={() => setOpen((o) => !o)}
         aria-expanded={open}
-        className="flex w-full cursor-pointer items-center justify-between gap-4 py-4 text-left text-sm font-semibold text-foreground"
+        className="flex w-full cursor-pointer items-center justify-between gap-4 py-4 text-left text-sm font-semibold text-ink"
       >
         {question}
-        <ChevronDown className={cn("h-4 w-4 shrink-0 text-muted-foreground transition-transform duration-300", open && "rotate-180")} />
+        <ChevronDown className={cn("h-4 w-4 shrink-0 text-inksoft transition-transform duration-300", open && "rotate-180")} />
       </button>
       <div className={cn("grid transition-all duration-300 ease-in-out", open ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0")}>
         <div className="overflow-hidden">
-          <p className="pb-4 text-sm leading-relaxed text-muted-foreground">{answer}</p>
+          <p className="pb-4 text-sm leading-relaxed text-inksoft">{answer}</p>
         </div>
       </div>
     </div>
   );
+}
+
+function stripEmoji(s: string) {
+  // badges are like "📋 RSVP management" — drop the leading emoji for the eyebrow
+  return s.replace(/^[^\p{L}\p{N}]+/u, "").trim();
 }
 
 export function LandingContent({ demoCalendar }: LandingContentProps) {
@@ -428,12 +499,6 @@ export function LandingContent({ demoCalendar }: LandingContentProps) {
     setGoogleLoading(false);
   };
 
-  const featureSections = [
-    { ...T.landing.features.rsvp, mockup: <RsvpMock m={T.landing.mockups.rsvp} />, reverse: false, icons: RSVP_BULLET_ICONS },
-    { ...T.landing.features.calendars, mockup: <PublicCalendarMock lang={lang} />, reverse: true, icons: CALENDARS_BULLET_ICONS },
-    { ...T.landing.features.sharing, mockup: <SharingMock m={T.landing.mockups.sharing} />, reverse: false, icons: SHARING_BULLET_ICONS },
-  ];
-
   const demoDateFmt = new Intl.DateTimeFormat(lang === "fr" ? "fr-FR" : "en-US", {
     day: "numeric",
     month: "short",
@@ -444,14 +509,13 @@ export function LandingContent({ demoCalendar }: LandingContentProps) {
     <>
       {/* ─── Hero ─── */}
       <section className="relative isolate overflow-hidden px-4 py-16 sm:px-6 sm:py-20">
-        {/* Mesh gradient background */}
-        <div aria-hidden className="pointer-events-none absolute inset-0 -z-20 animate-gradient-bg" />
+        {/* Soft evvy mesh background */}
         <div
           aria-hidden
           className="pointer-events-none absolute inset-0 -z-20"
           style={{
             background:
-              "radial-gradient(circle at 18% 22%, oklch(0.09 0 0 / 0.07), transparent 42%), radial-gradient(circle at 82% 18%, oklch(0.3 0 0 / 0.06), transparent 46%), radial-gradient(circle at 50% 92%, oklch(0.09 0 0 / 0.05), transparent 52%)",
+              "radial-gradient(circle at 18% 22%, rgba(91,75,230,0.10), transparent 42%), radial-gradient(circle at 82% 18%, rgba(255,122,89,0.08), transparent 46%), radial-gradient(circle at 50% 92%, rgba(91,75,230,0.06), transparent 52%)",
           }}
         />
         {/* Light grid pattern */}
@@ -460,35 +524,32 @@ export function LandingContent({ demoCalendar }: LandingContentProps) {
           className="pointer-events-none absolute inset-0 -z-20"
           style={{
             backgroundImage:
-              "linear-gradient(to right, oklch(0.09 0 0 / 0.05) 1px, transparent 1px), linear-gradient(to bottom, oklch(0.09 0 0 / 0.05) 1px, transparent 1px)",
+              "linear-gradient(to right, rgba(26,24,56,0.05) 1px, transparent 1px), linear-gradient(to bottom, rgba(26,24,56,0.05) 1px, transparent 1px)",
             backgroundSize: "44px 44px",
             maskImage: "radial-gradient(ellipse 80% 70% at 50% 30%, black 50%, transparent 100%)",
             WebkitMaskImage: "radial-gradient(ellipse 80% 70% at 50% 30%, black 50%, transparent 100%)",
           }}
         />
-        {/* Calendar backdrop */}
         <HeroCalendarBackdrop />
         <div className="relative mx-auto grid max-w-6xl items-center gap-16 lg:grid-cols-2 lg:gap-12">
           <div className="text-center lg:text-left">
-            <div
-              className="inline-flex items-center gap-2 rounded-full border border-border/60 bg-background/80 px-4 py-1.5 text-xs font-medium text-muted-foreground shadow-sm backdrop-blur-sm animate-fade-in-up"
-            >
-              <span className="h-2 w-2 shrink-0 rounded-full bg-emerald-500" />
+            <div className="inline-flex items-center gap-2 rounded-full border border-line bg-white/80 px-4 py-1.5 text-xs font-medium text-inksoft shadow-card backdrop-blur-sm animate-fade-in-up">
+              <span className="h-2 w-2 shrink-0 rounded-full bg-mint" />
               {T.landing.hero.badge}
             </div>
 
             <h1
-              className="mt-5 text-4xl font-bold tracking-tight sm:text-6xl lg:text-6xl animate-fade-in-up"
+              className="mt-5 font-display text-4xl font-extrabold tracking-tight text-ink sm:text-6xl lg:text-6xl animate-fade-in-up"
               style={{ animationDelay: "0.1s" }}
             >
               <span className="block">{T.landing.hero.titleStart}</span>
-              <span className="block bg-gradient-to-r from-blue-600 to-violet-500 bg-clip-text text-transparent">
+              <span className="block bg-gradient-to-r from-evvy to-coral bg-clip-text text-transparent">
                 {T.landing.hero.titleHighlight}
               </span>
             </h1>
 
             <p
-              className="mx-auto mt-6 max-w-xl text-lg leading-relaxed text-muted-foreground animate-fade-in-up lg:mx-0"
+              className="mx-auto mt-6 max-w-xl text-lg leading-relaxed text-inksoft animate-fade-in-up lg:mx-0"
               style={{ animationDelay: "0.2s" }}
             >
               {T.landing.hero.subtitle}
@@ -503,7 +564,7 @@ export function LandingContent({ demoCalendar }: LandingContentProps) {
                 size="lg"
                 disabled={googleLoading}
                 onClick={handleGoogle}
-                className="w-full gap-2.5 rounded-[10px] border-border bg-background px-7 py-6 text-sm shadow-md shadow-black/5 transition-all hover:-translate-y-0.5 hover:shadow-lg hover:shadow-black/10 sm:w-auto"
+                className="w-full gap-2.5 rounded-[10px] border-line bg-white px-7 py-6 text-sm text-ink shadow-card transition-all hover:-translate-y-0.5 hover:bg-paper sm:w-auto"
               >
                 {googleLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <GoogleGlyph />}
                 {T.landing.hero.ctaGoogle}
@@ -512,7 +573,7 @@ export function LandingContent({ demoCalendar }: LandingContentProps) {
                 size="lg"
                 nativeButton={false}
                 render={<Link href="/register" />}
-                className="w-full gap-2.5 rounded-[10px] px-7 py-6 text-sm shadow-md shadow-primary/20 transition-all hover:-translate-y-0.5 hover:shadow-lg hover:shadow-primary/30 sm:w-auto"
+                className="w-full gap-2.5 rounded-[10px] bg-evvy px-7 py-6 text-sm text-white shadow-pop transition-all hover:-translate-y-0.5 hover:bg-evvy-deep sm:w-auto"
               >
                 <Mail className="h-4 w-4" />
                 {T.landing.hero.ctaEmail}
@@ -520,7 +581,7 @@ export function LandingContent({ demoCalendar }: LandingContentProps) {
             </div>
 
             <p
-              className="mt-5 inline-flex items-center gap-1.5 text-xs font-medium text-emerald-600 animate-fade-in-up"
+              className="mt-5 inline-flex items-center gap-1.5 text-xs font-medium text-mint animate-fade-in-up"
               style={{ animationDelay: "0.4s" }}
             >
               <CheckCircle2 className="h-3.5 w-3.5 shrink-0" />
@@ -534,44 +595,69 @@ export function LandingContent({ demoCalendar }: LandingContentProps) {
         </div>
       </section>
 
-      {/* ─── Features (alternating) ─── */}
-      <section id="features" className="px-4 py-20 sm:px-6 sm:py-28">
-        <div className="mx-auto flex max-w-5xl flex-col gap-20 sm:gap-28">
-          {featureSections.map((f, i) => (
-            <div key={f.title} className="grid items-center gap-10 lg:grid-cols-2 lg:gap-16">
-              <div className={cn("animate-fade-in-up", f.reverse && "lg:order-2")} style={{ animationDelay: `${0.05 * i}s` }}>
-                <FeatureBadge>{f.badge}</FeatureBadge>
-                <h3 className="mt-3 text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
-                  <HighlightedTitle title={f.title} highlight={f.titleHighlight} />
-                </h3>
-                <p className="mt-3 leading-relaxed text-muted-foreground">{f.description}</p>
-                <FeatureBullets bullets={f.bullets} icons={f.icons} />
-              </div>
-              <div className={cn("animate-fade-in-up", f.reverse && "lg:order-1")} style={{ animationDelay: `${0.05 * i + 0.1}s` }}>
-                <div className={i % 2 === 0 ? "animate-float-card" : "animate-float-card-delayed"}>
-                  {f.mockup}
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-      </section>
+      {/* ─── Features (bento) ─── */}
+      <section id="features" className="border-y border-line bg-paper px-4 py-20 sm:px-6 sm:py-28">
+        <div className="mx-auto max-w-6xl">
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-12">
+            {/* Row A — RSVP */}
+            <BentoTextTile
+              className="md:col-span-7"
+              eyebrow={stripEmoji(T.landing.features.rsvp.badge)}
+              title={T.landing.features.rsvp.title}
+              highlight={T.landing.features.rsvp.titleHighlight}
+              description={T.landing.features.rsvp.description}
+              bullets={T.landing.features.rsvp.bullets}
+              icons={RSVP_BULLET_ICONS}
+              cols2
+            />
+            <BentoMockTile className="md:col-span-5" tone="dark" delay={0.05}>
+              <RsvpMock m={T.landing.mockups.rsvp} />
+            </BentoMockTile>
 
-      {/* ─── Branding / White-label ─── */}
-      <section className="bg-muted/20 px-4 py-20 sm:px-6 sm:py-28">
-        <div className="mx-auto grid max-w-5xl items-center gap-10 lg:grid-cols-2 lg:gap-16">
-          <div className="lg:order-1">
-            <div className="animate-float-card">
+            {/* Row B — Calendars */}
+            <BentoMockTile className="md:col-span-5" tone="tint" delay={0.05}>
+              <PublicCalendarMock lang={lang} />
+            </BentoMockTile>
+            <BentoTextTile
+              className="md:col-span-7"
+              eyebrow={stripEmoji(T.landing.features.calendars.badge)}
+              title={T.landing.features.calendars.title}
+              highlight={T.landing.features.calendars.titleHighlight}
+              description={T.landing.features.calendars.description}
+              bullets={T.landing.features.calendars.bullets}
+              icons={CALENDARS_BULLET_ICONS}
+            />
+
+            {/* Row C — Sharing */}
+            <BentoTextTile
+              className="md:col-span-8"
+              eyebrow={stripEmoji(T.landing.features.sharing.badge)}
+              title={T.landing.features.sharing.title}
+              highlight={T.landing.features.sharing.titleHighlight}
+              description={T.landing.features.sharing.description}
+              bullets={T.landing.features.sharing.bullets}
+              icons={SHARING_BULLET_ICONS}
+              cols2
+            />
+            <BentoMockTile className="md:col-span-4" tone="tint" delay={0.05}>
+              <SharingMock m={T.landing.mockups.sharing} />
+            </BentoMockTile>
+
+            {/* Row D — White-label */}
+            <BentoMockTile className="md:col-span-5" tone="dark" delay={0.05}>
               <BrandingMock m={T.landing.mockups.branding} />
-            </div>
-          </div>
-          <div className="lg:order-2">
-            <FeatureBadge>{T.landing.branding.badge}</FeatureBadge>
-            <h3 className="mt-3 text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
-              <HighlightedTitle title={T.landing.branding.title} highlight={T.landing.branding.titleHighlight} />
-            </h3>
-            <p className="mt-3 leading-relaxed text-muted-foreground">{T.landing.branding.description}</p>
-            <FeatureBullets bullets={T.landing.branding.bullets} icons={BRANDING_BULLET_ICONS} />
+            </BentoMockTile>
+            <BentoTextTile
+              className="md:col-span-7"
+              dark
+              eyebrow={stripEmoji(T.landing.branding.badge)}
+              title={T.landing.branding.title}
+              highlight={T.landing.branding.titleHighlight}
+              description={T.landing.branding.description}
+              bullets={T.landing.branding.bullets}
+              icons={BRANDING_BULLET_ICONS}
+              cols2
+            />
           </div>
         </div>
       </section>
@@ -581,23 +667,23 @@ export function LandingContent({ demoCalendar }: LandingContentProps) {
         <section className="px-4 py-20 sm:px-6 sm:py-28">
           <div className="mx-auto max-w-5xl">
             <div className="mx-auto max-w-xl text-center">
-              <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">{T.landing.demo.title}</h2>
-              <p className="mt-3 leading-relaxed text-muted-foreground">{T.landing.demo.description}</p>
+              <h2 className="font-display text-3xl font-bold tracking-tight text-ink sm:text-4xl">{T.landing.demo.title}</h2>
+              <p className="mt-3 leading-relaxed text-inksoft">{T.landing.demo.description}</p>
             </div>
 
-            <div className="mx-auto mt-10 max-w-2xl overflow-hidden rounded-2xl border border-border/60 bg-card shadow-sm">
+            <div className="mx-auto mt-10 max-w-2xl overflow-hidden rounded-xl2 border border-line bg-white shadow-card">
               <Link
                 href={`/c/${demoCalendar.slug}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="group block border-b border-border/60 bg-muted/30 px-6 py-5 transition-colors hover:bg-muted/50"
+                className="group block border-b border-line bg-paper px-6 py-5 transition-colors hover:bg-evvy-soft/50"
               >
                 <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between sm:gap-3">
                   <div className="min-w-0">
-                    <p className="truncate text-base font-semibold text-foreground">{T.landing.demo.calendarName}</p>
-                    <p className="mt-0.5 text-sm text-muted-foreground">{T.landing.demo.calendarDescription}</p>
+                    <p className="truncate text-base font-semibold text-ink">{T.landing.demo.calendarName}</p>
+                    <p className="mt-0.5 text-sm text-inksoft">{T.landing.demo.calendarDescription}</p>
                   </div>
-                  <span className="inline-flex shrink-0 items-center gap-1 text-sm font-medium text-primary">
+                  <span className="inline-flex shrink-0 items-center gap-1 text-sm font-medium text-evvy">
                     {T.landing.demo.viewCalendar.replace(" →", "")}
                     <ArrowUpRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
                   </span>
@@ -605,7 +691,7 @@ export function LandingContent({ demoCalendar }: LandingContentProps) {
               </Link>
 
               <div className="px-6 py-5">
-                <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                <p className="text-xs font-semibold uppercase tracking-wide text-inksoft">
                   {T.landing.demo.eventsLabel}
                 </p>
                 <ul className="mt-3 space-y-1">
@@ -615,11 +701,11 @@ export function LandingContent({ demoCalendar }: LandingContentProps) {
                         href={`/e/${event.slug ?? event.id}`}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="group flex items-center justify-between gap-3 rounded-xl px-3 py-3 transition-colors hover:bg-muted/50"
+                        className="group flex items-center justify-between gap-3 rounded-xl px-3 py-3 transition-colors hover:bg-paper"
                       >
                         <div className="min-w-0">
-                          <p className="truncate text-sm font-medium text-foreground">{event.title}</p>
-                          <div className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted-foreground">
+                          <p className="truncate text-sm font-medium text-ink">{event.title}</p>
+                          <div className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-inksoft">
                             <span className="inline-flex items-center gap-1">
                               <CalendarRange className="h-3.5 w-3.5" />
                               {demoDateFmt.format(new Date(event.startAt))}
@@ -637,7 +723,7 @@ export function LandingContent({ demoCalendar }: LandingContentProps) {
                             ) : null}
                           </div>
                         </div>
-                        <ArrowUpRight className="h-4 w-4 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:text-primary" />
+                        <ArrowUpRight className="h-4 w-4 shrink-0 text-inksoft transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:text-evvy" />
                       </Link>
                     </li>
                   ))}
@@ -648,7 +734,7 @@ export function LandingContent({ demoCalendar }: LandingContentProps) {
             <div className="mt-8 text-center">
               <Link
                 href="/register"
-                className="inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/5 px-4 py-2 text-sm font-medium text-primary transition-colors hover:bg-primary/10"
+                className="inline-flex items-center gap-2 rounded-full border border-evvy/30 bg-evvy-soft px-4 py-2 text-sm font-medium text-evvy transition-colors hover:bg-evvy/10"
               >
                 {T.landing.demo.cta}
               </Link>
@@ -658,28 +744,28 @@ export function LandingContent({ demoCalendar }: LandingContentProps) {
       )}
 
       {/* ─── Pricing ─── */}
-      <section id="pricing" className="bg-muted/20 px-4 py-20 sm:px-6 sm:py-28">
+      <section id="pricing" className="border-y border-line bg-paper px-4 py-20 sm:px-6 sm:py-28">
         <div className="mx-auto max-w-5xl">
           <div className="mx-auto max-w-xl text-center">
-            <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">{T.landing.pricing.title}</h2>
-            <p className="mt-3 leading-relaxed text-muted-foreground">{T.landing.pricing.subtitle}</p>
+            <h2 className="font-display text-3xl font-bold tracking-tight text-ink sm:text-4xl">{T.landing.pricing.title}</h2>
+            <p className="mt-3 leading-relaxed text-inksoft">{T.landing.pricing.subtitle}</p>
           </div>
 
-          <div className="mx-auto mt-10 grid max-w-3xl gap-6 sm:grid-cols-2">
-            <div className="flex flex-col rounded-2xl border border-border/60 bg-background p-6 shadow-sm">
-              <h3 className="text-base font-semibold text-foreground">{T.landing.pricing.free.name}</h3>
-              <p className="mt-1 text-xs text-muted-foreground">{T.landing.pricing.free.tagline}</p>
+          <div className="mx-auto mt-10 grid max-w-3xl items-start gap-6 sm:grid-cols-2">
+            <div className="flex flex-col rounded-xl2 border border-line bg-white p-6 shadow-card">
+              <h3 className="font-display text-base font-semibold text-ink">{T.landing.pricing.free.name}</h3>
+              <p className="mt-1 text-xs text-inksoft">{T.landing.pricing.free.tagline}</p>
               <p className="mt-4 flex items-baseline gap-1">
-                <span className="text-3xl font-bold text-foreground">{T.landing.pricing.free.price}</span>
-                <span className="text-sm text-muted-foreground">{T.landing.pricing.free.period}</span>
+                <span className="font-display text-4xl font-bold text-ink">{T.landing.pricing.free.price}</span>
+                <span className="text-sm text-inksoft">{T.landing.pricing.free.period}</span>
               </p>
               <ul className="mt-6 flex-1 space-y-2.5">
                 {T.landing.pricing.free.bullets.map((b) => (
-                  <li key={b.text} className="flex items-start gap-2.5 text-sm text-foreground">
+                  <li key={b.text} className="flex items-start gap-2.5 text-sm text-ink">
                     {b.included ? (
-                      <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground" />
+                      <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-inksoft" />
                     ) : (
-                      <X className="mt-0.5 h-4 w-4 shrink-0 text-red-500" />
+                      <X className="mt-0.5 h-4 w-4 shrink-0 text-coral" />
                     )}
                     {b.text}
                   </li>
@@ -689,26 +775,26 @@ export function LandingContent({ demoCalendar }: LandingContentProps) {
                 variant="outline"
                 nativeButton={false}
                 render={<Link href="/register" />}
-                className="mt-6 w-full cursor-pointer"
+                className="mt-6 w-full cursor-pointer border-line bg-white text-ink hover:bg-paper"
               >
                 {T.landing.pricing.free.cta}
               </Button>
             </div>
 
-            <div className="relative flex flex-col rounded-2xl border border-primary/40 bg-background p-6 shadow-lg shadow-primary/10 ring-1 ring-primary/20">
-              <span className="absolute -top-3 right-6 rounded-full bg-primary px-3 py-1 text-[10px] font-semibold uppercase tracking-wide text-primary-foreground">
+            <div className="relative flex flex-col rounded-xl2 border-2 border-evvy bg-white p-6 shadow-pop">
+              <span className="absolute -top-3 right-6 rounded-full bg-evvy px-3 py-1 text-[10px] font-semibold uppercase tracking-wide text-white shadow-card">
                 {T.landing.pricing.popular}
               </span>
-              <h3 className="text-base font-semibold text-foreground">{T.landing.pricing.premium.name}</h3>
-              <p className="mt-1 text-xs text-muted-foreground">{T.landing.pricing.premium.tagline}</p>
+              <h3 className="font-display text-base font-semibold text-ink">{T.landing.pricing.premium.name}</h3>
+              <p className="mt-1 text-xs text-inksoft">{T.landing.pricing.premium.tagline}</p>
               <p className="mt-4 flex items-baseline gap-1">
-                <span className="text-3xl font-bold text-foreground">{T.landing.pricing.premium.price}</span>
-                <span className="text-sm text-muted-foreground">{T.landing.pricing.premium.period}</span>
+                <span className="font-display text-4xl font-bold text-evvy">{T.landing.pricing.premium.price}</span>
+                <span className="text-sm text-inksoft">{T.landing.pricing.premium.period}</span>
               </p>
               <ul className="mt-6 flex-1 space-y-2.5">
                 {T.landing.pricing.premium.bullets.map((b) => (
-                  <li key={b.text} className="flex items-start gap-2.5 text-sm text-foreground">
-                    <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
+                  <li key={b.text} className="flex items-start gap-2.5 text-sm text-ink">
+                    <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-evvy" />
                     {b.text}
                   </li>
                 ))}
@@ -716,10 +802,14 @@ export function LandingContent({ demoCalendar }: LandingContentProps) {
               <Button
                 nativeButton={false}
                 render={<Link href="/register" />}
-                className="mt-6 w-full cursor-pointer shadow-md shadow-primary/20"
+                className="mt-6 w-full cursor-pointer bg-evvy text-white shadow-card hover:bg-evvy-deep"
               >
                 {T.landing.pricing.premium.cta}
               </Button>
+              <p className="mt-3 inline-flex items-center justify-center gap-1.5 text-center text-xs font-medium text-mint">
+                <CheckCircle2 className="h-3.5 w-3.5 shrink-0" />
+                {T.landing.hero.microText}
+              </p>
             </div>
           </div>
         </div>
@@ -729,8 +819,8 @@ export function LandingContent({ demoCalendar }: LandingContentProps) {
       <section id="faq" className="px-4 py-20 sm:px-6 sm:py-28">
         <div className="mx-auto max-w-[800px]">
           <div className="text-center">
-            <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">{T.landing.faq.title}</h2>
-            <p className="mt-3 leading-relaxed text-muted-foreground">{T.landing.faq.subtitle}</p>
+            <h2 className="font-display text-3xl font-bold tracking-tight text-ink sm:text-4xl">{T.landing.faq.title}</h2>
+            <p className="mt-3 leading-relaxed text-inksoft">{T.landing.faq.subtitle}</p>
           </div>
           <div className="mt-10">
             {T.landing.faq.items.map((item, i) => (
@@ -744,28 +834,28 @@ export function LandingContent({ demoCalendar }: LandingContentProps) {
       <section className="px-4 py-20 sm:px-6 sm:py-24">
         <div className="mx-auto max-w-4xl">
           <div
-            className="relative overflow-hidden rounded-2xl px-6 py-14 text-center text-white shadow-xl sm:px-10 sm:py-16"
-            style={{ background: "linear-gradient(135deg, #000000 0%, #18181b 100%)" }}
+            className="relative overflow-hidden rounded-xl2 px-6 py-14 text-center text-white shadow-pop sm:px-10 sm:py-16"
+            style={{ background: "linear-gradient(135deg, #1a1838 0%, #4636c9 100%)" }}
           >
             <div
               aria-hidden
               className="pointer-events-none absolute -top-16 -right-16 h-64 w-64 rounded-full"
-              style={{ background: "radial-gradient(circle, rgba(255,255,255,0.16), transparent 70%)" }}
+              style={{ background: "radial-gradient(circle, rgba(255,122,89,0.30), transparent 70%)" }}
             />
             <div
               aria-hidden
               className="pointer-events-none absolute -bottom-20 -left-20 h-72 w-72 rounded-full"
-              style={{ background: "radial-gradient(circle, rgba(255,255,255,0.10), transparent 70%)" }}
+              style={{ background: "radial-gradient(circle, rgba(255,255,255,0.12), transparent 70%)" }}
             />
 
-            <h2 className="relative text-3xl font-bold tracking-tight sm:text-4xl">{T.landing.finalCta.title}</h2>
+            <h2 className="relative font-display text-3xl font-bold tracking-tight sm:text-4xl">{T.landing.finalCta.title}</h2>
 
             <div className="relative mt-8 flex flex-wrap items-center justify-center gap-3">
               <Button
                 size="lg"
                 nativeButton={false}
                 render={<Link href="/register" />}
-                className="whitespace-nowrap bg-white px-8 text-foreground shadow-lg shadow-black/10 hover:bg-white/90"
+                className="whitespace-nowrap bg-white px-8 text-ink shadow-card hover:bg-white/90"
               >
                 {T.landing.finalCta.ctaPrimary}
               </Button>

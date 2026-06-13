@@ -4,6 +4,7 @@ import { useEffect, useRef, useState, type ReactNode } from "react";
 import { ToastProvider } from "./Toast";
 import { DashboardTopbar } from "./DashboardTopbar";
 import { DashboardSidebar, type SidebarItem } from "./DashboardSidebar";
+import { CreateDialogsProvider } from "@/components/CreateDialogsProvider";
 
 interface DashboardShellProps {
   sidebarItems: SidebarItem[];
@@ -11,7 +12,7 @@ interface DashboardShellProps {
   backUrl: string;
   backLabel: string;
   isSuperAdmin: boolean;
-  onNewEvent: () => void;
+  calendars: { id: string; name: string }[];
   children: ReactNode;
 }
 
@@ -23,7 +24,7 @@ const topIn = (el: HTMLElement, scroller: HTMLElement) =>
  * The page body does not scroll — only the central <main> does. Shared by the
  * event and calendar detail dashboards.
  */
-export function DashboardShell({ sidebarItems, manageLabel, backUrl, backLabel, isSuperAdmin, onNewEvent, children }: DashboardShellProps) {
+export function DashboardShell({ sidebarItems, manageLabel, backUrl, backLabel, isSuperAdmin, calendars, children }: DashboardShellProps) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [activeSection, setActiveSection] = useState(sidebarItems[0]?.id ?? "");
   const scrollerRef = useRef<HTMLElement>(null);
@@ -71,7 +72,8 @@ export function DashboardShell({ sidebarItems, manageLabel, backUrl, backLabel, 
       style={{ fontFamily: "var(--font-inter), Inter, system-ui, sans-serif" }}
     >
       <ToastProvider>
-        <DashboardTopbar isSuperAdmin={isSuperAdmin} onMenuClick={() => setSidebarOpen(true)} onNewEvent={onNewEvent} />
+       <CreateDialogsProvider calendars={calendars}>
+        <DashboardTopbar isSuperAdmin={isSuperAdmin} isLoggedIn onMenuClick={() => setSidebarOpen(true)} />
 
         <div className="flex min-h-0 flex-1">
           {sidebarOpen && (
@@ -93,6 +95,7 @@ export function DashboardShell({ sidebarItems, manageLabel, backUrl, backLabel, 
             {children}
           </main>
         </div>
+       </CreateDialogsProvider>
       </ToastProvider>
     </div>
   );

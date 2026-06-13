@@ -12,9 +12,10 @@ interface ImageDropzoneProps {
   onChange: (url: string) => void;
   hint?: string;
   previewClassName?: string;
+  maxSize?: number;
 }
 
-export function ImageDropzone({ value, onChange, hint, previewClassName }: ImageDropzoneProps) {
+export function ImageDropzone({ value, onChange, hint, previewClassName, maxSize = MAX_FILE_SIZE }: ImageDropzoneProps) {
   const { T } = useLanguage();
   const [dragging, setDragging] = useState(false);
   const [uploading, setUploading] = useState(false);
@@ -23,7 +24,7 @@ export function ImageDropzone({ value, onChange, hint, previewClassName }: Image
 
   const upload = async (file: File) => {
     setError("");
-    if (file.size > MAX_FILE_SIZE) {
+    if (file.size > maxSize) {
       setError(T.dropzone.fileTooLarge);
       return;
     }

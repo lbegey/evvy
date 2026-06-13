@@ -7,11 +7,9 @@ import {
   LayoutGrid, Link2, CalendarRange, QrCode, Palette, Users, Paperclip, Code2, AppWindow, BarChart2,
 } from "lucide-react";
 import { EditEventDialog } from "@/components/EditEventDialog";
-import { CreateEventDialog } from "@/components/CreateEventDialog";
 import { type RsvpQuestion } from "@/components/EventQuestionsSection";
 import { type BrandingPreset } from "@/app/actions/brandingPresets";
-import { assignEventToCalendar } from "@/app/actions/calendars";
-import { createEvent, deleteEvent, toggleEventPublished, updateEventBranding } from "@/app/actions/events";
+import { deleteEvent, toggleEventPublished, updateEventBranding } from "@/app/actions/events";
 import { applyBrandingPresetToEvent } from "@/app/actions/brandingPresets";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { markdownToHtml } from "@/lib/markdown";
@@ -95,12 +93,8 @@ export function EventDetail({
   const { T, lang } = useLanguage();
   const searchParams = useSearchParams();
   const fromCalendarId = searchParams.get("calendar");
-  const browserTz = Intl.DateTimeFormat().resolvedOptions().timeZone;
 
   const [editOpen, setEditOpen] = useState(false);
-  const [createEventOpen, setCreateEventOpen] = useState(false);
-  const [createEventError, setCreateEventError] = useState<string | null>(null);
-  const [isCreatingEvent, startCreateEvent] = useTransition();
   const [published, setPublished] = useState(event.published);
   const [, startTogglePublished] = useTransition();
   const [isDeleting, startDelete] = useTransition();
@@ -169,20 +163,6 @@ export function EventDetail({
     startDelete(async () => { await deleteEvent(event.id); });
   };
 
-  const handleCreateEvent = async (data: {
-    title: string; description: string; location: string; organizerEmail: string;
-    startAt: string; endAt: string; allDay: boolean; isOnline: boolean; rsvpEnabled: boolean;
-    timezone: string; language: string; imageUrl: string; calendarId: string | null;
-  }) => {
-    setCreateEventError(null);
-    startCreateEvent(async () => {
-      const result = await createEvent(data);
-      if ("error" in result) { setCreateEventError(T.eventForm.errors.limitReached); return; }
-      if (data.calendarId) await assignEventToCalendar(result.id, data.calendarId);
-      router.push(`/dashboard/events/${result.id}${data.calendarId ? `?calendar=${data.calendarId}` : ""}`);
-    });
-  };
-
   const publishTitle = !published && !emailVerified
     ? T.eventDetail.published.verifyEmailRequired
     : published ? T.eventDetail.published.onlineHint : T.eventDetail.published.offlineHint;
@@ -195,7 +175,7 @@ export function EventDetail({
         backUrl={backUrl}
         backLabel={T.eventDetail.backToCalendar}
         isSuperAdmin={isSuperAdmin}
-        onNewEvent={() => { setCreateEventError(null); setCreateEventOpen(true); }}
+        calendars={calendars.map((c) => ({ id: c.id, name: c.name }))}
       >
             {/* ── EVENT HEADER ── */}
             <div className="relative overflow-hidden border-b border-line bg-white">
@@ -360,18 +340,6 @@ export function EventDetail({
           imageUrl: event.imageUrl, organizerEmail: event.organizerEmail, startAt: event.startAt, endAt: event.endAt,
           allDay: event.allDay, isOnline: event.isOnline, rsvpEnabled: event.rsvpEnabled, timezone: event.timezone, language: event.language,
         }}
-      />
-
-      <CreateEventDialog
-        open={createEventOpen}
-        onOpenChange={setCreateEventOpen}
-        defaultDate={new Date()}
-        defaultTimezone={browserTz}
-        calendars={calendars}
-        defaultCalendarId={event.calendarId}
-        onSubmit={handleCreateEvent}
-        isPending={isCreatingEvent}
-        error={createEventError}
       />
     </>
   );

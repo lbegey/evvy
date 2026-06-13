@@ -11,10 +11,11 @@ const FULL_SHELL_ROUTE = /^\/dashboard\/(events|calendars)\/[^/]+\/?$/;
 interface DashboardChromeProps {
   isSuperAdmin: boolean;
   showBanner: boolean;
+  calendars: { id: string; name: string }[];
   children: ReactNode;
 }
 
-export function DashboardChrome({ isSuperAdmin, showBanner, children }: DashboardChromeProps) {
+export function DashboardChrome({ isSuperAdmin, showBanner, calendars, children }: DashboardChromeProps) {
   const pathname = usePathname();
 
   if (FULL_SHELL_ROUTE.test(pathname ?? "")) {
@@ -22,7 +23,7 @@ export function DashboardChrome({ isSuperAdmin, showBanner, children }: Dashboar
   }
 
   return (
-    <DashboardListShell isSuperAdmin={isSuperAdmin} showBanner={showBanner}>
+    <DashboardListShell isSuperAdmin={isSuperAdmin} showBanner={showBanner} calendars={calendars}>
       {children}
     </DashboardListShell>
   );

@@ -1,4 +1,4 @@
-import { Navbar } from "@/components/Navbar";
+import { SiteHeader } from "@/components/SiteHeader";
 import { Footer } from "@/components/Footer";
 import { LandingContent } from "@/components/LandingContent";
 import { db } from "@/lib/db";
@@ -32,8 +32,11 @@ export default async function Home() {
     : null;
 
   return (
-    <div className="flex min-h-full flex-col">
-      <Navbar />
+    <div
+      className="evvy-theme flex min-h-full flex-col bg-white text-ink"
+      style={{ fontFamily: "var(--font-inter), Inter, system-ui, sans-serif" }}
+    >
+      <SiteHeader />
       <LandingContent demoCalendar={demoCalendar} />
       <Footer />
     </div>

@@ -224,6 +224,7 @@ export function BrandingSectionForm({
             <ImageDropzone
               value={logoUrl}
               onChange={(v) => { setLogoUrl(v); persist({ logoUrl: v }); }}
+              maxSize={3 * 1024 * 1024}
               previewClassName={cn("h-16 w-auto max-w-full rounded-lg object-contain p-2", !logoTransparentBg && "border border-border/60 bg-muted/20")}
             />
           </div>

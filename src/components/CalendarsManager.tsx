@@ -101,9 +101,9 @@ export function CalendarsManager({ calendars, appUrl, plan }: CalendarsManagerPr
   return (
     <div className="space-y-4">
       {!isPremium && (
-        <div className="flex items-center justify-between gap-3 rounded-lg border border-border/60 bg-muted/30 px-4 py-2.5 text-sm text-muted-foreground">
+        <div className="flex items-center justify-between gap-3 rounded-xl2 border border-line bg-white px-4 py-2.5 text-sm text-inksoft shadow-card">
           <span>{T.calendars.freeLimitBanner(calendars.length, FREE_CALENDAR_LIMIT)}</span>
-          <Link href="/dashboard/billing" className="shrink-0 text-xs font-medium text-primary underline-offset-4 hover:underline">
+          <Link href="/dashboard/billing" className="shrink-0 text-xs font-semibold text-evvy underline-offset-4 hover:underline">
             {T.calendars.unlock}
           </Link>
         </div>
@@ -117,11 +117,11 @@ export function CalendarsManager({ calendars, appUrl, plan }: CalendarsManagerPr
               value={search}
               onChange={(e) => handleSearchChange(e.target.value)}
               placeholder={T.calendars.searchPlaceholder}
-              className="w-full pl-8 text-xs"
+              className="w-full bg-white pl-8 text-xs"
             />
           </div>
         )}
-        <Button onClick={openCreate} disabled={atFreeLimit} className="shrink-0 gap-1.5">
+        <Button onClick={openCreate} disabled={atFreeLimit} className="shrink-0 gap-1.5 shadow-card">
           <Plus className="h-4 w-4" />
           <span className="hidden sm:inline">{T.calendars.create}</span>
         </Button>
@@ -174,22 +174,22 @@ export function CalendarsManager({ calendars, appUrl, plan }: CalendarsManagerPr
                 </div>
                 <div className="relative z-20 flex shrink-0 items-center gap-1.5">
                   <Button
-                    variant="ghost"
+                    variant="outline"
                     size="icon-sm"
                     onClick={() => handleCopy(calendar.id)}
                     title={copiedId === calendar.id ? T.common.copied : T.common.copyUrl}
                     aria-label={copiedId === calendar.id ? T.common.copied : T.common.copyUrl}
-                    className={cn(copiedId === calendar.id && "border border-green-500/40 bg-green-50 text-green-700 hover:bg-green-50 hover:text-green-700")}
+                    className={cn("bg-white", copiedId === calendar.id && "border-green-500/40 bg-green-50 text-green-700 hover:bg-green-50 hover:text-green-700")}
                   >
                     {copiedId === calendar.id ? <Check className="h-3.5 w-3.5" /> : <Copy className="h-3.5 w-3.5" />}
                   </Button>
                   <Button
-                    variant="ghost"
+                    variant="outline"
                     size="icon-sm"
                     onClick={() => handleDelete(calendar.id)}
                     disabled={isDeleting}
                     aria-label={T.calendars.delete}
-                    className="text-muted-foreground hover:bg-destructive/10 hover:text-destructive"
+                    className="bg-white text-inksoft hover:border-coral/40 hover:bg-coral/5 hover:text-coral"
                   >
                     <Trash2 className="h-3.5 w-3.5" />
                   </Button>

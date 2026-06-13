@@ -15,14 +15,14 @@ export function Logo({ size = "md", className }: LogoProps) {
   return (
     <span
       className={cn(
-        "font-extrabold tracking-tight select-none",
+        "font-display font-extrabold tracking-tight select-none",
         SIZES[size],
         className
       )}
     >
-      <span className="text-foreground">E</span>
-      <span className="text-blue-500">v</span>
-      <span className="text-foreground">vy.</span>
+      <span className="text-ink">Ev</span>
+      <span className="text-evvy">vy</span>
+      <span className="text-evvy">.</span>
     </span>
   );
 }
