@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useTransition, useEffect, useRef, type CSSProperties } from "react";
+import { useState, useTransition, useEffect, useRef } from "react";
 import { Loader2, Check, RotateCcw, ArrowDown, ArrowDownRight, ArrowRight, ArrowUpRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -13,7 +13,8 @@ import { applyBrandingPresetToUser, type BrandingPreset } from "@/app/actions/br
 import { useBrandingPresets } from "@/hooks/useBrandingPresets";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { cn } from "@/lib/utils";
-import { brandBackgroundStyle, resolveBrandBackgroundType, showBrandBackgroundImage, DEFAULT_GRADIENT_ANGLE, type BrandBackgroundType } from "@/lib/branding";
+import { BrandingPreview } from "@/components/BrandingPreview";
+import { resolveBrandBackgroundType, DEFAULT_GRADIENT_ANGLE, type BrandBackgroundType } from "@/lib/branding";
 
 const MIN_LOGO_SIZE = 16;
 const MAX_LOGO_SIZE = 300;
@@ -67,8 +68,6 @@ export function BrandingSettings(props: BrandingSettingsProps) {
   const skipNextSave = useRef(false);
   const { presets, refresh: refreshPresets } = useBrandingPresets();
 
-  const valid = (s: string) => (/^#[0-9a-fA-F]{3,8}$/.test(s.trim()) ? s.trim() : null);
-  const previewCardColor = valid(cardColor);
   const hasCustomBranding = Boolean(logoUrl || color || textColor || cardColor || iconBackgroundColor || backgroundColor || backgroundColor2 || backgroundImageUrl || squareCorners);
 
   const currentPresetData = {
@@ -151,17 +150,6 @@ export function BrandingSettings(props: BrandingSettingsProps) {
       savedTimerRef.current = setTimeout(() => setSaved(false), 2000);
     });
   };
-
-  const previewBg = { brandBackgroundType: bgType, brandBackgroundColor: backgroundColor, brandBackgroundColor2: backgroundColor2, brandBackgroundGradientAngle: gradientAngle, brandBackgroundImageUrl: backgroundImageUrl };
-  const previewStyle = {
-    ...(valid(color) ? { "--primary": valid(color), "--border": valid(color), "--ring": valid(color) } : {}),
-    ...(valid(textColor) ? {
-      "--foreground": valid(textColor), "--card-foreground": valid(textColor), "--popover-foreground": valid(textColor),
-      "--muted-foreground": valid(textColor), "--primary-foreground": valid(textColor), "--secondary-foreground": valid(textColor), "--accent-foreground": valid(textColor),
-    } : {}),
-    ...(previewCardColor ? { "--card": previewCardColor, "--background": previewCardColor } : {}),
-    ...brandBackgroundStyle(previewBg),
-  } as CSSProperties;
 
   return (
     <div className="space-y-6">
@@ -279,25 +267,12 @@ export function BrandingSettings(props: BrandingSettingsProps) {
       {/* Preview — always visible, on the right like the event/calendar branding cards */}
       <div className="rounded-xl border border-border/60 bg-card p-5 space-y-3">
           <h2 className="text-sm font-semibold text-foreground">{T.branding.preview}</h2>
-          <div className={cn("relative isolate overflow-hidden rounded-xl border p-4", squareCorners && "brand-square")} style={previewStyle}>
-            {showBrandBackgroundImage(previewBg) && (
-              <div aria-hidden className="pointer-events-none absolute inset-0 -z-10 scale-110 bg-cover bg-center blur-sm" style={{ backgroundImage: `url(${JSON.stringify(backgroundImageUrl)})` }} />
-            )}
-            <div className="rounded-lg border border-border/60 p-3 space-y-2" style={previewCardColor ? { backgroundColor: previewCardColor } : undefined}>
-              {logoUrl && (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img src={logoUrl} alt="" style={{ height: logoSize }} className="mb-1 w-auto max-w-full rounded-lg object-contain" />
-              )}
-              <p className="text-sm font-semibold text-foreground">Event title</p>
-              <p className="text-xs text-muted-foreground">Mon 9 Jun · 10:00 – 11:00</p>
-              <div className="flex items-center gap-2 pt-1">
-                <button type="button" className="cursor-default rounded-md bg-primary px-2.5 py-1 text-xs font-medium text-primary-foreground">
-                  Add to calendar
-                </button>
-                <span className="rounded-md border border-border/60 px-2.5 py-1 text-xs text-foreground">RSVP</span>
-              </div>
-            </div>
-          </div>
+          <BrandingPreview
+            logoUrl={logoUrl} logoSize={logoSize} logoTransparentBg={logoTransparentBg} squareCorners={squareCorners}
+            color={color} textColor={textColor} cardColor={cardColor}
+            bgType={bgType} backgroundColor={backgroundColor} backgroundColor2={backgroundColor2} gradientAngle={gradientAngle} backgroundImageUrl={backgroundImageUrl}
+            title="Event title" meta="Mon 9 Jun · 10:00 – 11:00"
+          />
       </div>
         </div>
        </div>
