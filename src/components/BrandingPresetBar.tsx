@@ -25,7 +25,7 @@ export function BrandingPresetBar({ presets, onApply }: BrandingPresetBarProps) 
   };
 
   return (
-    <div className="flex flex-wrap items-center gap-2 rounded-lg border border-border/60 bg-muted/20 p-2.5">
+    <div className="flex flex-wrap items-center gap-2 rounded-lg border border-border/60 bg-card p-2.5 shadow-sm">
       <Sparkles className="h-3.5 w-3.5 shrink-0 text-muted-foreground" />
       {presets.length > 0 ? (
         <>

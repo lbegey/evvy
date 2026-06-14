@@ -287,8 +287,8 @@ export function BrandingCard(props: Props) {
               </div>
 
               {/* Global rounded corners */}
-              <label className="flex items-center justify-between gap-2 rounded-lg border border-line px-3 py-2.5 text-sm">
-                <span className="font-medium text-ink">{T.eventDetail.branding.roundedCorners}</span>
+              <label className="flex items-center justify-between gap-2 rounded-lg border border-line px-2.5 py-2 text-xs">
+                {T.eventDetail.branding.roundedCorners}
                 <EvvySwitch checked={!squareCorners} onCheckedChange={(n) => { const sq = !n; setSquareCorners(sq); persist({ squareCorners: sq }); }} />
               </label>
 
@@ -301,8 +301,8 @@ export function BrandingCard(props: Props) {
 
               {/* Background group: color / gradient / image */}
               <div>
-                <label className="text-xs font-medium text-inksoft">{T.eventDetail.branding.background}</label>
-                <div className="mt-1.5 inline-flex rounded-lg border border-line bg-paper p-0.5">
+                <label className="mb-1.5 block text-xs font-medium text-inksoft">{T.eventDetail.branding.background}</label>
+                <div className="inline-flex rounded-lg border border-line bg-paper p-0.5">
                   {([["color", T.eventDetail.branding.bgTypeSolid], ["gradient", T.eventDetail.branding.bgTypeGradient], ["image", T.eventDetail.branding.bgTypeImage]] as const).map(([t, label]) => (
                     <button key={t} type="button" onClick={() => setType(t)}
                       className={cn("rounded-md px-3 py-1.5 text-xs font-medium transition", bgType === t ? "bg-white text-evvy shadow-card" : "text-inksoft hover:text-ink")}>

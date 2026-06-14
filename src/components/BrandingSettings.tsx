@@ -167,6 +167,8 @@ export function BrandingSettings(props: BrandingSettingsProps) {
     <div className="space-y-6">
       <BrandingPresetBar presets={presets} onApply={onApplyPreset} />
 
+      <div className="grid gap-6 lg:grid-cols-5">
+       <div className="space-y-6 lg:col-span-3">
       {/* Logo */}
       <div className="rounded-xl border border-border/60 bg-card p-5 space-y-4">
         <h2 className="text-sm font-semibold text-foreground">{T.branding.logo}</h2>
@@ -270,8 +272,11 @@ export function BrandingSettings(props: BrandingSettingsProps) {
           />
         )}
       </div>
+       </div>
 
-      {/* Preview — always visible, like the event/calendar branding cards */}
+       <div className="lg:col-span-2">
+        <div className="lg:sticky lg:top-4">
+      {/* Preview — always visible, on the right like the event/calendar branding cards */}
       <div className="rounded-xl border border-border/60 bg-card p-5 space-y-3">
           <h2 className="text-sm font-semibold text-foreground">{T.branding.preview}</h2>
           <div className={cn("relative isolate overflow-hidden rounded-xl border p-4", squareCorners && "brand-square")} style={previewStyle}>
@@ -293,6 +298,9 @@ export function BrandingSettings(props: BrandingSettingsProps) {
               </div>
             </div>
           </div>
+      </div>
+        </div>
+       </div>
       </div>
 
       {/* Footer actions */}
