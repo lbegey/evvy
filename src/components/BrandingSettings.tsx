@@ -271,9 +271,8 @@ export function BrandingSettings(props: BrandingSettingsProps) {
         )}
       </div>
 
-      {/* Preview */}
-      {hasCustomBranding && (
-        <div className="rounded-xl border border-border/60 bg-card p-5 space-y-3">
+      {/* Preview — always visible, like the event/calendar branding cards */}
+      <div className="rounded-xl border border-border/60 bg-card p-5 space-y-3">
           <h2 className="text-sm font-semibold text-foreground">{T.branding.preview}</h2>
           <div className={cn("relative isolate overflow-hidden rounded-xl border p-4", squareCorners && "brand-square")} style={previewStyle}>
             {showBrandBackgroundImage(previewBg) && (
@@ -294,8 +293,7 @@ export function BrandingSettings(props: BrandingSettingsProps) {
               </div>
             </div>
           </div>
-        </div>
-      )}
+      </div>
 
       {/* Footer actions */}
       <div className="flex flex-wrap items-center gap-3">
