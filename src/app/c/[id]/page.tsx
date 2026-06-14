@@ -13,6 +13,7 @@ import { getAppUrl } from "@/lib/url";
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { buildGoogleSubscribeUrl, buildOutlookSubscribeUrl, buildOffice365SubscribeUrl } from "@/lib/calendar-urls";
+import { brandBackgroundStyle, showBrandBackgroundImage } from "@/lib/branding";
 import { en } from "@/i18n/en";
 import { fr } from "@/i18n/fr";
 
@@ -81,6 +82,10 @@ export default async function PublicCalendarPage({
             brandIconBackgroundColor: true,
             brandBackgroundColor: true,
             brandBackgroundImageUrl: true,
+            brandSquareCorners: true,
+            brandBackgroundType: true,
+            brandBackgroundColor2: true,
+            brandBackgroundGradientAngle: true,
           },
         },
       },
@@ -159,7 +164,15 @@ export default async function PublicCalendarPage({
   const brandIconBackgroundColor = isPremiumOrganizer
     ? (useCalendarOverride ? calendar.brandIconBackgroundColor : calendar.user.brandIconBackgroundColor)
     : null;
-  const brandStyle: CSSProperties | undefined = (brandColor || brandBackgroundColor || brandBackgroundImageUrl || brandTextColor || brandCardColor)
+  const brandSquareCorners = isPremiumOrganizer ? (useCalendarOverride ? calendar.brandSquareCorners : calendar.user.brandSquareCorners) : false;
+  const brandBg = {
+    brandBackgroundType: isPremiumOrganizer ? (useCalendarOverride ? calendar.brandBackgroundType : calendar.user.brandBackgroundType) : null,
+    brandBackgroundColor,
+    brandBackgroundColor2: isPremiumOrganizer ? (useCalendarOverride ? calendar.brandBackgroundColor2 : calendar.user.brandBackgroundColor2) : null,
+    brandBackgroundGradientAngle: isPremiumOrganizer ? (useCalendarOverride ? calendar.brandBackgroundGradientAngle : calendar.user.brandBackgroundGradientAngle) : null,
+    brandBackgroundImageUrl,
+  };
+  const brandStyle: CSSProperties | undefined = (brandColor || brandBackgroundColor || brandBackgroundImageUrl || brandTextColor || brandCardColor || brandBg.brandBackgroundColor2)
     ? {
         ...(brandColor ? { "--primary": brandColor, "--border": brandColor, "--ring": brandColor } as CSSProperties : {}),
         ...(brandTextColor ? {
@@ -172,7 +185,7 @@ export default async function PublicCalendarPage({
           "--accent-foreground": brandTextColor,
         } as CSSProperties : {}),
         ...(brandCardColor ? { "--card": brandCardColor, "--background": brandCardColor } as CSSProperties : {}),
-        ...(brandBackgroundColor ? { backgroundColor: brandBackgroundColor } : {}),
+        ...brandBackgroundStyle(brandBg),
       }
     : undefined;
 
@@ -272,8 +285,8 @@ export default async function PublicCalendarPage({
           </Link>
         </div>
       )}
-      <div className="relative isolate flex min-h-screen flex-col justify-center overflow-hidden bg-muted/20 py-6 px-4 sm:py-8" style={brandStyle}>
-      {brandBackgroundImageUrl && (
+      <div className={cn("relative isolate flex min-h-screen flex-col justify-center overflow-hidden bg-muted/20 py-6 px-4 sm:py-8", brandSquareCorners && "brand-square")} style={brandStyle}>
+      {showBrandBackgroundImage(brandBg) && (
         <div
           aria-hidden
           className="pointer-events-none absolute inset-0 -z-10 scale-110 bg-cover bg-center blur-sm"

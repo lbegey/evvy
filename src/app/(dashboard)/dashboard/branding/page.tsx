@@ -21,6 +21,10 @@ export default async function BrandingPage() {
       brandIconBackgroundColor={user?.brandIconBackgroundColor ?? null}
       brandBackgroundColor={user?.brandBackgroundColor ?? null}
       brandBackgroundImageUrl={user?.brandBackgroundImageUrl ?? null}
+      brandSquareCorners={user?.brandSquareCorners ?? false}
+      brandBackgroundType={user?.brandBackgroundType ?? null}
+      brandBackgroundColor2={user?.brandBackgroundColor2 ?? null}
+      brandBackgroundGradientAngle={user?.brandBackgroundGradientAngle ?? null}
     />
   );
 }

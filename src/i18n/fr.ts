@@ -460,6 +460,14 @@ export const fr: Translations = {
       iconBackgroundColor: "Fond des icônes de calendrier",
       backgroundColor: "Fond de page",
       backgroundImage: "Image de fond",
+      roundedCorners: "Coins arrondis",
+      background: "Fond de page",
+      bgTypeSolid: "Couleur",
+      bgTypeGradient: "Dégradé",
+      bgTypeImage: "Image",
+      gradientFrom: "De",
+      gradientTo: "À",
+      gradientDirection: "Direction",
       locked: "La personnalisation est une fonctionnalité Premium.",
       unlock: "Passer en Premium",
     },
@@ -750,6 +758,7 @@ export const fr: Translations = {
 
   branding: {
     title: "Personnalisation de la marque",
+    colors: "Couleurs",
     subtitle: "Définissez l'apparence par défaut de vos pages publiques d'événements et de calendriers — votre logo et vos couleurs de marque s'appliquent automatiquement, sauf si vous les personnalisez au cas par cas.",
     locked: "La personnalisation de la marque est une fonctionnalité Premium.",
     unlock: "Passer en Premium",

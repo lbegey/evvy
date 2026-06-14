@@ -28,6 +28,10 @@ model User {
   brandIconBackgroundColor String?
   brandBackgroundColor   String?
   brandBackgroundImageUrl String?
+  brandSquareCorners      Boolean  @default(false)
+  brandBackgroundType     String?
+  brandBackgroundColor2   String?
+  brandBackgroundGradientAngle Int?
   stripeCustomerId       String?   @unique
   stripeSubscriptionId   String?   @unique
   stripeCurrentPeriodEnd DateTime?
@@ -56,6 +60,10 @@ model BrandingPreset {
   brandIconBackgroundColor String?
   brandBackgroundColor     String?
   brandBackgroundImageUrl  String?
+  brandSquareCorners       Boolean  @default(false)
+  brandBackgroundType      String?
+  brandBackgroundColor2    String?
+  brandBackgroundGradientAngle Int?
   userId                   String
   user                     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   createdAt                DateTime @default(now())
@@ -96,6 +104,10 @@ model Event {
   brandIconBackgroundColor String?
   brandBackgroundColor String?
   brandBackgroundImageUrl String?
+  brandSquareCorners      Boolean  @default(false)
+  brandBackgroundType     String?
+  brandBackgroundColor2   String?
+  brandBackgroundGradientAngle Int?
   userId         String
   user        User         @relation(fields: [userId], references: [id], onDelete: Cascade)
   calendarId  String?
@@ -125,6 +137,10 @@ model Calendar {
   brandIconBackgroundColor String?
   brandBackgroundColor String?
   brandBackgroundImageUrl String?
+  brandSquareCorners      Boolean  @default(false)
+  brandBackgroundType     String?
+  brandBackgroundColor2   String?
+  brandBackgroundGradientAngle Int?
   language    String   @default("en")
   userId      String
   user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)

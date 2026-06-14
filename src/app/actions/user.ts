@@ -42,7 +42,7 @@ export async function setUserDashboardView(view: string): Promise<void> {
   });
 }
 
-export async function updateBranding(data: { brandLogoUrl: string; brandLogoSize: number; brandLogoTransparentBg: boolean; brandLogoRounded: boolean; brandColor: string; brandTextColor: string; brandCardColor: string; brandIconBackgroundColor: string; brandBackgroundColor: string; brandBackgroundImageUrl: string }): Promise<void> {
+export async function updateBranding(data: { brandLogoUrl: string; brandLogoSize: number; brandLogoTransparentBg: boolean; brandLogoRounded: boolean; brandColor: string; brandTextColor: string; brandCardColor: string; brandIconBackgroundColor: string; brandBackgroundColor: string; brandBackgroundImageUrl: string; brandSquareCorners: boolean; brandBackgroundType: string | null; brandBackgroundColor2: string | null; brandBackgroundGradientAngle: number | null }): Promise<void> {
   const session = await auth.api.getSession({ headers: await headers() });
   if (!session) throw new Error("Unauthorized");
 
@@ -62,6 +62,10 @@ export async function updateBranding(data: { brandLogoUrl: string; brandLogoSize
       brandIconBackgroundColor: data.brandIconBackgroundColor || null,
       brandBackgroundColor: data.brandBackgroundColor || null,
       brandBackgroundImageUrl: data.brandBackgroundImageUrl || null,
+      brandSquareCorners: data.brandSquareCorners,
+      brandBackgroundType: data.brandBackgroundType,
+      brandBackgroundColor2: data.brandBackgroundColor2 || null,
+      brandBackgroundGradientAngle: data.brandBackgroundGradientAngle,
     },
   });
 }
@@ -75,6 +79,6 @@ export async function resetBranding(): Promise<void> {
 
   await db.user.update({
     where: { id: session.user.id },
-    data: { brandLogoUrl: null, brandLogoSize: null, brandLogoTransparentBg: true, brandLogoRounded: false, brandColor: null, brandTextColor: null, brandCardColor: null, brandIconBackgroundColor: null, brandBackgroundColor: null, brandBackgroundImageUrl: null },
+    data: { brandLogoUrl: null, brandLogoSize: null, brandLogoTransparentBg: true, brandLogoRounded: false, brandColor: null, brandTextColor: null, brandCardColor: null, brandIconBackgroundColor: null, brandBackgroundColor: null, brandBackgroundImageUrl: null, brandSquareCorners: false, brandBackgroundType: null, brandBackgroundColor2: null, brandBackgroundGradientAngle: null },
   });
 }

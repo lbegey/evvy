@@ -3,13 +3,14 @@
 import { useEffect, useRef, useState, useTransition, type CSSProperties } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { Palette, RotateCcw, Loader2 } from "lucide-react";
+import { Palette, RotateCcw, Loader2, ArrowDown, ArrowDownRight, ArrowRight, ArrowUpRight } from "lucide-react";
 import { ImageDropzone } from "@/components/ImageDropzone";
 import { SaveBrandingPresetButton } from "@/components/SaveBrandingPresetButton";
 import { useBrandingPresets } from "@/hooks/useBrandingPresets";
 import { type BrandingPreset } from "@/app/actions/brandingPresets";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { cn } from "@/lib/utils";
+import { brandBackgroundStyle, resolveBrandBackgroundType, showBrandBackgroundImage, DEFAULT_GRADIENT_ANGLE, type BrandBackgroundType } from "@/lib/branding";
 import { EvvySwitch } from "./EvvySwitch";
 import { LockedNotice } from "./LockedNotice";
 
@@ -30,6 +31,10 @@ interface BrandingData {
   brandIconBackgroundColor: string | null;
   brandBackgroundColor: string | null;
   brandBackgroundImageUrl: string | null;
+  brandSquareCorners: boolean;
+  brandBackgroundType: string | null;
+  brandBackgroundColor2: string | null;
+  brandBackgroundGradientAngle: number | null;
 }
 
 interface Props {
@@ -46,6 +51,10 @@ interface Props {
   brandIconBackgroundColor: string | null;
   brandBackgroundColor: string | null;
   brandBackgroundImageUrl: string | null;
+  brandSquareCorners: boolean;
+  brandBackgroundType: string | null;
+  brandBackgroundColor2: string | null;
+  brandBackgroundGradientAngle: number | null;
   initialPresets: BrandingPreset[];
   previewTitle: string;
   previewMeta: string;
@@ -70,6 +79,13 @@ function ColorField({ label, value, placeholder, onChange, onCommit }: {
   );
 }
 
+const DIRECTIONS = [
+  { angle: 180, Icon: ArrowDown },
+  { angle: 135, Icon: ArrowDownRight },
+  { angle: 90, Icon: ArrowRight },
+  { angle: 45, Icon: ArrowUpRight },
+] as const;
+
 export function BrandingCard(props: Props) {
   const { targetId, plan, previewTitle, previewMeta, initialPresets, updateBranding, applyPreset } = props;
   const router = useRouter();
@@ -80,12 +96,15 @@ export function BrandingCard(props: Props) {
   const [logoUrl, setLogoUrl] = useState(props.brandLogoUrl ?? "");
   const [logoSize, setLogoSize] = useState(props.brandLogoSize ?? DEFAULT_LOGO_SIZE);
   const [logoTransparentBg, setLogoTransparentBg] = useState(props.brandLogoTransparentBg);
-  const [logoRounded, setLogoRounded] = useState(props.brandLogoRounded);
+  const [squareCorners, setSquareCorners] = useState(props.brandSquareCorners);
   const [color, setColor] = useState(props.brandColor ?? "");
   const [textColor, setTextColor] = useState(props.brandTextColor ?? "");
   const [cardColor, setCardColor] = useState(props.brandCardColor ?? "");
   const [backgroundColor, setBackgroundColor] = useState(props.brandBackgroundColor ?? "");
+  const [backgroundColor2, setBackgroundColor2] = useState(props.brandBackgroundColor2 ?? "");
+  const [gradientAngle, setGradientAngle] = useState(props.brandBackgroundGradientAngle ?? DEFAULT_GRADIENT_ANGLE);
   const [backgroundImageUrl, setBackgroundImageUrl] = useState(props.brandBackgroundImageUrl ?? "");
+  const [bgType, setBgType] = useState<BrandBackgroundType>(resolveBrandBackgroundType(props));
   // kept (configurable on the account branding page) but not edited here — persisted as-is
   const iconBg = props.brandIconBackgroundColor;
 
@@ -96,25 +115,33 @@ export function BrandingCard(props: Props) {
   const [isApplying, startApply] = useTransition();
   const isFirstRender = useRef(true);
 
-  const hasCustom = Boolean(logoUrl || color || textColor || cardColor || backgroundColor || backgroundImageUrl);
+  const hasCustom = Boolean(logoUrl || color || textColor || cardColor || backgroundColor || backgroundColor2 || backgroundImageUrl || squareCorners);
 
-  const buildData = (overrides: Partial<Record<string, unknown>> = {}) => {
-    const next = { enabled, logoUrl, logoSize, logoTransparentBg, logoRounded, color, textColor, cardColor, backgroundColor, backgroundImageUrl, ...overrides } as {
-      enabled: boolean; logoUrl: string; logoSize: number; logoTransparentBg: boolean; logoRounded: boolean;
-      color: string; textColor: string; cardColor: string; backgroundColor: string; backgroundImageUrl: string;
+  const buildData = (overrides: Partial<Record<string, unknown>> = {}): BrandingData => {
+    const next = {
+      enabled, logoUrl, logoSize, logoTransparentBg, squareCorners, color, textColor, cardColor,
+      backgroundColor, backgroundColor2, gradientAngle, backgroundImageUrl, bgType, ...overrides,
+    } as {
+      enabled: boolean; logoUrl: string; logoSize: number; logoTransparentBg: boolean; squareCorners: boolean;
+      color: string; textColor: string; cardColor: string; backgroundColor: string; backgroundColor2: string;
+      gradientAngle: number; backgroundImageUrl: string; bgType: BrandBackgroundType;
     };
     return {
       brandingEnabled: next.enabled,
       brandLogoUrl: next.enabled ? (next.logoUrl || null) : null,
       brandLogoSize: next.enabled ? next.logoSize : null,
       brandLogoTransparentBg: next.logoTransparentBg,
-      brandLogoRounded: next.logoRounded,
+      brandLogoRounded: !next.squareCorners, // logo follows the global corner setting
       brandColor: next.enabled ? (next.color || null) : null,
       brandTextColor: next.enabled ? (next.textColor || null) : null,
       brandCardColor: next.enabled ? (next.cardColor || null) : null,
       brandIconBackgroundColor: next.enabled ? iconBg : null,
       brandBackgroundColor: next.enabled ? (next.backgroundColor || null) : null,
       brandBackgroundImageUrl: next.enabled ? (next.backgroundImageUrl || null) : null,
+      brandSquareCorners: next.squareCorners,
+      brandBackgroundType: next.enabled ? next.bgType : null,
+      brandBackgroundColor2: next.enabled ? (next.backgroundColor2 || null) : null,
+      brandBackgroundGradientAngle: next.enabled ? next.gradientAngle : null,
     };
   };
 
@@ -122,7 +149,7 @@ export function BrandingCard(props: Props) {
     startTransition(async () => { await updateBranding(targetId, buildData(overrides)); router.refresh(); });
   };
 
-  // debounced auto-save for color fields
+  // debounced auto-save for color/gradient fields
   useEffect(() => {
     if (isFirstRender.current) { isFirstRender.current = false; return; }
     if (!enabled) return;
@@ -131,7 +158,7 @@ export function BrandingCard(props: Props) {
     }, COLOR_SAVE_DELAY_MS);
     return () => clearTimeout(timer);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [color, textColor, cardColor, backgroundColor]);
+  }, [color, textColor, cardColor, backgroundColor, backgroundColor2]);
 
   const onApplyPreset = () => {
     const preset = presets.find((p) => p.id === applyId);
@@ -140,41 +167,46 @@ export function BrandingCard(props: Props) {
     setLogoUrl(preset.brandLogoUrl ?? "");
     setLogoSize(preset.brandLogoSize ?? DEFAULT_LOGO_SIZE);
     setLogoTransparentBg(preset.brandLogoTransparentBg);
-    setLogoRounded(preset.brandLogoRounded);
+    setSquareCorners(preset.brandSquareCorners);
     setColor(preset.brandColor ?? "");
     setTextColor(preset.brandTextColor ?? "");
     setCardColor(preset.brandCardColor ?? "");
     setBackgroundColor(preset.brandBackgroundColor ?? "");
+    setBackgroundColor2(preset.brandBackgroundColor2 ?? "");
+    setGradientAngle(preset.brandBackgroundGradientAngle ?? DEFAULT_GRADIENT_ANGLE);
     setBackgroundImageUrl(preset.brandBackgroundImageUrl ?? "");
+    setBgType(resolveBrandBackgroundType(preset));
     startApply(async () => { await applyPreset(targetId, preset.id); router.refresh(); });
   };
 
   const onReset = () => {
     if (!confirm(T.branding.resetConfirm)) return;
-    setLogoUrl(""); setLogoSize(DEFAULT_LOGO_SIZE); setLogoTransparentBg(true); setLogoRounded(false);
-    setColor(""); setTextColor(""); setCardColor(""); setBackgroundColor(""); setBackgroundImageUrl("");
+    setLogoUrl(""); setLogoSize(DEFAULT_LOGO_SIZE); setLogoTransparentBg(true); setSquareCorners(false);
+    setColor(""); setTextColor(""); setCardColor(""); setBackgroundColor(""); setBackgroundColor2(""); setGradientAngle(DEFAULT_GRADIENT_ANGLE);
+    setBackgroundImageUrl(""); setBgType("color");
     startReset(async () => {
       await updateBranding(targetId, {
-        brandingEnabled: enabled, brandLogoUrl: null, brandLogoSize: null, brandLogoTransparentBg: true, brandLogoRounded: false,
+        brandingEnabled: enabled, brandLogoUrl: null, brandLogoSize: null, brandLogoTransparentBg: true, brandLogoRounded: true,
         brandColor: null, brandTextColor: null, brandCardColor: null, brandIconBackgroundColor: null, brandBackgroundColor: null, brandBackgroundImageUrl: null,
+        brandSquareCorners: false, brandBackgroundType: null, brandBackgroundColor2: null, brandBackgroundGradientAngle: null,
       });
       router.refresh();
     });
   };
 
   const currentPresetData = {
-    brandLogoUrl: logoUrl || null, brandLogoSize: logoSize, brandLogoTransparentBg: logoTransparentBg, brandLogoRounded: logoRounded,
+    brandLogoUrl: logoUrl || null, brandLogoSize: logoSize, brandLogoTransparentBg: logoTransparentBg, brandLogoRounded: !squareCorners,
     brandColor: color || null, brandTextColor: textColor || null, brandCardColor: cardColor || null, brandIconBackgroundColor: iconBg,
     brandBackgroundColor: backgroundColor || null, brandBackgroundImageUrl: backgroundImageUrl || null,
+    brandSquareCorners: squareCorners, brandBackgroundType: bgType, brandBackgroundColor2: backgroundColor2 || null, brandBackgroundGradientAngle: gradientAngle,
   };
 
-  // Mirror the real public page: only apply a brand color when it's valid, otherwise
-  // fall back to the default app theme (no invented colors).
+  // Mirror the real public page.
   const valid = (s: string) => (/^#[0-9a-fA-F]{3,8}$/.test(s.trim()) ? s.trim() : null);
   const cAccent = valid(color);
   const cText = valid(textColor);
   const cCard = valid(cardColor);
-  const cBg = valid(backgroundColor);
+  const previewBg = { brandBackgroundType: bgType, brandBackgroundColor: backgroundColor, brandBackgroundColor2: backgroundColor2, brandBackgroundGradientAngle: gradientAngle, brandBackgroundImageUrl: backgroundImageUrl };
   const previewStyle = {
     ...(cAccent ? { "--primary": cAccent, "--border": cAccent, "--ring": cAccent } : {}),
     ...(cText ? {
@@ -182,8 +214,10 @@ export function BrandingCard(props: Props) {
       "--primary-foreground": cText, "--secondary-foreground": cText, "--accent-foreground": cText,
     } : {}),
     ...(cCard ? { "--card": cCard, "--background": cCard } : {}),
-    ...(cBg ? { backgroundColor: cBg } : {}),
+    ...brandBackgroundStyle(previewBg),
   } as CSSProperties;
+
+  const setType = (t: BrandBackgroundType) => { setBgType(t); persist({ bgType: t }); };
 
   return (
     <section data-reveal id="branding" className="scroll-mt-24">
@@ -224,62 +258,95 @@ export function BrandingCard(props: Props) {
                 </div>
               )}
 
-              <div className="grid gap-4 sm:grid-cols-2">
-                <div>
-                  <label className="text-xs font-medium text-inksoft">{T.eventDetail.branding.logo}</label>
-                  <div className="mt-1.5">
-                    <ImageDropzone value={logoUrl} onChange={(v) => { setLogoUrl(v); persist({ logoUrl: v }); }}
-                      previewClassName="mx-auto block h-24 w-auto max-w-full rounded-lg border border-line bg-paper object-contain p-2" />
-                  </div>
+              {/* Logo + its size directly underneath */}
+              <div>
+                <label className="text-xs font-medium text-inksoft">{T.eventDetail.branding.logo}</label>
+                <div className="mt-1.5">
+                  <ImageDropzone value={logoUrl} onChange={(v) => { setLogoUrl(v); persist({ logoUrl: v }); }} maxSize={3 * 1024 * 1024}
+                    previewClassName="mx-auto block h-24 w-auto max-w-full rounded-lg border border-line bg-paper object-contain p-2" />
                 </div>
-                <div>
-                  <label className="text-xs font-medium text-inksoft">{T.eventDetail.branding.backgroundImage}</label>
-                  <div className="mt-1.5">
-                    <ImageDropzone value={backgroundImageUrl} onChange={(v) => { setBackgroundImageUrl(v); persist({ backgroundImageUrl: v }); }}
-                      previewClassName="h-24 w-full rounded-lg border border-line object-cover" />
-                  </div>
-                </div>
-              </div>
-
-              {logoUrl && (
-                <div className="space-y-3">
-                  <div>
-                    <label className="text-xs font-medium text-inksoft">{T.eventDetail.branding.logoSize}</label>
-                    <div className="mt-1.5 flex items-center gap-3">
+                {logoUrl && (
+                  <div className="mt-3 space-y-3">
+                    <div>
+                      <div className="flex items-center justify-between">
+                        <label className="text-xs font-medium text-inksoft">{T.eventDetail.branding.logoSize}</label>
+                        <span className="text-xs tabular-nums text-inksoft">{logoSize}px</span>
+                      </div>
                       <input type="range" min={MIN_LOGO_SIZE} max={MAX_LOGO_SIZE} value={logoSize}
                         onChange={(e) => setLogoSize(Number(e.target.value))}
                         onMouseUp={(e) => persist({ logoSize: Number((e.target as HTMLInputElement).value) })}
                         onTouchEnd={(e) => persist({ logoSize: Number((e.target as HTMLInputElement).value) })}
-                        className="h-2 flex-1 cursor-pointer accent-evvy" />
-                      <span className="w-12 shrink-0 text-right text-xs tabular-nums text-inksoft">{logoSize}px</span>
+                        className="mt-1.5 h-2 w-full cursor-pointer accent-evvy" />
                     </div>
-                  </div>
-                  <div className="grid gap-2 sm:grid-cols-2">
                     <label className="flex items-center justify-between gap-2 rounded-lg border border-line px-2.5 py-2 text-xs">
                       {T.eventDetail.branding.logoTransparentBg}
                       <EvvySwitch checked={logoTransparentBg} onCheckedChange={(n) => { setLogoTransparentBg(n); persist({ logoTransparentBg: n }); }} />
                     </label>
-                    <label className="flex items-center justify-between gap-2 rounded-lg border border-line px-2.5 py-2 text-xs">
-                      {T.eventDetail.branding.logoRounded}
-                      <EvvySwitch checked={logoRounded} onCheckedChange={(n) => { setLogoRounded(n); persist({ logoRounded: n }); }} />
-                    </label>
                   </div>
-                </div>
-              )}
+                )}
+              </div>
 
-              <div className="grid gap-x-4 gap-y-3 sm:grid-cols-2">
+              {/* Global rounded corners */}
+              <label className="flex items-center justify-between gap-2 rounded-lg border border-line px-3 py-2.5 text-sm">
+                <span className="font-medium text-ink">{T.eventDetail.branding.roundedCorners}</span>
+                <EvvySwitch checked={!squareCorners} onCheckedChange={(n) => { const sq = !n; setSquareCorners(sq); persist({ squareCorners: sq }); }} />
+              </label>
+
+              {/* Accent / text / card — side by side */}
+              <div className="grid gap-x-3 gap-y-3 sm:grid-cols-3">
                 <ColorField label={T.eventDetail.branding.color} value={color} placeholder="#6366f1" onChange={setColor} onCommit={() => persist({ color })} />
                 <ColorField label={T.eventDetail.branding.textColor} value={textColor} placeholder="#111111" onChange={setTextColor} onCommit={() => persist({ textColor })} />
-                <ColorField label={T.eventDetail.branding.backgroundColor} value={backgroundColor} placeholder="#f4f4f5" onChange={setBackgroundColor} onCommit={() => persist({ backgroundColor })} />
                 <ColorField label={T.eventDetail.branding.cardColor} value={cardColor} placeholder="#ffffff" onChange={setCardColor} onCommit={() => persist({ cardColor })} />
+              </div>
+
+              {/* Background group: color / gradient / image */}
+              <div>
+                <label className="text-xs font-medium text-inksoft">{T.eventDetail.branding.background}</label>
+                <div className="mt-1.5 inline-flex rounded-lg border border-line bg-paper p-0.5">
+                  {([["color", T.eventDetail.branding.bgTypeSolid], ["gradient", T.eventDetail.branding.bgTypeGradient], ["image", T.eventDetail.branding.bgTypeImage]] as const).map(([t, label]) => (
+                    <button key={t} type="button" onClick={() => setType(t)}
+                      className={cn("rounded-md px-3 py-1.5 text-xs font-medium transition", bgType === t ? "bg-white text-evvy shadow-card" : "text-inksoft hover:text-ink")}>
+                      {label}
+                    </button>
+                  ))}
+                </div>
+
+                <div className="mt-3">
+                  {bgType === "color" && (
+                    <ColorField label={T.eventDetail.branding.backgroundColor} value={backgroundColor} placeholder="#f4f4f5" onChange={setBackgroundColor} onCommit={() => persist({ backgroundColor })} />
+                  )}
+                  {bgType === "gradient" && (
+                    <div className="space-y-3">
+                      <div className="grid gap-x-3 gap-y-3 sm:grid-cols-2">
+                        <ColorField label={T.eventDetail.branding.gradientFrom} value={backgroundColor} placeholder="#6366f1" onChange={setBackgroundColor} onCommit={() => persist({ backgroundColor })} />
+                        <ColorField label={T.eventDetail.branding.gradientTo} value={backgroundColor2} placeholder="#ec4899" onChange={setBackgroundColor2} onCommit={() => persist({ backgroundColor2 })} />
+                      </div>
+                      <div>
+                        <label className="text-xs font-medium text-inksoft">{T.eventDetail.branding.gradientDirection}</label>
+                        <div className="mt-1.5 flex gap-1.5">
+                          {DIRECTIONS.map(({ angle, Icon }) => (
+                            <button key={angle} type="button" onClick={() => { setGradientAngle(angle); persist({ gradientAngle: angle }); }}
+                              className={cn("grid h-9 w-9 place-items-center rounded-lg border transition", gradientAngle === angle ? "border-evvy bg-evvy-soft text-evvy" : "border-line text-inksoft hover:bg-paper")}>
+                              <Icon className="h-4 w-4" />
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                  {bgType === "image" && (
+                    <ImageDropzone value={backgroundImageUrl} onChange={(v) => { setBackgroundImageUrl(v); persist({ backgroundImageUrl: v }); }}
+                      previewClassName="h-24 w-full rounded-lg border border-line object-cover" />
+                  )}
+                </div>
               </div>
             </div>
 
             {/* live preview — faithful mini-replica of the public event page */}
             <div className="lg:col-span-2">
               <p className="mb-1.5 text-xs font-medium text-inksoft">{T.eventDashboard.livePreview}</p>
-              <div className="relative isolate overflow-hidden rounded-xl2 border border-line bg-muted/20 p-4" style={previewStyle}>
-                {backgroundImageUrl && (
+              <div className={cn("relative isolate overflow-hidden rounded-xl2 border border-line bg-muted/20 p-4", squareCorners && "brand-square")} style={previewStyle}>
+                {showBrandBackgroundImage(previewBg) && (
                   <div
                     aria-hidden
                     className="pointer-events-none absolute inset-0 -z-10 scale-110 bg-cover bg-center blur-sm"
@@ -288,9 +355,9 @@ export function BrandingCard(props: Props) {
                 )}
                 {logoUrl && (
                   <div className="mb-2 flex justify-center">
-                    <span className={cn("inline-flex", logoRounded && "overflow-hidden rounded-lg")} style={!logoTransparentBg ? { backgroundColor: cCard ?? "#ffffff" } : undefined}>
+                    <span className="inline-flex overflow-hidden rounded-lg" style={!logoTransparentBg ? { backgroundColor: cCard ?? "#ffffff" } : undefined}>
                       {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img src={logoUrl} alt="" style={{ maxWidth: logoSize, width: "100%" }} className={cn("h-auto object-contain", logoRounded && "rounded-lg")} />
+                      <img src={logoUrl} alt="" style={{ maxWidth: logoSize, width: "100%" }} className="h-auto rounded-lg object-contain" />
                     </span>
                   </div>
                 )}

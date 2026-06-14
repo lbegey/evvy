@@ -60,6 +60,10 @@ interface Event {
   brandIconBackgroundColor: string | null;
   brandBackgroundColor: string | null;
   brandBackgroundImageUrl: string | null;
+  brandSquareCorners: boolean;
+  brandBackgroundType: string | null;
+  brandBackgroundColor2: string | null;
+  brandBackgroundGradientAngle: number | null;
   calendarId: string | null;
 }
 
@@ -308,6 +312,10 @@ export function EventDetail({
                 brandIconBackgroundColor={event.brandIconBackgroundColor}
                 brandBackgroundColor={event.brandBackgroundColor}
                 brandBackgroundImageUrl={event.brandBackgroundImageUrl}
+                brandSquareCorners={event.brandSquareCorners}
+                brandBackgroundType={event.brandBackgroundType}
+                brandBackgroundColor2={event.brandBackgroundColor2}
+                brandBackgroundGradientAngle={event.brandBackgroundGradientAngle}
                 initialPresets={brandingPresets}
                 previewTitle={event.title}
                 previewMeta={previewMeta}

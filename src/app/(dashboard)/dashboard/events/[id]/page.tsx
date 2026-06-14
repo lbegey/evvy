@@ -95,6 +95,10 @@ export default async function EventPage({
         brandIconBackgroundColor: event.brandIconBackgroundColor,
         brandBackgroundColor: event.brandBackgroundColor,
         brandBackgroundImageUrl: event.brandBackgroundImageUrl,
+        brandSquareCorners: event.brandSquareCorners,
+        brandBackgroundType: event.brandBackgroundType,
+        brandBackgroundColor2: event.brandBackgroundColor2,
+        brandBackgroundGradientAngle: event.brandBackgroundGradientAngle,
         calendarId: event.calendarId,
       }}
       appUrl={APP_URL}

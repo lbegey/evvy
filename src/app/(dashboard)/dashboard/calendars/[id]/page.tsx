@@ -50,6 +50,10 @@ export default async function CalendarPage({
         brandIconBackgroundColor: calendar.brandIconBackgroundColor,
         brandBackgroundColor: calendar.brandBackgroundColor,
         brandBackgroundImageUrl: calendar.brandBackgroundImageUrl,
+        brandSquareCorners: calendar.brandSquareCorners,
+        brandBackgroundType: calendar.brandBackgroundType,
+        brandBackgroundColor2: calendar.brandBackgroundColor2,
+        brandBackgroundGradientAngle: calendar.brandBackgroundGradientAngle,
         eventCount: calendar._count.events,
       }}
       events={calendar.events.map((e) => ({

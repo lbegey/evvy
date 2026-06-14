@@ -458,6 +458,14 @@ export const en = {
       iconBackgroundColor: "Calendar icons background",
       backgroundColor: "Page background",
       backgroundImage: "Background image",
+      roundedCorners: "Rounded corners",
+      background: "Page background",
+      bgTypeSolid: "Color",
+      bgTypeGradient: "Gradient",
+      bgTypeImage: "Image",
+      gradientFrom: "From",
+      gradientTo: "To",
+      gradientDirection: "Direction",
       locked: "Custom branding is a Premium feature.",
       unlock: "Upgrade to Premium",
     },
@@ -748,6 +756,7 @@ export const en = {
 
   branding: {
     title: "Custom branding",
+    colors: "Colors",
     subtitle: "Set the default look for your public event and calendar pages — your logo and brand colors are applied automatically unless overridden per item.",
     locked: "Custom branding is a Premium feature.",
     unlock: "Upgrade to Premium",

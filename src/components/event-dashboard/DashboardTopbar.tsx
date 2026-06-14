@@ -30,7 +30,8 @@ export function DashboardTopbar({ isSuperAdmin, isLoggedIn, onMenuClick }: Props
     if (m) router.push(`/${target}${m[2] ?? ""}`);
   };
   const onCalendars = pathname.startsWith("/dashboard/calendars");
-  const onEvents = pathname.startsWith("/dashboard") && !onCalendars;
+  const onBranding = pathname.startsWith("/dashboard/branding");
+  const onEvents = pathname.startsWith("/dashboard") && !onCalendars && !onBranding;
 
   const focusRing = "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-evvy/50 focus-visible:ring-offset-1";
 
@@ -61,6 +62,7 @@ export function DashboardTopbar({ isSuperAdmin, isLoggedIn, onMenuClick }: Props
         <nav className="ml-4 hidden items-center gap-1 text-sm md:flex">
           <Link href="/dashboard" aria-current={onEvents ? "page" : undefined} className={navLink(onEvents)}>{T.nav.events}</Link>
           <Link href="/dashboard/calendars" aria-current={onCalendars ? "page" : undefined} className={navLink(onCalendars)}>{T.nav.calendars}</Link>
+          <Link href="/dashboard/branding" aria-current={onBranding ? "page" : undefined} className={navLink(onBranding)}>{T.nav.branding}</Link>
         </nav>
       ) : (
         <div className="ml-4 hidden md:block">
@@ -120,6 +122,7 @@ export function DashboardTopbar({ isSuperAdmin, isLoggedIn, onMenuClick }: Props
         <nav className="flex border-t border-line px-2 md:hidden">
           <Link href="/dashboard" aria-current={onEvents ? "page" : undefined} className={mobileTab(onEvents)}>{T.nav.events}</Link>
           <Link href="/dashboard/calendars" aria-current={onCalendars ? "page" : undefined} className={mobileTab(onCalendars)}>{T.nav.calendars}</Link>
+          <Link href="/dashboard/branding" aria-current={onBranding ? "page" : undefined} className={mobileTab(onBranding)}>{T.nav.branding}</Link>
         </nav>
       ) : (
         <nav className="flex border-t border-line px-2 md:hidden">

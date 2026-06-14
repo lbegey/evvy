@@ -27,6 +27,10 @@ type CalendarBrandingData = {
   brandIconBackgroundColor: string | null;
   brandBackgroundColor: string | null;
   brandBackgroundImageUrl: string | null;
+  brandSquareCorners: boolean;
+  brandBackgroundType: string | null;
+  brandBackgroundColor2: string | null;
+  brandBackgroundGradientAngle: number | null;
 };
 
 async function getSession() {
@@ -125,6 +129,10 @@ export async function updateCalendarBranding(id: string, data: CalendarBrandingD
       brandIconBackgroundColor: data.brandIconBackgroundColor,
       brandBackgroundColor: data.brandBackgroundColor,
       brandBackgroundImageUrl: data.brandBackgroundImageUrl,
+      brandSquareCorners: data.brandSquareCorners,
+      brandBackgroundType: data.brandBackgroundType,
+      brandBackgroundColor2: data.brandBackgroundColor2,
+      brandBackgroundGradientAngle: data.brandBackgroundGradientAngle,
     },
   });
 

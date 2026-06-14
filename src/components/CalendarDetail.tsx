@@ -41,6 +41,10 @@ interface CalendarRecord {
   brandIconBackgroundColor: string | null;
   brandBackgroundColor: string | null;
   brandBackgroundImageUrl: string | null;
+  brandSquareCorners: boolean;
+  brandBackgroundType: string | null;
+  brandBackgroundColor2: string | null;
+  brandBackgroundGradientAngle: number | null;
   eventCount: number;
 }
 
@@ -312,6 +316,10 @@ export function CalendarDetail({ calendar, events, calendars, appUrl, plan, emai
             brandIconBackgroundColor={calendar.brandIconBackgroundColor}
             brandBackgroundColor={calendar.brandBackgroundColor}
             brandBackgroundImageUrl={calendar.brandBackgroundImageUrl}
+            brandSquareCorners={calendar.brandSquareCorners}
+            brandBackgroundType={calendar.brandBackgroundType}
+            brandBackgroundColor2={calendar.brandBackgroundColor2}
+            brandBackgroundGradientAngle={calendar.brandBackgroundGradientAngle}
             initialPresets={brandingPresets}
             previewTitle={calendar.name}
             previewMeta={T.dashboardDetail.sidebar.events + " · " + events.length}

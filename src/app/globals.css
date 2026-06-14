@@ -207,6 +207,13 @@
   scrollbar-width: none;
   -ms-overflow-style: none;
 }
+
+/* Brand "square corners" — flatten every rounded block under a branded surface
+   (public event/calendar pages + their live previews). */
+.brand-square,
+.brand-square * {
+  border-radius: 0 !important;
+}
 .no-scrollbar::-webkit-scrollbar {
   display: none;
 }

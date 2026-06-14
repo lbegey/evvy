@@ -68,6 +68,10 @@ type EventBrandingData = {
   brandIconBackgroundColor: string | null;
   brandBackgroundColor: string | null;
   brandBackgroundImageUrl: string | null;
+  brandSquareCorners: boolean;
+  brandBackgroundType: string | null;
+  brandBackgroundColor2: string | null;
+  brandBackgroundGradientAngle: number | null;
 };
 
 const FREE_EVENT_LIMIT = 10;
@@ -211,6 +215,10 @@ export async function updateEventBranding(id: string, data: EventBrandingData): 
       brandIconBackgroundColor: data.brandIconBackgroundColor,
       brandBackgroundColor: data.brandBackgroundColor,
       brandBackgroundImageUrl: data.brandBackgroundImageUrl,
+      brandSquareCorners: data.brandSquareCorners,
+      brandBackgroundType: data.brandBackgroundType,
+      brandBackgroundColor2: data.brandBackgroundColor2,
+      brandBackgroundGradientAngle: data.brandBackgroundGradientAngle,
     },
   });
 

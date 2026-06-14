@@ -16,6 +16,10 @@ export type BrandingPresetData = {
   brandIconBackgroundColor: string | null;
   brandBackgroundColor: string | null;
   brandBackgroundImageUrl: string | null;
+  brandSquareCorners: boolean;
+  brandBackgroundType: string | null;
+  brandBackgroundColor2: string | null;
+  brandBackgroundGradientAngle: number | null;
 };
 
 export type BrandingPreset = BrandingPresetData & {
@@ -51,6 +55,10 @@ export async function listBrandingPresets(): Promise<BrandingPreset[]> {
       brandIconBackgroundColor: true,
       brandBackgroundColor: true,
       brandBackgroundImageUrl: true,
+      brandSquareCorners: true,
+      brandBackgroundType: true,
+      brandBackgroundColor2: true,
+      brandBackgroundGradientAngle: true,
     },
   });
 }
@@ -102,6 +110,10 @@ export async function applyBrandingPresetToEvent(eventId: string, presetId: stri
       brandIconBackgroundColor: preset.brandIconBackgroundColor,
       brandBackgroundColor: preset.brandBackgroundColor,
       brandBackgroundImageUrl: preset.brandBackgroundImageUrl,
+      brandSquareCorners: preset.brandSquareCorners,
+      brandBackgroundType: preset.brandBackgroundType,
+      brandBackgroundColor2: preset.brandBackgroundColor2,
+      brandBackgroundGradientAngle: preset.brandBackgroundGradientAngle,
     },
   });
 
@@ -130,6 +142,10 @@ export async function applyBrandingPresetToUser(presetId: string): Promise<{ err
       brandIconBackgroundColor: preset.brandIconBackgroundColor,
       brandBackgroundColor: preset.brandBackgroundColor,
       brandBackgroundImageUrl: preset.brandBackgroundImageUrl,
+      brandSquareCorners: preset.brandSquareCorners,
+      brandBackgroundType: preset.brandBackgroundType,
+      brandBackgroundColor2: preset.brandBackgroundColor2,
+      brandBackgroundGradientAngle: preset.brandBackgroundGradientAngle,
     },
   });
 
@@ -160,6 +176,10 @@ export async function applyBrandingPresetToCalendar(calendarId: string, presetId
       brandIconBackgroundColor: preset.brandIconBackgroundColor,
       brandBackgroundColor: preset.brandBackgroundColor,
       brandBackgroundImageUrl: preset.brandBackgroundImageUrl,
+      brandSquareCorners: preset.brandSquareCorners,
+      brandBackgroundType: preset.brandBackgroundType,
+      brandBackgroundColor2: preset.brandBackgroundColor2,
+      brandBackgroundGradientAngle: preset.brandBackgroundGradientAngle,
     },
   });
 

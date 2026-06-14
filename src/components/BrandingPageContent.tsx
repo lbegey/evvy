@@ -16,11 +16,16 @@ interface BrandingPageContentProps {
   brandIconBackgroundColor: string | null;
   brandBackgroundColor: string | null;
   brandBackgroundImageUrl: string | null;
+  brandSquareCorners: boolean;
+  brandBackgroundType: string | null;
+  brandBackgroundColor2: string | null;
+  brandBackgroundGradientAngle: number | null;
 }
 
 export function BrandingPageContent({
   unlocked, brandLogoUrl, brandLogoSize, brandLogoTransparentBg, brandLogoRounded,
   brandColor, brandTextColor, brandCardColor, brandIconBackgroundColor, brandBackgroundColor, brandBackgroundImageUrl,
+  brandSquareCorners, brandBackgroundType, brandBackgroundColor2, brandBackgroundGradientAngle,
 }: BrandingPageContentProps) {
   const { T } = useLanguage();
 
@@ -45,6 +50,10 @@ export function BrandingPageContent({
           brandIconBackgroundColor={brandIconBackgroundColor}
           brandBackgroundColor={brandBackgroundColor}
           brandBackgroundImageUrl={brandBackgroundImageUrl}
+          brandSquareCorners={brandSquareCorners}
+          brandBackgroundType={brandBackgroundType}
+          brandBackgroundColor2={brandBackgroundColor2}
+          brandBackgroundGradientAngle={brandBackgroundGradientAngle}
         />
       ) : (
         <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-border/60 bg-card p-5">
