@@ -80,6 +80,8 @@ export const fr: Translations = {
       },
     },
     features: {
+      heading: "Conçu pour remplir vos événements, pas pour empiler des options",
+      subheading: "Tout pour réussir vos événements — collectez les réponses, personnalisez chaque page, et laissez vos invités ajouter la date en un clic.",
       rsvp: {
         badge: "📋 Gestion des RSVPs",
         title: "Collectez les réponses de vos invités, sans effort.",

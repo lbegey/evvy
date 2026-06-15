@@ -78,6 +78,8 @@ export const en = {
       },
     },
     features: {
+      heading: "Built to fill seats, not collect features",
+      subheading: "Everything you need to run great events — collect RSVPs, brand every page, and let guests add the date in one click.",
       rsvp: {
         badge: "📋 RSVP management",
         title: "Collect your guests' responses, effortlessly.",
