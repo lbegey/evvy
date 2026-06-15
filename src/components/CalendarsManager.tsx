@@ -13,7 +13,6 @@ import { useLanguage } from "@/contexts/LanguageContext";
 import { cn } from "@/lib/utils";
 
 const CALENDARS_PER_PAGE = 10;
-const FREE_CALENDAR_LIMIT = 1;
 
 export interface CalendarRecord {
   id: string;
@@ -30,7 +29,7 @@ interface CalendarsManagerProps {
   plan: string;
 }
 
-export function CalendarsManager({ calendars, appUrl, plan }: CalendarsManagerProps) {
+export function CalendarsManager({ calendars, appUrl }: CalendarsManagerProps) {
   const router = useRouter();
   const { T } = useLanguage();
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -41,9 +40,6 @@ export function CalendarsManager({ calendars, appUrl, plan }: CalendarsManagerPr
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
   const [copiedId, setCopiedId] = useState<string | null>(null);
-
-  const isPremium = plan === "premium";
-  const atFreeLimit = !isPremium && calendars.length >= FREE_CALENDAR_LIMIT;
 
   const filteredCalendars = useMemo(() => {
     const query = search.trim().toLowerCase();
@@ -100,15 +96,6 @@ export function CalendarsManager({ calendars, appUrl, plan }: CalendarsManagerPr
 
   return (
     <div className="space-y-4">
-      {!isPremium && (
-        <div className="flex items-center justify-between gap-3 rounded-xl2 border border-line bg-white px-4 py-2.5 text-sm text-inksoft shadow-card">
-          <span>{T.calendars.freeLimitBanner(calendars.length, FREE_CALENDAR_LIMIT)}</span>
-          <Link href="/dashboard/billing" className="shrink-0 text-xs font-semibold text-evvy underline-offset-4 hover:underline">
-            {T.calendars.unlock}
-          </Link>
-        </div>
-      )}
-
       <div className="flex items-center gap-2">
         {calendars.length > 0 && (
           <div className="relative min-w-0 flex-1">
@@ -121,7 +108,7 @@ export function CalendarsManager({ calendars, appUrl, plan }: CalendarsManagerPr
             />
           </div>
         )}
-        <Button onClick={openCreate} disabled={atFreeLimit} className="shrink-0 gap-1.5 shadow-card">
+        <Button onClick={openCreate} className="shrink-0 gap-1.5 shadow-card">
           <Plus className="h-4 w-4" />
           <span className="hidden sm:inline">{T.calendars.create}</span>
         </Button>

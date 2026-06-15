@@ -6,8 +6,6 @@ import { headers } from "next/headers";
 import { revalidatePath } from "next/cache";
 import { isValidSlug, isSlugTaken } from "@/lib/slug";
 
-const FREE_CALENDAR_LIMIT = 1;
-
 type CalendarData = {
   name: string;
   description: string;
@@ -41,13 +39,11 @@ async function getSession() {
 
 export async function createCalendar(data: CalendarData): Promise<{ id: string } | { error: "forbidden" | "limit" }> {
   const session = await getSession();
+  // Free plan creates unlimited calendars — Premium only gates analytics & branding.
   const user = await db.user.findUnique({
     where: { id: session.user.id },
-    select: { plan: true, role: true, emailVerified: true, _count: { select: { calendars: true } } },
+    select: { emailVerified: true },
   });
-  const isPremium = user?.plan === "premium" || user?.role === "super_admin";
-
-  if (!isPremium && (user?._count.calendars ?? 0) >= FREE_CALENDAR_LIMIT) return { error: "limit" };
 
   const calendar = await db.calendar.create({
     data: {

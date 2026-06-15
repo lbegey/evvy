@@ -74,21 +74,18 @@ type EventBrandingData = {
   brandBackgroundGradientAngle: number | null;
 };
 
-const FREE_EVENT_LIMIT = 10;
-const FREE_RSVP_LIMIT = 50;
-
 export async function createEvent(data: EventData): Promise<{ id: string } | { error: "limit" }> {
   const session = await auth.api.getSession({ headers: await headers() });
   if (!session) throw new Error("Unauthorized");
 
   if (new Date(data.endAt) < new Date(data.startAt)) throw new Error("End date cannot be before start date");
 
+  // Free plan is unlimited on quantity (events/RSVPs/calendars) — only analytics
+  // and custom branding are Premium.
   const user = await db.user.findUnique({
     where: { id: session.user.id },
-    select: { plan: true, emailVerified: true, _count: { select: { events: true } } },
+    select: { emailVerified: true },
   });
-  const isPremium = user?.plan === "premium";
-  if (!isPremium && (user?._count.events ?? 0) >= FREE_EVENT_LIMIT) return { error: "limit" };
 
   const event = await db.event.create({
     data: {
@@ -382,11 +379,6 @@ export async function submitRsvp(data: {
   if (cookieStore.get(cookieName)?.value) return { error: "already" };
 
   const existing = await db.rsvp.findFirst({ where: { eventId: event.id, email } });
-
-  if (!existing && event.user.plan !== "premium") {
-    const count = await db.rsvp.count({ where: { eventId: event.id } });
-    if (count >= FREE_RSVP_LIMIT) return { error: "full" };
-  }
 
   if (event.rsvpLimit != null && data.status === "yes" && existing?.status !== "yes") {
     const yesCount = await db.rsvp.count({ where: { eventId: event.id, status: "yes" } });
