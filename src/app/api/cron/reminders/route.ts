@@ -6,10 +6,19 @@ import { buildRsvpReminderEmail } from "@/lib/email";
 const resend = new Resend(process.env.RESEND_API_KEY);
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? "https://evvycal.app";
 
+// RSVP email reminders are disabled for now (no paid subscribers yet → avoid
+// email costs). Re-enable by flipping this flag and restoring the cron entry
+// in vercel.json ({ "path": "/api/cron/reminders", "schedule": "0 8 * * *" }).
+const REMINDERS_ENABLED: boolean = false;
+
 export async function GET(req: NextRequest) {
   const authHeader = req.headers.get("authorization");
   if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
     return new Response("Unauthorized", { status: 401 });
+  }
+
+  if (!REMINDERS_ENABLED) {
+    return Response.json({ ok: true, sent: 0, disabled: true });
   }
 
   const now = new Date();

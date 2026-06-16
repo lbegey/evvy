@@ -93,7 +93,6 @@ export const fr: Translations = {
         bullets: [
           "Formulaires de réponse personnalisables",
           "Export CSV en un clic",
-          "Rappels automatiques par email la veille de chaque événement",
           "Questions personnalisées pour collecter exactement les infos dont vous avez besoin",
           "Webhook pour synchroniser les RSVPs avec Zapier, Make ou n8n",
         ],
@@ -204,7 +203,6 @@ export const fr: Translations = {
         bullets: [
           { text: "Événements illimités", included: true },
           { text: "RSVP illimités", included: true },
-          { text: "Rappels RSVP automatiques aux participants", included: true },
           { text: "Mention Evvy entièrement supprimée", included: true },
           { text: "Logo, couleurs et fond personnalisés", included: true },
           { text: "Statistiques complètes : vues, clics, scans QR, export CSV", included: true },

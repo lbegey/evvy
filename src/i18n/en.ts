@@ -91,7 +91,6 @@ export const en = {
         bullets: [
           "Customizable response forms",
           "One-click CSV export",
-          "Automatic email reminders sent the day before each event",
           "Custom questions to collect exactly the info you need",
           "Webhook to sync RSVPs with Zapier, Make or n8n",
         ],
@@ -202,7 +201,6 @@ export const en = {
         bullets: [
           { text: "Unlimited events", included: true },
           { text: "Unlimited RSVPs", included: true },
-          { text: "Automated RSVP reminders to participants", included: true },
           { text: "Evvy branding fully removed", included: true },
           { text: "Custom logo, colors and background", included: true },
           { text: "Full analytics: page views, clicks, QR scans, CSV export", included: true },
