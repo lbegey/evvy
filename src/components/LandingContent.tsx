@@ -688,7 +688,7 @@ export function LandingContent({ demoCalendar, demoEvent }: LandingContentProps)
               <p className="mt-3 leading-relaxed text-inksoft">{T.landing.embedShowcase.subtitle}</p>
             </div>
 
-            <div className="mt-12 grid items-start justify-items-center gap-10 sm:grid-cols-2">
+            <div className="mt-12 grid items-center justify-items-center gap-10 sm:grid-cols-2">
               <div className="flex w-full flex-col items-center gap-3">
                 <span className="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-inksoft">
                   <Code2 className="h-3.5 w-3.5 text-evvy" />
