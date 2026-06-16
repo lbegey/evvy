@@ -107,8 +107,8 @@ export function CalendarDetail({ calendar, events, calendars, appUrl, plan, emai
     { id: "overview", label: T.dashboardDetail.sidebar.info, Icon: Info },
     { id: "public-link", label: T.dashboardDetail.sidebar.publicLink, Icon: Link2 },
     { id: "qr-code", label: T.dashboardDetail.sidebar.qrCode, Icon: QrCode },
-    { id: "embed", label: T.dashboardDetail.sidebar.embed, Icon: AppWindow },
     { id: "branding", label: T.dashboardDetail.sidebar.branding, Icon: Palette },
+    { id: "embed", label: T.dashboardDetail.sidebar.embed, Icon: AppWindow },
     { id: "events", label: T.dashboardDetail.sidebar.events, Icon: CalendarRange, badge: events.length },
   ];
 
@@ -311,9 +311,6 @@ export function CalendarDetail({ calendar, events, calendars, appUrl, plan, emai
             </div>
           </section>
 
-          {/* Embed */}
-          <CalendarEmbedCard appUrl={appUrl} slugOrId={calendar.slug || calendar.id} />
-
           {/* Branding */}
           <BrandingCard
             targetId={calendar.id}
@@ -339,6 +336,9 @@ export function CalendarDetail({ calendar, events, calendars, appUrl, plan, emai
             previewTitle={calendar.name}
             previewMeta={T.dashboardDetail.sidebar.events + " · " + events.length}
           />
+
+          {/* Embed */}
+          <CalendarEmbedCard appUrl={appUrl} slugOrId={calendar.slug || calendar.id} />
 
           {/* Events */}
           <section data-reveal id="events" className="scroll-mt-24 rounded-xl2 border border-line bg-white p-5 shadow-card">

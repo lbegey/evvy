@@ -167,6 +167,14 @@ export const en = {
         branding: "Branding",
       },
     },
+    embedShowcase: {
+      badge: "🚀 Embed anywhere",
+      title: "Your events, on every page",
+      subtitle: "Copy one line of HTML and your branded event or calendar card lives on your website, newsletter or Notion — every \"Add to calendar\" button built in.",
+      eventLabel: "Event card",
+      calendarLabel: "Calendar card",
+      cta: "Create yours — free forever",
+    },
     pricing: {
       badge: "💳 Pricing",
       title: "Simple, transparent pricing",

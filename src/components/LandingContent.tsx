@@ -399,6 +399,19 @@ function DemoEmbedCardFrame({ slug, height = 360 }: { slug: string; height?: num
   );
 }
 
+/** Renders the real branded "card" embed of a live calendar via iframe. */
+function DemoCalendarEmbedFrame({ slug, height = 420 }: { slug: string; height?: number }) {
+  return (
+    <iframe
+      src={`/c/${slug}/embed`}
+      title="Calendar embed card"
+      loading="lazy"
+      className="w-full max-w-sm rounded-2xl border border-line bg-white shadow-pop"
+      style={{ height, border: 0 }}
+    />
+  );
+}
+
 /** The real RSVP form of a live event, rendered read-only (non-interactive). */
 function DemoRsvpFormCard({
   event,
@@ -676,6 +689,52 @@ export function LandingContent({ demoCalendar, demoEvent }: LandingContentProps)
           tabs={useCaseTabs}
         />
       </div>
+
+      {/* ─── Embed showcase (real event + calendar cards) ─── */}
+      {demoEvent && demoCalendar && (
+        <section className="border-t border-line bg-white px-4 py-20 sm:px-6 sm:py-28">
+          <div className="mx-auto max-w-6xl">
+            <div className="mx-auto max-w-2xl text-center">
+              <span className="inline-flex items-center gap-1.5 rounded-full border border-line bg-paper px-3.5 py-1.5 text-xs font-medium text-inksoft">
+                {T.landing.embedShowcase.badge}
+              </span>
+              <h2 className="mt-4 font-display text-3xl font-bold tracking-tight text-ink sm:text-4xl">
+                <span className="bg-linear-to-r from-evvy to-coral bg-clip-text text-transparent">{T.landing.embedShowcase.title}</span>
+              </h2>
+              <p className="mt-3 leading-relaxed text-inksoft">{T.landing.embedShowcase.subtitle}</p>
+            </div>
+
+            <div className="mt-12 grid items-start justify-items-center gap-10 sm:grid-cols-2">
+              <div className="flex w-full flex-col items-center gap-3">
+                <span className="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-inksoft">
+                  <Code2 className="h-3.5 w-3.5 text-evvy" />
+                  {T.landing.embedShowcase.eventLabel}
+                </span>
+                <DemoEmbedCardFrame slug={demoEvent.slug} height={420} />
+              </div>
+              <div className="flex w-full flex-col items-center gap-3">
+                <span className="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-inksoft">
+                  <CalendarRange className="h-3.5 w-3.5 text-evvy" />
+                  {T.landing.embedShowcase.calendarLabel}
+                </span>
+                <DemoCalendarEmbedFrame slug={demoCalendar.slug} height={420} />
+              </div>
+            </div>
+
+            <div className="mt-12 flex justify-center">
+              <Button
+                size="lg"
+                nativeButton={false}
+                render={<Link href="/register" />}
+                className="gap-2 rounded-[10px] bg-evvy px-8 text-white shadow-pop transition-all hover:-translate-y-0.5 hover:bg-evvy-deep"
+              >
+                {T.landing.embedShowcase.cta}
+                <ArrowUpRight className="h-4 w-4" />
+              </Button>
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* ─── Live demo ─── */}
       {demoCalendar && demoCalendar.events.length > 0 && (

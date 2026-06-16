@@ -44,7 +44,7 @@ export function CalendarEmbedCard({ appUrl, slugOrId }: Props) {
 
         <div className="mt-4 flex items-center gap-2">
           <div className="h-10 min-w-0 flex-1 truncate rounded-lg border border-line bg-paper/60 px-3 text-sm leading-10 text-inksoft">{host}{path}</div>
-          <CopyButton value={embedUrl} toast={T.common.copied}
+          <CopyButton value={iframeCode} toast={T.common.copied}
             className="inline-flex h-10 shrink-0 items-center gap-1.5 rounded-lg border border-line px-3 text-sm font-medium transition hover:bg-paper">
             {T.common.copy}
           </CopyButton>

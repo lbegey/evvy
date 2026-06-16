@@ -145,10 +145,10 @@ export function EventDetail({
     { id: "public-link", label: T.dashboardDetail.sidebar.publicLink, Icon: Link2 },
     { id: "qr-code", label: T.dashboardDetail.sidebar.qrCode, Icon: QrCode },
     { id: "branding", label: T.dashboardDetail.sidebar.branding, Icon: Palette },
-    { id: "attachment", label: T.dashboardDetail.sidebar.attachment, Icon: Paperclip },
-    { id: "calendar", label: T.dashboardDetail.sidebar.calendar, Icon: CalendarRange },
     { id: "integration", label: T.dashboardDetail.sidebar.integration, Icon: Code2 },
     { id: "embed", label: T.dashboardDetail.sidebar.embed, Icon: AppWindow },
+    { id: "attachment", label: T.dashboardDetail.sidebar.attachment, Icon: Paperclip },
+    { id: "calendar", label: T.dashboardDetail.sidebar.calendar, Icon: CalendarRange },
     { id: "stats", label: T.dashboardDetail.sidebar.stats, Icon: BarChart2 },
   ];
 
@@ -322,6 +322,9 @@ export function EventDetail({
                 previewMeta={previewMeta}
               />
 
+              <EventIntegrationCard eventId={event.id} appUrl={appUrl} />
+              <EventEmbedCard appUrl={appUrl} slugOrId={slugOrId} />
+
               <section id="attachment" data-reveal className="grid scroll-mt-24 grid-cols-1 gap-6 lg:grid-cols-2">
                 <EventAttachmentCard
                   eventId={event.id}
@@ -332,8 +335,6 @@ export function EventDetail({
                 <EventCalendarCard eventId={event.id} plan={plan} calendarId={event.calendarId} calendars={calendars} />
               </section>
 
-              <EventIntegrationCard eventId={event.id} appUrl={appUrl} />
-              <EventEmbedCard appUrl={appUrl} slugOrId={slugOrId} />
               <EventStatsCard eventId={event.id} plan={plan} stats={stats} />
 
               <div className="h-2" />

@@ -169,6 +169,14 @@ export const fr: Translations = {
         branding: "Branding",
       },
     },
+    embedShowcase: {
+      badge: "🚀 Intégrez partout",
+      title: "Vos événements, sur toutes vos pages",
+      subtitle: "Copiez une ligne de HTML et votre carte événement ou calendrier brandée s'affiche sur votre site, newsletter ou Notion — chaque bouton « Ajouter au calendrier » est inclus.",
+      eventLabel: "Carte événement",
+      calendarLabel: "Carte calendrier",
+      cta: "Créez la vôtre — gratuit à vie",
+    },
     pricing: {
       badge: "💳 Tarifs",
       title: "Des tarifs simples et transparents",
