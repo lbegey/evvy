@@ -5,6 +5,7 @@ import { db } from "@/lib/db";
 import { getAppUrl } from "@/lib/url";
 import { cn } from "@/lib/utils";
 import { resolveEventBranding, BRAND_FIELDS_SELECT } from "@/lib/branding";
+import { EmbedHeightReporter } from "@/components/EmbedHeightReporter";
 import { en } from "@/i18n/en";
 import { fr } from "@/i18n/fr";
 
@@ -62,9 +63,11 @@ export default async function CalendarEmbedPage({
 
   return (
     <div
-      className={cn("relative isolate flex min-h-dvh items-center justify-center overflow-hidden p-4", brand.brandSquareCorners && "brand-square")}
+      id="embed-root"
+      className={cn("relative isolate flex justify-center overflow-hidden p-4", brand.brandSquareCorners && "brand-square")}
       style={brand.brandStyle}
     >
+      <EmbedHeightReporter />
       {brand.showBackgroundImage && (
         <div
           aria-hidden
@@ -73,7 +76,7 @@ export default async function CalendarEmbedPage({
         />
       )}
 
-      <div className="w-full max-w-sm space-y-3">
+      <div className="w-full max-w-md space-y-3">
         {brand.brandLogoUrl && (
           <div className="flex justify-center">
             <span

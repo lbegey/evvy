@@ -24,6 +24,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { RsvpForm } from "@/components/RsvpForm";
+import { AutoHeightIframe } from "@/components/AutoHeightIframe";
 import type { RsvpQuestion } from "@/components/EventQuestionsSection";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { cn } from "@/lib/utils";
@@ -316,6 +317,8 @@ interface UseCaseTab {
   description: string;
   bullets: readonly string[];
   visual: ReactNode;
+  linkHref?: string;
+  linkLabel?: string;
 }
 
 function UseCaseTabs({ heading, subheading, tabs }: { heading: string; subheading: string; tabs: UseCaseTab[] }) {
@@ -364,6 +367,9 @@ function UseCaseTabs({ heading, subheading, tabs }: { heading: string; subheadin
                 </li>
               ))}
             </ul>
+            {current.linkHref && current.linkLabel && (
+              <ViewLink href={current.linkHref} label={current.linkLabel} />
+            )}
           </div>
           <div className="flex justify-center lg:justify-end">{current.visual}</div>
         </div>
@@ -387,63 +393,42 @@ function ViewLink({ href, label }: { href: string; label: string }) {
 }
 
 /** Renders the real branded "card" embed of a live event via iframe. */
-function DemoEmbedCardFrame({ slug, height = 360 }: { slug: string; height?: number }) {
+function DemoEmbedCardFrame({ slug }: { slug: string }) {
   return (
-    <iframe
+    <AutoHeightIframe
       src={`/e/${slug}/embed?mode=card`}
       title="Event embed card"
-      loading="lazy"
-      className="w-full max-w-sm rounded-2xl border border-line bg-white shadow-pop"
-      style={{ height, border: 0 }}
+      className="w-full max-w-md rounded-2xl border border-line bg-white shadow-pop"
     />
   );
 }
 
 /** Renders the real branded "card" embed of a live calendar via iframe. */
-function DemoCalendarEmbedFrame({ slug, height = 420 }: { slug: string; height?: number }) {
+function DemoCalendarEmbedFrame({ slug }: { slug: string }) {
   return (
-    <iframe
+    <AutoHeightIframe
       src={`/c/${slug}/embed`}
       title="Calendar embed card"
-      loading="lazy"
-      className="w-full max-w-sm rounded-2xl border border-line bg-white shadow-pop"
-      style={{ height, border: 0 }}
+      className="w-full max-w-md rounded-2xl border border-line bg-white shadow-pop"
     />
   );
 }
 
 /** The real RSVP form of a live event, rendered read-only (non-interactive). */
-function DemoRsvpFormCard({
-  event,
-  lang,
-  viewLabel,
-}: {
-  event: DemoEvent;
-  lang: "fr" | "en";
-  viewLabel: string;
-}) {
+function DemoRsvpFormCard({ event, lang }: { event: DemoEvent; lang: "fr" | "en" }) {
   return (
-    <div className="w-full max-w-sm rounded-2xl border border-line bg-white p-5 shadow-pop">
-      <h3 className="mb-3 text-sm font-semibold text-ink">RSVP</h3>
-      {/* inert: real form, but display-only on the marketing page */}
+    <div className="w-full max-w-md rounded-2xl border border-line bg-white p-6 shadow-pop">
+      <h3 className="mb-4 text-sm font-semibold text-ink">RSVP</h3>
+      {/* inert: real form, but display-only on the marketing page (no custom questions) */}
       <div inert className="pointer-events-none select-none">
-        <RsvpForm eventId={event.id} lang={lang} questions={event.questions} />
+        <RsvpForm eventId={event.id} lang={lang} questions={[]} />
       </div>
-      <ViewLink href={`/c/${event.calendarSlug}`} label={viewLabel} />
     </div>
   );
 }
 
 /** The real "Add to calendar" buttons of a live event (tracked links). */
-function DemoAddToCalendarCard({
-  event,
-  addLabel,
-  viewLabel,
-}: {
-  event: DemoEvent;
-  addLabel: string;
-  viewLabel: string;
-}) {
+function DemoAddToCalendarCard({ event, addLabel }: { event: DemoEvent; addLabel: string }) {
   return (
     <div className="w-full max-w-sm rounded-2xl border border-line bg-white p-5 shadow-pop">
       <p className="font-display text-base font-bold text-ink">{event.title}</p>
@@ -465,7 +450,6 @@ function DemoAddToCalendarCard({
           ))}
         </div>
       </div>
-      <ViewLink href={`/c/${event.calendarSlug}`} label={viewLabel} />
     </div>
   );
 }
@@ -499,20 +483,17 @@ export function LandingContent({ demoCalendar, demoEvent }: LandingContentProps)
   const viewCalLabel = T.landing.useCases.viewCalendar;
 
   const rsvpVisual = demoEvent ? (
-    <DemoRsvpFormCard event={demoEvent} lang={lang} viewLabel={viewCalLabel} />
+    <DemoRsvpFormCard event={demoEvent} lang={lang} />
   ) : (
     <HeroRsvpCardMock m={mock} />
   );
   const calendarVisual = demoEvent ? (
-    <DemoAddToCalendarCard event={demoEvent} addLabel={T.landing.demo.addToCalendar} viewLabel={viewCalLabel} />
+    <DemoAddToCalendarCard event={demoEvent} addLabel={T.landing.demo.addToCalendar} />
   ) : (
     <UseCaseCalendarsMock events={calendarMockEvents} subscribe={mock.addToCalendar} />
   );
   const brandingVisual = demoEvent ? (
-    <div className="flex w-full max-w-sm flex-col items-start">
-      <DemoEmbedCardFrame slug={demoEvent.slug} />
-      <ViewLink href={`/e/${demoEvent.slug}`} label={T.landing.useCases.viewEvent} />
-    </div>
+    <DemoEmbedCardFrame slug={demoEvent.slug} />
   ) : (
     <UseCaseBrandingMock
       customBrand={T.landing.mockups.branding.customBrand}
@@ -528,6 +509,7 @@ export function LandingContent({ demoCalendar, demoEvent }: LandingContentProps)
       label: T.landing.useCases.tabs.rsvp,
       ...T.landing.features.rsvp,
       visual: rsvpVisual,
+      ...(demoEvent ? { linkHref: `/c/${demoEvent.calendarSlug}`, linkLabel: viewCalLabel } : {}),
     },
     {
       key: "calendars",
@@ -535,6 +517,7 @@ export function LandingContent({ demoCalendar, demoEvent }: LandingContentProps)
       label: T.landing.useCases.tabs.calendars,
       ...T.landing.features.calendars,
       visual: calendarVisual,
+      ...(demoEvent ? { linkHref: `/c/${demoEvent.calendarSlug}`, linkLabel: viewCalLabel } : {}),
     },
     {
       key: "sharing",
@@ -549,6 +532,7 @@ export function LandingContent({ demoCalendar, demoEvent }: LandingContentProps)
       label: T.landing.useCases.tabs.branding,
       ...T.landing.branding,
       visual: brandingVisual,
+      ...(demoEvent ? { linkHref: `/e/${demoEvent.slug}`, linkLabel: T.landing.useCases.viewEvent } : {}),
     },
   ];
 
@@ -710,14 +694,14 @@ export function LandingContent({ demoCalendar, demoEvent }: LandingContentProps)
                   <Code2 className="h-3.5 w-3.5 text-evvy" />
                   {T.landing.embedShowcase.eventLabel}
                 </span>
-                <DemoEmbedCardFrame slug={demoEvent.slug} height={420} />
+                <DemoEmbedCardFrame slug={demoEvent.slug} />
               </div>
               <div className="flex w-full flex-col items-center gap-3">
                 <span className="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-inksoft">
                   <CalendarRange className="h-3.5 w-3.5 text-evvy" />
                   {T.landing.embedShowcase.calendarLabel}
                 </span>
-                <DemoCalendarEmbedFrame slug={demoCalendar.slug} height={420} />
+                <DemoCalendarEmbedFrame slug={demoCalendar.slug} />
               </div>
             </div>
 
@@ -745,7 +729,7 @@ export function LandingContent({ demoCalendar, demoEvent }: LandingContentProps)
               <p className="mt-3 leading-relaxed text-inksoft">{T.landing.demo.description}</p>
             </div>
 
-            <div className="mt-10 grid items-start gap-8 lg:grid-cols-2">
+            <div className="mt-10 grid items-center gap-8 lg:grid-cols-2">
             <div className="overflow-hidden rounded-xl2 border border-line bg-white shadow-card">
               <Link
                 href={`/c/${demoCalendar.slug}`}
@@ -810,7 +794,6 @@ export function LandingContent({ demoCalendar, demoEvent }: LandingContentProps)
                 <p className="mb-3 text-xs font-semibold uppercase tracking-wide text-inksoft">{T.landing.demo.embedLabel}</p>
                 <DemoEmbedCardFrame
                   slug={demoEvent?.slug ?? demoCalendar.events[0].slug ?? demoCalendar.events[0].id}
-                  height={400}
                 />
                 <p className="mt-3 text-xs text-inksoft">{T.landing.demo.embedHint}</p>
               </div>

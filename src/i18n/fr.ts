@@ -160,8 +160,8 @@ export const fr: Translations = {
       badge: "⚡ Cas d'usage",
       heading: "Un seul outil, quatre superpouvoirs",
       subheading: "Passez d'une fonctionnalité à l'autre pour remplir vos événements — toutes incluses dans le plan gratuit.",
-      viewEvent: "Voir cet événement en ligne →",
-      viewCalendar: "Ouvrir le calendrier d'exemple →",
+      viewEvent: "Voir cet événement en ligne",
+      viewCalendar: "Ouvrir le calendrier d'exemple",
       tabs: {
         rsvp: "RSVP",
         calendars: "Calendriers abonnables",

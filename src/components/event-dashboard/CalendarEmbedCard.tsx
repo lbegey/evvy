@@ -2,6 +2,7 @@
 
 import { AppWindow } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { AutoHeightIframe } from "@/components/AutoHeightIframe";
 import { CopyButton } from "./CopyButton";
 
 interface Props {
@@ -32,13 +33,7 @@ export function CalendarEmbedCard({ appUrl, slugOrId }: Props) {
         <div className="mt-1">
           <p className="mb-1.5 text-xs font-semibold uppercase tracking-wide text-inksoft">{T.eventDetail.integration.iframe.preview}</p>
           <div className="overflow-hidden rounded-xl border border-line bg-paper">
-            <iframe
-              src={path}
-              title={T.eventDetail.integration.iframe.preview}
-              className="w-full"
-              style={{ height, border: 0 }}
-              loading="lazy"
-            />
+            <AutoHeightIframe src={path} title={T.eventDetail.integration.iframe.preview} className="block w-full" />
           </div>
         </div>
 

@@ -158,8 +158,8 @@ export const en = {
       badge: "⚡ Use cases",
       heading: "One tool, four superpowers",
       subheading: "Switch between the features that fill your events — every one works on the free plan.",
-      viewEvent: "View this live event →",
-      viewCalendar: "Open the example calendar →",
+      viewEvent: "View this live event",
+      viewCalendar: "Open the example calendar",
       tabs: {
         rsvp: "RSVP",
         calendars: "Subscribable calendars",

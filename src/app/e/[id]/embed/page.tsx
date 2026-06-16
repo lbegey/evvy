@@ -5,6 +5,7 @@ import { db } from "@/lib/db";
 import { getAppUrl } from "@/lib/url";
 import { cn } from "@/lib/utils";
 import { resolveEventBranding, BRAND_FIELDS_SELECT } from "@/lib/branding";
+import { EmbedHeightReporter } from "@/components/EmbedHeightReporter";
 import { en } from "@/i18n/en";
 import { fr } from "@/i18n/fr";
 
@@ -75,7 +76,8 @@ export default async function EventEmbedPage({
   // ── Simple mode (default): just the "Add to calendar" links, no branding ──
   if (!isCard) {
     return (
-      <div className="flex flex-col items-center justify-center gap-1 p-3">
+      <div id="embed-root" className="flex flex-col items-center justify-center gap-1 p-3">
+        <EmbedHeightReporter />
         {isPast ? (
           <p className="text-sm text-muted-foreground">{T.publicEvent.eventEnded}</p>
         ) : (
@@ -120,9 +122,11 @@ export default async function EventEmbedPage({
 
   return (
     <div
-      className={cn("relative isolate flex min-h-dvh items-center justify-center overflow-hidden p-4", brand.brandSquareCorners && "brand-square")}
+      id="embed-root"
+      className={cn("relative isolate flex justify-center overflow-hidden p-4", brand.brandSquareCorners && "brand-square")}
       style={brand.brandStyle}
     >
+      <EmbedHeightReporter />
       {brand.showBackgroundImage && (
         <div
           aria-hidden
@@ -131,7 +135,7 @@ export default async function EventEmbedPage({
         />
       )}
 
-      <div className="w-full max-w-sm space-y-3">
+      <div className="w-full max-w-md space-y-3">
         {brand.brandLogoUrl && (
           <div className="flex justify-center">
             <span
