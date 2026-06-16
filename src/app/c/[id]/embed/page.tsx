@@ -76,7 +76,7 @@ export default async function CalendarEmbedPage({
         />
       )}
 
-      <div className="w-full max-w-md space-y-3">
+      <div className="w-full max-w-lg space-y-3">
         {brand.brandLogoUrl && (
           <div className="flex justify-center">
             <span

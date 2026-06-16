@@ -393,23 +393,23 @@ function ViewLink({ href, label }: { href: string; label: string }) {
 }
 
 /** Renders the real branded "card" embed of a live event via iframe. */
-function DemoEmbedCardFrame({ slug }: { slug: string }) {
+function DemoEmbedCardFrame({ slug, maxW = "max-w-md" }: { slug: string; maxW?: string }) {
   return (
     <AutoHeightIframe
       src={`/e/${slug}/embed?mode=card`}
       title="Event embed card"
-      className="w-full max-w-md rounded-2xl border border-line bg-white shadow-pop"
+      className={cn("w-full rounded-2xl border border-line bg-white shadow-pop", maxW)}
     />
   );
 }
 
 /** Renders the real branded "card" embed of a live calendar via iframe. */
-function DemoCalendarEmbedFrame({ slug }: { slug: string }) {
+function DemoCalendarEmbedFrame({ slug, maxW = "max-w-md" }: { slug: string; maxW?: string }) {
   return (
     <AutoHeightIframe
       src={`/c/${slug}/embed`}
       title="Calendar embed card"
-      className="w-full max-w-md rounded-2xl border border-line bg-white shadow-pop"
+      className={cn("w-full rounded-2xl border border-line bg-white shadow-pop", maxW)}
     />
   );
 }
@@ -650,21 +650,6 @@ export function LandingContent({ demoCalendar, demoEvent }: LandingContentProps)
         </div>
       </section>
 
-      {/* ─── Features ─── */}
-      <section id="features" className="px-4 py-20 sm:px-6 sm:py-28">
-        <div className="mx-auto max-w-6xl">
-          <div className="mx-auto max-w-2xl text-center">
-            <h2 className="font-display text-3xl font-bold tracking-tight text-ink sm:text-4xl">{T.landing.features.heading}</h2>
-            <p className="mt-3 leading-relaxed text-inksoft">{T.landing.features.subheading}</p>
-          </div>
-          <div className="mt-12 grid gap-5 md:grid-cols-2">
-            {features.map((f) => (
-              <FeatureCard key={f.title} {...f} />
-            ))}
-          </div>
-        </div>
-      </section>
-
       {/* ─── Use cases (tabs) ─── */}
       <div className="border-t border-line bg-paper">
         <UseCaseTabs
@@ -688,20 +673,20 @@ export function LandingContent({ demoCalendar, demoEvent }: LandingContentProps)
               <p className="mt-3 leading-relaxed text-inksoft">{T.landing.embedShowcase.subtitle}</p>
             </div>
 
-            <div className="mt-12 grid items-center justify-items-center gap-10 sm:grid-cols-2">
+            <div className="mx-auto mt-12 grid max-w-5xl items-center justify-items-center gap-6 sm:grid-cols-2">
               <div className="flex w-full flex-col items-center gap-3">
                 <span className="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-inksoft">
                   <Code2 className="h-3.5 w-3.5 text-evvy" />
                   {T.landing.embedShowcase.eventLabel}
                 </span>
-                <DemoEmbedCardFrame slug={demoEvent.slug} />
+                <DemoEmbedCardFrame slug={demoEvent.slug} maxW="max-w-lg" />
               </div>
               <div className="flex w-full flex-col items-center gap-3">
                 <span className="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-inksoft">
                   <CalendarRange className="h-3.5 w-3.5 text-evvy" />
                   {T.landing.embedShowcase.calendarLabel}
                 </span>
-                <DemoCalendarEmbedFrame slug={demoCalendar.slug} />
+                <DemoCalendarEmbedFrame slug={demoCalendar.slug} maxW="max-w-lg" />
               </div>
             </div>
 
@@ -870,6 +855,21 @@ export function LandingContent({ demoCalendar, demoEvent }: LandingContentProps)
                 {T.landing.hero.microText}
               </p>
             </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ─── Features ─── */}
+      <section id="features" className="border-t border-line px-4 py-20 sm:px-6 sm:py-28">
+        <div className="mx-auto max-w-6xl">
+          <div className="mx-auto max-w-2xl text-center">
+            <h2 className="font-display text-3xl font-bold tracking-tight text-ink sm:text-4xl">{T.landing.features.heading}</h2>
+            <p className="mt-3 leading-relaxed text-inksoft">{T.landing.features.subheading}</p>
+          </div>
+          <div className="mt-12 grid gap-5 md:grid-cols-2">
+            {features.map((f) => (
+              <FeatureCard key={f.title} {...f} />
+            ))}
           </div>
         </div>
       </section>
