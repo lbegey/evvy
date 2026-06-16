@@ -145,6 +145,7 @@ model Calendar {
   userId      String
   user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   events      Event[]
+  clicks      CalendarClick[]
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 }
@@ -155,6 +156,14 @@ model EventClick {
   service   String
   createdAt DateTime @default(now())
   event     Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
+}
+
+model CalendarClick {
+  id         String   @id @default(cuid())
+  calendarId String
+  service    String
+  createdAt  DateTime @default(now())
+  calendar   Calendar @relation(fields: [calendarId], references: [id], onDelete: Cascade)
 }
 
 model Rsvp {

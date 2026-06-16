@@ -14,7 +14,7 @@ export default async function CalendarPage({
   const APP_URL = await getAppUrl();
   const current = await getCurrentUser();
   const session = current!.session;
-  const [calendar, calendars, brandingPresets] = await Promise.all([
+  const [calendar, calendars, brandingPresets, views, adds] = await Promise.all([
     db.calendar.findUnique({
       where: { id },
       include: {
@@ -25,6 +25,8 @@ export default async function CalendarPage({
     }),
     db.calendar.findMany({ where: { userId: session!.user.id }, select: { id: true, name: true }, orderBy: { createdAt: "asc" } }),
     listBrandingPresets(),
+    db.calendarClick.count({ where: { calendarId: id, service: "page" } }),
+    db.calendarClick.count({ where: { calendarId: id, service: { in: ["google", "apple", "outlook", "office365", "yahoo"] } } }),
   ]);
 
   if (!calendar || calendar.userId !== session!.user.id) notFound();
@@ -71,6 +73,8 @@ export default async function CalendarPage({
       emailVerified={calendar.user.emailVerified}
       isSuperAdmin={current?.user?.role === "super_admin"}
       brandingPresets={brandingPresets}
+      views={views}
+      adds={adds}
     />
   );
 }

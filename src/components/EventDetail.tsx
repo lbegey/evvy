@@ -138,14 +138,15 @@ export function EventDetail({
   const servicesWithClicks = serviceCounts.filter((n) => n > 0).length;
 
   // ── sidebar sections ──
+  // Order must follow the on-page (DOM) order so the scrollspy stays in sync.
   const SECTIONS: SidebarItem[] = [
     { id: "overview", label: T.dashboardDetail.sidebar.info, Icon: LayoutGrid },
+    { id: "rsvp", label: T.dashboardDetail.sidebar.rsvp, Icon: Users, badge: rsvps.length },
     { id: "public-link", label: T.dashboardDetail.sidebar.publicLink, Icon: Link2 },
-    { id: "calendar", label: T.dashboardDetail.sidebar.calendar, Icon: CalendarRange },
     { id: "qr-code", label: T.dashboardDetail.sidebar.qrCode, Icon: QrCode },
     { id: "branding", label: T.dashboardDetail.sidebar.branding, Icon: Palette },
-    { id: "rsvp", label: T.dashboardDetail.sidebar.rsvp, Icon: Users, badge: rsvps.length },
     { id: "attachment", label: T.dashboardDetail.sidebar.attachment, Icon: Paperclip },
+    { id: "calendar", label: T.dashboardDetail.sidebar.calendar, Icon: CalendarRange },
     { id: "integration", label: T.dashboardDetail.sidebar.integration, Icon: Code2 },
     { id: "embed", label: T.dashboardDetail.sidebar.embed, Icon: AppWindow },
     { id: "stats", label: T.dashboardDetail.sidebar.stats, Icon: BarChart2 },

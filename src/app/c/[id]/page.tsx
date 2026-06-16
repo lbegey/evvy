@@ -9,10 +9,10 @@ import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { Logo } from "@/components/Logo";
 import { CalendarLiveRefresh } from "@/components/CalendarLiveRefresh";
+import { CalendarPageViewTracker } from "@/components/CalendarPageViewTracker";
 import { getAppUrl } from "@/lib/url";
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { buildGoogleSubscribeUrl, buildOutlookSubscribeUrl, buildOffice365SubscribeUrl } from "@/lib/calendar-urls";
 import { brandBackgroundStyle, showBrandBackgroundImage } from "@/lib/branding";
 import { en } from "@/i18n/en";
 import { fr } from "@/i18n/fr";
@@ -189,15 +189,6 @@ export default async function PublicCalendarPage({
       }
     : undefined;
 
-  const icsUrl = `${APP_URL}/api/calendars/${calendar.id}/ics`;
-  const subscribeUrls: Record<(typeof CAL_SERVICES)[number]["key"], string> = {
-    google: buildGoogleSubscribeUrl(icsUrl),
-    apple: icsUrl,
-    outlook: buildOutlookSubscribeUrl(icsUrl, calendar.name),
-    office365: buildOffice365SubscribeUrl(icsUrl, calendar.name),
-    yahoo: icsUrl,
-  };
-
   const formatEventDate = (startAt: Date, endAt: Date, allDay: boolean, tz: string) => {
     const dateFmt = new Intl.DateTimeFormat(lang === "fr" ? "fr-FR" : "en-US", {
       weekday: "short", day: "numeric", month: "short", year: "numeric", timeZone: tz,
@@ -294,6 +285,7 @@ export default async function PublicCalendarPage({
         />
       )}
       <CalendarLiveRefresh id={calendar.id} signature={liveSignature} />
+      {!isCreator && <CalendarPageViewTracker id={calendar.id} />}
       <div className="mx-auto w-full max-w-xl space-y-3">
         {brandLogoUrl ? (
           <div className="flex justify-center pb-1">
@@ -349,7 +341,7 @@ export default async function PublicCalendarPage({
                     {CAL_SERVICES.map((s) => (
                       <a
                         key={s.key}
-                        href={subscribeUrls[s.key]}
+                        href={`${APP_URL}/api/calendars/${calendar.id}/track?service=${s.key}`}
                         target={s.key !== "apple" ? "_blank" : undefined}
                         rel="noopener noreferrer"
                         title={s.name}

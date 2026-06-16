@@ -152,16 +152,16 @@ export const fr: Translations = {
       online: "En ligne",
       viewCalendar: "Ouvrir le calendrier public →",
       cta: "Créer mon propre calendrier →",
-      embedLabel: "Aperçu de l'embed",
-      embedHint: "Collez une ligne de HTML — chaque bouton « Ajouter au calendrier » est déjà inclus.",
+      embedLabel: "Carte embed en direct",
+      embedHint: "C'est un vrai événement, intégré avec une ligne de HTML — chaque bouton « Ajouter au calendrier » est inclus.",
       addToCalendar: "Ajouter au calendrier",
-      copyEmbed: "Copier l'embed",
-      copied: "Copié !",
     },
     useCases: {
       badge: "⚡ Cas d'usage",
       heading: "Un seul outil, quatre superpouvoirs",
       subheading: "Passez d'une fonctionnalité à l'autre pour remplir vos événements — toutes incluses dans le plan gratuit.",
+      viewEvent: "Voir cet événement en ligne →",
+      viewCalendar: "Ouvrir le calendrier d'exemple →",
       tabs: {
         rsvp: "RSVP",
         calendars: "Calendriers abonnables",
@@ -542,6 +542,11 @@ export const fr: Translations = {
       iframe: {
         title: "Intégration via iframe",
         subtitle: "Intégrez un widget « Ajouter au calendrier » (avec les icônes des fournisseurs) sur n'importe quel site — WordPress, Notion, etc.",
+        modeSimple: "Liens seuls",
+        modeCard: "Carte événement",
+        modeSimpleHint: "Une ligne compacte « Ajouter au calendrier » avec les icônes des fournisseurs.",
+        modeCardHint: "Une carte d'événement complète (titre, date, branding) avec les boutons calendrier.",
+        preview: "Aperçu en direct",
       },
     },
   },
@@ -879,6 +884,12 @@ export const fr: Translations = {
     qrCode: {
       subtitle: "Imprimez-le ou partagez-le — le scanner ouvre la page publique du calendrier.",
     },
+    embed: {
+      title: "Intégration via iframe",
+      subtitle: "Glissez une carte calendrier (événements à venir + boutons d'abonnement) sur n'importe quel site.",
+    },
+    kpiViews: "Vues",
+    kpiAdds: "Ajouts au calendrier",
   },
 
   admin: {

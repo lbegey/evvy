@@ -150,16 +150,16 @@ export const en = {
       online: "Online",
       viewCalendar: "Open the public calendar →",
       cta: "Create my own calendar →",
-      embedLabel: "Live embed preview",
-      embedHint: "Paste one line of HTML — every \"Add to calendar\" button comes built in.",
+      embedLabel: "Live embed card",
+      embedHint: "This is a real event, embedded with one line of HTML — every \"Add to calendar\" button included.",
       addToCalendar: "Add to calendar",
-      copyEmbed: "Copy embed",
-      copied: "Copied!",
     },
     useCases: {
       badge: "⚡ Use cases",
       heading: "One tool, four superpowers",
       subheading: "Switch between the features that fill your events — every one works on the free plan.",
+      viewEvent: "View this live event →",
+      viewCalendar: "Open the example calendar →",
       tabs: {
         rsvp: "RSVP",
         calendars: "Subscribable calendars",
@@ -540,6 +540,11 @@ export const en = {
       iframe: {
         title: "Embed via iframe",
         subtitle: "Embed an \"Add to calendar\" widget (with provider icons) on any site — WordPress, Notion, etc.",
+        modeSimple: "Links only",
+        modeCard: "Event card",
+        modeSimpleHint: "A compact \"Add to calendar\" row with the provider icons.",
+        modeCardHint: "A full event card (title, date, branding) with the calendar buttons.",
+        preview: "Live preview",
       },
     },
   },
@@ -877,6 +882,12 @@ export const en = {
     qrCode: {
       subtitle: "Print it or share it — scanning opens the public calendar page.",
     },
+    embed: {
+      title: "Embed via iframe",
+      subtitle: "Drop a calendar card (upcoming events + subscribe buttons) onto any website.",
+    },
+    kpiViews: "Views",
+    kpiAdds: "Calendar adds",
   },
 
   admin: {

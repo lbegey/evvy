@@ -20,10 +20,11 @@ import {
   Palette,
   Infinity as InfinityIcon,
   Sparkles,
-  Copy,
   type LucideIcon,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { RsvpForm } from "@/components/RsvpForm";
+import type { RsvpQuestion } from "@/components/EventQuestionsSection";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { cn } from "@/lib/utils";
 import { signIn } from "@/lib/auth-client";
@@ -42,8 +43,19 @@ interface DemoCalendarData {
   events: DemoCalendarEvent[];
 }
 
+interface DemoEvent {
+  id: string;
+  slug: string;
+  title: string;
+  lang: "fr" | "en";
+  rsvpEnabled: boolean;
+  questions: RsvpQuestion[];
+  calendarSlug: string;
+}
+
 interface LandingContentProps {
   demoCalendar: DemoCalendarData | null;
+  demoEvent: DemoEvent | null;
 }
 
 function GoogleGlyph() {
@@ -360,78 +372,92 @@ function UseCaseTabs({ heading, subheading, tabs }: { heading: string; subheadin
   );
 }
 
-function EmbedPreview({
-  slug,
-  label,
-  hint,
-  eventTitle,
-  eventDate,
-  addToCalendar,
-  copyLabel,
-  copiedLabel,
-}: {
-  slug: string;
-  label: string;
-  hint: string;
-  eventTitle: string;
-  eventDate: string;
-  addToCalendar: string;
-  copyLabel: string;
-  copiedLabel: string;
-}) {
-  const [copied, setCopied] = useState(false);
-  const snippet = `<iframe src="https://evvy.app/e/${slug}/embed" width="100%" height="240" style="border:0"></iframe>`;
-  const handleCopy = () => {
-    navigator.clipboard.writeText(snippet).then(() => {
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    });
-  };
+function ViewLink({ href, label }: { href: string; label: string }) {
   return (
-    <div className="overflow-hidden rounded-xl2 border border-line bg-white shadow-card">
-      <div className="flex items-center justify-between gap-3 border-b border-line bg-paper px-5 py-3">
-        <p className="text-xs font-semibold uppercase tracking-wide text-inksoft">{label}</p>
-        <button
-          type="button"
-          onClick={handleCopy}
-          className="inline-flex cursor-pointer items-center gap-1.5 rounded-lg border border-line bg-white px-3 py-1.5 text-xs font-medium text-ink transition-colors hover:bg-paper"
-        >
-          {copied ? <Check className="h-3.5 w-3.5 text-mint-ink" /> : <Copy className="h-3.5 w-3.5" />}
-          {copied ? copiedLabel : copyLabel}
-        </button>
+    <Link
+      href={href}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="mt-4 inline-flex items-center gap-1 text-sm font-medium text-evvy transition-colors hover:text-evvy-deep"
+    >
+      {label}
+      <ArrowUpRight className="h-4 w-4" />
+    </Link>
+  );
+}
+
+/** Renders the real branded "card" embed of a live event via iframe. */
+function DemoEmbedCardFrame({ slug, height = 360 }: { slug: string; height?: number }) {
+  return (
+    <iframe
+      src={`/e/${slug}/embed?mode=card`}
+      title="Event embed card"
+      loading="lazy"
+      className="w-full max-w-sm rounded-2xl border border-line bg-white shadow-pop"
+      style={{ height, border: 0 }}
+    />
+  );
+}
+
+/** The real RSVP form of a live event, rendered read-only (non-interactive). */
+function DemoRsvpFormCard({
+  event,
+  lang,
+  viewLabel,
+}: {
+  event: DemoEvent;
+  lang: "fr" | "en";
+  viewLabel: string;
+}) {
+  return (
+    <div className="w-full max-w-sm rounded-2xl border border-line bg-white p-5 shadow-pop">
+      <h3 className="mb-3 text-sm font-semibold text-ink">RSVP</h3>
+      {/* inert: real form, but display-only on the marketing page */}
+      <div inert className="pointer-events-none select-none">
+        <RsvpForm eventId={event.id} lang={lang} questions={event.questions} />
       </div>
-      <div className="p-6">
-        <div className="rounded-xl border border-line bg-white p-5 shadow-card">
-          <p className="font-display text-base font-bold text-ink">{eventTitle}</p>
-          <p className="mt-1 flex items-center gap-2 text-xs text-inksoft">
-            <CalendarRange className="h-3.5 w-3.5 shrink-0 text-evvy" />
-            {eventDate}
-          </p>
-          <div className="mt-4 border-t border-line pt-4">
-            <p className="text-xs font-medium text-inksoft">{addToCalendar}</p>
-            <div className="mt-2 flex flex-wrap items-center gap-2">
-              {SHARE_LOGOS.map((s) => (
-                <span
-                  key={s.key}
-                  className="inline-flex items-center gap-1.5 rounded-lg border border-line bg-white px-2.5 py-1.5 text-xs font-medium text-ink shadow-card"
-                >
-                  <Image src={s.logo} alt={s.name} width={18} height={18} className="rounded" />
-                  <span className="hidden sm:inline">{s.name.split(" ")[0]}</span>
-                </span>
-              ))}
-            </div>
-          </div>
-        </div>
-        <pre className="mt-4 overflow-x-auto rounded-lg bg-ink px-4 py-3 text-[11px] leading-relaxed text-white/90">
-          <code>{snippet}</code>
-        </pre>
-        <p className="mt-3 text-center text-xs text-inksoft">{hint}</p>
-      </div>
+      <ViewLink href={`/c/${event.calendarSlug}`} label={viewLabel} />
     </div>
   );
 }
 
-export function LandingContent({ demoCalendar }: LandingContentProps) {
+/** The real "Add to calendar" buttons of a live event (tracked links). */
+function DemoAddToCalendarCard({
+  event,
+  addLabel,
+  viewLabel,
+}: {
+  event: DemoEvent;
+  addLabel: string;
+  viewLabel: string;
+}) {
+  return (
+    <div className="w-full max-w-sm rounded-2xl border border-line bg-white p-5 shadow-pop">
+      <p className="font-display text-base font-bold text-ink">{event.title}</p>
+      <div className="mt-4 border-t border-line pt-4">
+        <p className="text-xs font-medium text-inksoft">{addLabel}</p>
+        <div className="mt-2.5 flex flex-wrap items-center gap-2">
+          {SHARE_LOGOS.map((s) => (
+            <a
+              key={s.key}
+              href={`/api/events/${event.id}/track?service=${s.key}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              title={s.name}
+              className="inline-flex items-center gap-1.5 rounded-lg border border-line bg-white px-2.5 py-1.5 text-xs font-medium text-ink shadow-card transition-colors hover:bg-paper"
+            >
+              <Image src={s.logo} alt={s.name} width={18} height={18} className="rounded" />
+              <span>{s.name.split(" ")[0]}</span>
+            </a>
+          ))}
+        </div>
+      </div>
+      <ViewLink href={`/c/${event.calendarSlug}`} label={viewLabel} />
+    </div>
+  );
+}
+
+export function LandingContent({ demoCalendar, demoEvent }: LandingContentProps) {
   const { T, lang } = useLanguage();
   const [googleLoading, setGoogleLoading] = useState(false);
 
@@ -457,6 +483,30 @@ export function LandingContent({ demoCalendar }: LandingContentProps) {
   const mock = T.landing.hero.mockup;
   const calendarMockEvents =
     demoCalendar?.events.slice(0, 3).map((e) => e.title) ?? [mock.eventTitle];
+  const viewCalLabel = T.landing.useCases.viewCalendar;
+
+  const rsvpVisual = demoEvent ? (
+    <DemoRsvpFormCard event={demoEvent} lang={lang} viewLabel={viewCalLabel} />
+  ) : (
+    <HeroRsvpCardMock m={mock} />
+  );
+  const calendarVisual = demoEvent ? (
+    <DemoAddToCalendarCard event={demoEvent} addLabel={T.landing.demo.addToCalendar} viewLabel={viewCalLabel} />
+  ) : (
+    <UseCaseCalendarsMock events={calendarMockEvents} subscribe={mock.addToCalendar} />
+  );
+  const brandingVisual = demoEvent ? (
+    <div className="flex w-full max-w-sm flex-col items-start">
+      <DemoEmbedCardFrame slug={demoEvent.slug} />
+      <ViewLink href={`/e/${demoEvent.slug}`} label={T.landing.useCases.viewEvent} />
+    </div>
+  ) : (
+    <UseCaseBrandingMock
+      customBrand={T.landing.mockups.branding.customBrand}
+      confirm={T.landing.mockups.branding.confirm}
+      eventDate={T.landing.mockups.branding.eventDate}
+    />
+  );
 
   const useCaseTabs: UseCaseTab[] = [
     {
@@ -464,14 +514,14 @@ export function LandingContent({ demoCalendar }: LandingContentProps) {
       Icon: ListChecks,
       label: T.landing.useCases.tabs.rsvp,
       ...T.landing.features.rsvp,
-      visual: <HeroRsvpCardMock m={mock} />,
+      visual: rsvpVisual,
     },
     {
       key: "calendars",
       Icon: CalendarRange,
       label: T.landing.useCases.tabs.calendars,
       ...T.landing.features.calendars,
-      visual: <UseCaseCalendarsMock events={calendarMockEvents} subscribe={mock.addToCalendar} />,
+      visual: calendarVisual,
     },
     {
       key: "sharing",
@@ -485,13 +535,7 @@ export function LandingContent({ demoCalendar }: LandingContentProps) {
       Icon: Palette,
       label: T.landing.useCases.tabs.branding,
       ...T.landing.branding,
-      visual: (
-        <UseCaseBrandingMock
-          customBrand={T.landing.mockups.branding.customBrand}
-          confirm={T.landing.mockups.branding.confirm}
-          eventDate={T.landing.mockups.branding.eventDate}
-        />
-      ),
+      visual: brandingVisual,
     },
   ];
 
@@ -703,16 +747,14 @@ export function LandingContent({ demoCalendar }: LandingContentProps) {
               </div>
             </div>
 
-              <EmbedPreview
-                slug={demoCalendar.events[0].slug ?? demoCalendar.events[0].id}
-                label={T.landing.demo.embedLabel}
-                hint={T.landing.demo.embedHint}
-                eventTitle={demoCalendar.events[0].title}
-                eventDate={demoDateFmt.format(new Date(demoCalendar.events[0].startAt))}
-                addToCalendar={T.landing.demo.addToCalendar}
-                copyLabel={T.landing.demo.copyEmbed}
-                copiedLabel={T.landing.demo.copied}
-              />
+              <div className="flex flex-col">
+                <p className="mb-3 text-xs font-semibold uppercase tracking-wide text-inksoft">{T.landing.demo.embedLabel}</p>
+                <DemoEmbedCardFrame
+                  slug={demoEvent?.slug ?? demoCalendar.events[0].slug ?? demoCalendar.events[0].id}
+                  height={400}
+                />
+                <p className="mt-3 text-xs text-inksoft">{T.landing.demo.embedHint}</p>
+              </div>
             </div>
           </div>
         </section>

@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import {
   CalendarRange, ExternalLink, Pencil, Trash2, Plus, Info, Palette, Link2,
-  CalendarX2, ChevronLeft, ChevronRight, QrCode, Download, Copy,
+  CalendarX2, ChevronLeft, ChevronRight, QrCode, Download, Copy, AppWindow,
 } from "lucide-react";
 import { CalendarDialog, type CalendarDialogValues } from "@/components/CalendarDialog";
 import { applyBrandingPresetToCalendar, type BrandingPreset } from "@/app/actions/brandingPresets";
@@ -21,6 +21,7 @@ import { type SidebarItem } from "@/components/event-dashboard/DashboardSidebar"
 import { EvvySwitch } from "@/components/event-dashboard/EvvySwitch";
 import { CopyButton } from "@/components/event-dashboard/CopyButton";
 import { BrandingCard } from "@/components/event-dashboard/BrandingCard";
+import { CalendarEmbedCard } from "@/components/event-dashboard/CalendarEmbedCard";
 
 interface CalendarRecord {
   id: string;
@@ -67,11 +68,13 @@ interface CalendarDetailProps {
   emailVerified: boolean;
   isSuperAdmin: boolean;
   brandingPresets: BrandingPreset[];
+  views: number;
+  adds: number;
 }
 
 const EVENTS_PER_PAGE = 6;
 
-export function CalendarDetail({ calendar, events, calendars, appUrl, plan, emailVerified, isSuperAdmin, brandingPresets }: CalendarDetailProps) {
+export function CalendarDetail({ calendar, events, calendars, appUrl, plan, emailVerified, isSuperAdmin, brandingPresets, views, adds }: CalendarDetailProps) {
   const router = useRouter();
   const { T, lang } = useLanguage();
   const locale = lang === "fr" ? "fr-FR" : "en-US";
@@ -104,6 +107,7 @@ export function CalendarDetail({ calendar, events, calendars, appUrl, plan, emai
     { id: "overview", label: T.dashboardDetail.sidebar.info, Icon: Info },
     { id: "public-link", label: T.dashboardDetail.sidebar.publicLink, Icon: Link2 },
     { id: "qr-code", label: T.dashboardDetail.sidebar.qrCode, Icon: QrCode },
+    { id: "embed", label: T.dashboardDetail.sidebar.embed, Icon: AppWindow },
     { id: "branding", label: T.dashboardDetail.sidebar.branding, Icon: Palette },
     { id: "events", label: T.dashboardDetail.sidebar.events, Icon: CalendarRange, badge: events.length },
   ];
@@ -233,7 +237,7 @@ export function CalendarDetail({ calendar, events, calendars, appUrl, plan, emai
             </div>
 
             {/* KPI strip */}
-            <div className="mt-7 grid grid-cols-3 gap-3">
+            <div className="mt-7 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
               <div data-reveal className="rounded-xl2 border border-line bg-paper/70 p-4">
                 <p className="text-xs font-medium text-inksoft">{T.dashboardDetail.sidebar.events}</p>
                 <p className="mt-1 font-display text-2xl font-bold">{events.length}</p>
@@ -245,6 +249,14 @@ export function CalendarDetail({ calendar, events, calendars, appUrl, plan, emai
               <div data-reveal className="rounded-xl2 border border-line bg-paper/70 p-4">
                 <p className="text-xs font-medium text-inksoft">{T.eventDashboard.kpiDrafts}</p>
                 <p className="mt-1 font-display text-2xl font-bold text-inksoft/60">{draftCount}</p>
+              </div>
+              <div data-reveal className="rounded-xl2 border border-line bg-paper/70 p-4">
+                <p className="text-xs font-medium text-inksoft">{T.calendarDetail.kpiViews}</p>
+                <p className="mt-1 font-display text-2xl font-bold">{views}</p>
+              </div>
+              <div data-reveal className="rounded-xl2 border border-line bg-paper/70 p-4">
+                <p className="text-xs font-medium text-inksoft">{T.calendarDetail.kpiAdds}</p>
+                <p className="mt-1 font-display text-2xl font-bold">{adds}</p>
               </div>
             </div>
           </div>
@@ -298,6 +310,9 @@ export function CalendarDetail({ calendar, events, calendars, appUrl, plan, emai
               </div>
             </div>
           </section>
+
+          {/* Embed */}
+          <CalendarEmbedCard appUrl={appUrl} slugOrId={calendar.slug || calendar.id} />
 
           {/* Branding */}
           <BrandingCard

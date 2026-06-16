@@ -1,5 +1,4 @@
 import Link from "next/link";
-import type { CSSProperties } from "react";
 import type { Metadata } from "next";
 import { headers, cookies } from "next/headers";
 import { redirect } from "next/navigation";
@@ -14,7 +13,7 @@ import { markdownToHtml } from "@/lib/markdown";
 import { getAppUrl } from "@/lib/url";
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { brandBackgroundStyle, showBrandBackgroundImage } from "@/lib/branding";
+import { resolveEventBranding, BRAND_FIELDS_SELECT } from "@/lib/branding";
 import { en } from "@/i18n/en";
 import { fr } from "@/i18n/fr";
 
@@ -92,25 +91,7 @@ export default async function PublicEventPage({
     db.event.findFirst({
       where: { OR: [{ id }, { slug: id }] },
       include: {
-        user: {
-          select: {
-            plan: true,
-            brandLogoUrl: true,
-            brandLogoSize: true,
-            brandLogoTransparentBg: true,
-            brandLogoRounded: true,
-            brandColor: true,
-            brandTextColor: true,
-            brandCardColor: true,
-            brandIconBackgroundColor: true,
-            brandBackgroundColor: true,
-            brandBackgroundImageUrl: true,
-            brandSquareCorners: true,
-            brandBackgroundType: true,
-            brandBackgroundColor2: true,
-            brandBackgroundGradientAngle: true,
-          },
-        },
+        user: { select: { plan: true, ...BRAND_FIELDS_SELECT } },
         questions: { orderBy: { order: "asc" } },
         calendar: { select: { id: true, slug: true, published: true } },
       },
@@ -142,62 +123,24 @@ export default async function PublicEventPage({
   const lang = event.language === "fr" || event.language === "en" ? event.language : cookieLang;
   T = lang === "fr" ? fr : en;
 
-  const isPremiumOrganizer = event.user.plan === "premium";
-  const useEventOverride = isPremiumOrganizer && event.brandingEnabled;
-  const brandLogoUrl = isPremiumOrganizer
-    ? (useEventOverride ? event.brandLogoUrl : event.user.brandLogoUrl)
-    : null;
-  const brandLogoSize = (isPremiumOrganizer
-    ? (useEventOverride ? event.brandLogoSize : event.user.brandLogoSize)
-    : null) ?? 32;
-  const brandLogoTransparentBg = isPremiumOrganizer
-    ? (useEventOverride ? event.brandLogoTransparentBg : event.user.brandLogoTransparentBg)
-    : true;
-  const brandLogoRounded = isPremiumOrganizer
-    ? (useEventOverride ? event.brandLogoRounded : event.user.brandLogoRounded)
-    : false;
-  const brandColor = isPremiumOrganizer
-    ? (useEventOverride ? event.brandColor : event.user.brandColor)
-    : null;
-  const brandBackgroundColor = isPremiumOrganizer
-    ? (useEventOverride ? event.brandBackgroundColor : event.user.brandBackgroundColor)
-    : null;
-  const brandBackgroundImageUrl = isPremiumOrganizer
-    ? (useEventOverride ? event.brandBackgroundImageUrl : event.user.brandBackgroundImageUrl)
-    : null;
-  const brandTextColor = isPremiumOrganizer
-    ? (useEventOverride ? event.brandTextColor : event.user.brandTextColor)
-    : null;
-  const brandCardColor = isPremiumOrganizer
-    ? (useEventOverride ? event.brandCardColor : event.user.brandCardColor)
-    : null;
-  const brandIconBackgroundColor = isPremiumOrganizer
-    ? (useEventOverride ? event.brandIconBackgroundColor : event.user.brandIconBackgroundColor)
-    : null;
-  const brandSquareCorners = isPremiumOrganizer ? (useEventOverride ? event.brandSquareCorners : event.user.brandSquareCorners) : false;
-  const brandBg = {
-    brandBackgroundType: isPremiumOrganizer ? (useEventOverride ? event.brandBackgroundType : event.user.brandBackgroundType) : null,
-    brandBackgroundColor,
-    brandBackgroundColor2: isPremiumOrganizer ? (useEventOverride ? event.brandBackgroundColor2 : event.user.brandBackgroundColor2) : null,
-    brandBackgroundGradientAngle: isPremiumOrganizer ? (useEventOverride ? event.brandBackgroundGradientAngle : event.user.brandBackgroundGradientAngle) : null,
+  const {
+    isPremiumOrganizer,
+    brandLogoUrl,
+    brandLogoSize,
+    brandLogoTransparentBg,
+    brandLogoRounded,
+    brandIconBackgroundColor,
+    brandCardColor,
+    brandSquareCorners,
     brandBackgroundImageUrl,
-  };
-  const brandStyle: CSSProperties | undefined = (brandColor || brandBackgroundColor || brandBackgroundImageUrl || brandTextColor || brandCardColor || brandBg.brandBackgroundColor2)
-    ? {
-        ...(brandColor ? { "--primary": brandColor, "--border": brandColor, "--ring": brandColor } as CSSProperties : {}),
-        ...(brandTextColor ? {
-          "--foreground": brandTextColor,
-          "--card-foreground": brandTextColor,
-          "--popover-foreground": brandTextColor,
-          "--muted-foreground": brandTextColor,
-          "--primary-foreground": brandTextColor,
-          "--secondary-foreground": brandTextColor,
-          "--accent-foreground": brandTextColor,
-        } as CSSProperties : {}),
-        ...(brandCardColor ? { "--card": brandCardColor, "--background": brandCardColor } as CSSProperties : {}),
-        ...brandBackgroundStyle(brandBg),
-      }
-    : undefined;
+    showBackgroundImage,
+    brandStyle,
+  } = resolveEventBranding({
+    plan: event.user.plan,
+    brandingEnabled: event.brandingEnabled,
+    event,
+    user: event.user,
+  });
 
   const isCreator = session?.user.id === event.userId;
 
@@ -304,7 +247,7 @@ export default async function PublicEventPage({
         </div>
       )}
       <div className={cn("relative isolate flex min-h-screen flex-col justify-center overflow-hidden bg-muted/20 py-6 px-4 sm:py-8", brandSquareCorners && "brand-square")} style={brandStyle}>
-      {showBrandBackgroundImage(brandBg) && (
+      {showBackgroundImage && (
         <div
           aria-hidden
           className="pointer-events-none absolute inset-0 -z-10 scale-110 bg-cover bg-center blur-sm"

@@ -37,7 +37,20 @@ export default async function Home() {
       slug: true,
       events: {
         orderBy: { startAt: "asc" },
-        select: { id: true, slug: true, title: true, startAt: true, location: true, isOnline: true },
+        select: {
+          id: true,
+          slug: true,
+          title: true,
+          startAt: true,
+          location: true,
+          isOnline: true,
+          language: true,
+          rsvpEnabled: true,
+          questions: {
+            orderBy: { order: "asc" },
+            select: { id: true, label: true, type: true, options: true, required: true, order: true },
+          },
+        },
       },
     },
   }).catch(() => null);
@@ -56,6 +69,21 @@ export default async function Home() {
       }
     : null;
 
+  // Featured event used to render the real RSVP / branding / embed previews.
+  const featured = calendar?.events.find((e) => e.rsvpEnabled) ?? calendar?.events[0];
+  const demoEvent =
+    featured && calendar
+      ? {
+          id: featured.id,
+          slug: featured.slug ?? featured.id,
+          title: featured.title,
+          lang: (featured.language === "fr" ? "fr" : "en") as "fr" | "en",
+          rsvpEnabled: featured.rsvpEnabled,
+          questions: featured.questions,
+          calendarSlug: calendar.slug!,
+        }
+      : null;
+
   return (
     <div
       className="evvy-theme flex min-h-full flex-col bg-white text-ink"
@@ -63,7 +91,7 @@ export default async function Home() {
     >
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(SITE_JSON_LD) }} />
       <SiteHeader />
-      <LandingContent demoCalendar={demoCalendar} />
+      <LandingContent demoCalendar={demoCalendar} demoEvent={demoEvent} />
       <Footer />
     </div>
   );
