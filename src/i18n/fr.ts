@@ -56,7 +56,8 @@ export const fr: Translations = {
       faq: "FAQ",
     },
     hero: {
-      badge: "✨ Nouveau — Partage public de pages événements",
+      badgeUnlimited: "Ajouts & clics illimités",
+      badgeFree: "Gratuit à vie",
       titleStart: "Gérez, partagez et",
       titleHighlight: "brandez vos événements",
       subtitle:
@@ -65,6 +66,7 @@ export const fr: Translations = {
       ctaEmail: "Inscription par email",
       microText: "Gratuit pour commencer · Aucune carte bancaire requise",
       compatibleWith: "Compatible avec",
+      compatibleNote: "Gratuit à vie — vos invités voient seulement un petit badge « Organisé avec Evvy ».",
       mockup: {
         tag: "Conférence Tech · Page publique",
         eventTitle: "VivaTech Paris 2026",
@@ -143,13 +145,29 @@ export const fr: Translations = {
       badge: "👀 À voir en vrai",
       title: "Curieux de voir à quoi ça ressemble ? Découvrez un calendrier réel.",
       description:
-        "Voici un calendrier public créé avec Evvy. — toute une saison de conférences tech réunies sur une seule page partageable. Cliquez pour voir ce que vos invités verraient.",
+        "Voici un calendrier public créé avec Evvy — toute une saison de conférences tech réunies sur une seule page partageable. Et voici l'embed exact que vous pouvez glisser dans n'importe quelle newsletter ou site.",
       calendarName: "Conférences Tech 2030",
       calendarDescription: "Une sélection des plus grandes conférences tech mondiales en 2030.",
       eventsLabel: "Événements à venir",
       online: "En ligne",
       viewCalendar: "Ouvrir le calendrier public →",
       cta: "Créer mon propre calendrier →",
+      embedLabel: "Aperçu de l'embed",
+      embedHint: "Collez une ligne de HTML — chaque bouton « Ajouter au calendrier » est déjà inclus.",
+      addToCalendar: "Ajouter au calendrier",
+      copyEmbed: "Copier l'embed",
+      copied: "Copié !",
+    },
+    useCases: {
+      badge: "⚡ Cas d'usage",
+      heading: "Un seul outil, quatre superpouvoirs",
+      subheading: "Passez d'une fonctionnalité à l'autre pour remplir vos événements — toutes incluses dans le plan gratuit.",
+      tabs: {
+        rsvp: "RSVP",
+        calendars: "Calendriers abonnables",
+        sharing: "Partage & embed",
+        branding: "Branding",
+      },
     },
     pricing: {
       badge: "💳 Tarifs",
@@ -159,15 +177,14 @@ export const fr: Translations = {
       free: {
         name: "Gratuit",
         price: "0 €",
-        period: "/ mois",
-        tagline: "Juste de quoi tester",
+        period: "à vie",
+        tagline: "Tout ce qu'il faut pour remplir vos événements",
         bullets: [
           { text: "Événements illimités", included: true },
-          { text: "Réponses RSVP illimitées", included: true },
+          { text: "RSVP illimités avec questions personnalisées", included: true },
           { text: "Calendriers illimités avec pages publiques", included: true },
-          { text: "Mention « Organisé avec Evvy » affichée", included: false },
-          { text: "Pas de branding personnalisé", included: false },
-          { text: "Pas de statistiques", included: false },
+          { text: "Boutons d'ajout au calendrier pour chaque fournisseur", included: true },
+          { text: "Embed HTML pour emails & sites web", included: true },
         ],
         cta: "Commencer gratuitement",
       },
@@ -220,7 +237,6 @@ export const fr: Translations = {
     },
     finalCta: {
       title: "Prêt à simplifier la gestion de vos événements ?",
-      subtitle: "Rejoignez des milliers d'organisateurs qui font confiance à la plateforme.",
       ctaPrimary: "Commencer gratuitement",
       ctaSecondary: "Essayer, c'est gratuit",
     },

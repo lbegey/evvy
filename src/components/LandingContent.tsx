@@ -1,13 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import { useState, type ReactNode } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import {
   CheckCircle2,
   ChevronDown,
   Mail,
-  Link2,
   Loader2,
   CalendarRange,
   Clock,
@@ -19,6 +18,9 @@ import {
   ListChecks,
   Code2,
   Palette,
+  Infinity as InfinityIcon,
+  Sparkles,
+  Copy,
   type LucideIcon,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -248,6 +250,187 @@ function FaqItem({ question, answer, defaultOpen }: { question: string; answer: 
   );
 }
 
+function UseCaseCalendarsMock({ events, subscribe }: { events: string[]; subscribe: string }) {
+  return (
+    <div className="w-full max-w-sm rounded-2xl border border-line bg-white p-5 shadow-pop">
+      <ul className="space-y-2">
+        {events.map((e) => (
+          <li key={e} className="flex items-center gap-2 rounded-lg border border-line bg-paper px-3 py-2 text-sm text-ink">
+            <CalendarRange className="h-4 w-4 shrink-0 text-evvy" />
+            <span className="truncate">{e}</span>
+          </li>
+        ))}
+      </ul>
+      <div className="mt-4 border-t border-line pt-4">
+        <p className="text-xs font-medium text-inksoft">{subscribe}</p>
+        <div className="mt-2 flex items-center gap-2">
+          {SHARE_LOGOS.map((s) => (
+            <Image key={s.key} src={s.logo} alt={s.name} width={26} height={26} className="rounded" />
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function UseCaseBrandingMock({ customBrand, confirm, eventDate }: { customBrand: string; confirm: string; eventDate: string }) {
+  return (
+    <div className="w-full max-w-sm overflow-hidden rounded-2xl border border-line bg-white shadow-pop">
+      <div className="flex items-center justify-between px-5 py-4" style={{ background: "linear-gradient(135deg,#0f766e,#14b8a6)" }}>
+        <span className="font-display text-sm font-bold text-white">ACME Corp</span>
+        <span className="rounded-full bg-white/20 px-2 py-0.5 text-[10px] font-medium text-white">{customBrand}</span>
+      </div>
+      <div className="p-5">
+        <h3 className="font-display text-lg font-bold text-ink">Annual Summit</h3>
+        <p className="mt-1 text-xs text-inksoft">{eventDate}</p>
+        <button
+          type="button"
+          className="mt-4 w-full cursor-pointer rounded-lg py-2.5 text-sm font-semibold text-white"
+          style={{ background: "#0f766e" }}
+        >
+          {confirm}
+        </button>
+      </div>
+    </div>
+  );
+}
+
+interface UseCaseTab {
+  key: string;
+  Icon: LucideIcon;
+  label: string;
+  title: string;
+  titleHighlight: string;
+  description: string;
+  bullets: readonly string[];
+  visual: ReactNode;
+}
+
+function UseCaseTabs({ heading, subheading, tabs }: { heading: string; subheading: string; tabs: UseCaseTab[] }) {
+  const [active, setActive] = useState(tabs[0]?.key);
+  const current = tabs.find((t) => t.key === active) ?? tabs[0];
+  if (!current) return null;
+  return (
+    <section className="px-4 py-20 sm:px-6 sm:py-28">
+      <div className="mx-auto max-w-6xl">
+        <div className="mx-auto max-w-2xl text-center">
+          <h2 className="font-display text-3xl font-bold tracking-tight text-ink sm:text-4xl">{heading}</h2>
+          <p className="mt-3 leading-relaxed text-inksoft">{subheading}</p>
+        </div>
+
+        <div className="mt-10 flex flex-wrap justify-center gap-2">
+          {tabs.map((t) => (
+            <button
+              key={t.key}
+              type="button"
+              onClick={() => setActive(t.key)}
+              aria-pressed={active === t.key}
+              className={cn(
+                "inline-flex cursor-pointer items-center gap-2 rounded-full border px-4 py-2 text-sm font-semibold transition-all",
+                active === t.key
+                  ? "border-evvy bg-evvy text-white shadow-pop"
+                  : "border-line bg-white text-inksoft hover:border-evvy/40 hover:text-ink"
+              )}
+            >
+              <t.Icon className="h-4 w-4 shrink-0" />
+              {t.label}
+            </button>
+          ))}
+        </div>
+
+        <div className="mt-10 grid items-center gap-10 rounded-xl2 border border-line bg-white p-6 shadow-card sm:p-10 lg:grid-cols-2">
+          <div>
+            <h3 className="font-display text-2xl font-bold tracking-tight text-ink">
+              <HighlightedTitle title={current.title} highlight={current.titleHighlight} />
+            </h3>
+            <p className="mt-3 leading-relaxed text-inksoft">{current.description}</p>
+            <ul className="mt-5 space-y-2.5">
+              {current.bullets.slice(0, 4).map((b) => (
+                <li key={b} className="flex items-start gap-2.5 text-sm text-ink">
+                  <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-evvy" />
+                  <span className="leading-snug">{b}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+          <div className="flex justify-center lg:justify-end">{current.visual}</div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function EmbedPreview({
+  slug,
+  label,
+  hint,
+  eventTitle,
+  eventDate,
+  addToCalendar,
+  copyLabel,
+  copiedLabel,
+}: {
+  slug: string;
+  label: string;
+  hint: string;
+  eventTitle: string;
+  eventDate: string;
+  addToCalendar: string;
+  copyLabel: string;
+  copiedLabel: string;
+}) {
+  const [copied, setCopied] = useState(false);
+  const snippet = `<iframe src="https://evvy.app/e/${slug}/embed" width="100%" height="240" style="border:0"></iframe>`;
+  const handleCopy = () => {
+    navigator.clipboard.writeText(snippet).then(() => {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    });
+  };
+  return (
+    <div className="overflow-hidden rounded-xl2 border border-line bg-white shadow-card">
+      <div className="flex items-center justify-between gap-3 border-b border-line bg-paper px-5 py-3">
+        <p className="text-xs font-semibold uppercase tracking-wide text-inksoft">{label}</p>
+        <button
+          type="button"
+          onClick={handleCopy}
+          className="inline-flex cursor-pointer items-center gap-1.5 rounded-lg border border-line bg-white px-3 py-1.5 text-xs font-medium text-ink transition-colors hover:bg-paper"
+        >
+          {copied ? <Check className="h-3.5 w-3.5 text-mint-ink" /> : <Copy className="h-3.5 w-3.5" />}
+          {copied ? copiedLabel : copyLabel}
+        </button>
+      </div>
+      <div className="p-6">
+        <div className="rounded-xl border border-line bg-white p-5 shadow-card">
+          <p className="font-display text-base font-bold text-ink">{eventTitle}</p>
+          <p className="mt-1 flex items-center gap-2 text-xs text-inksoft">
+            <CalendarRange className="h-3.5 w-3.5 shrink-0 text-evvy" />
+            {eventDate}
+          </p>
+          <div className="mt-4 border-t border-line pt-4">
+            <p className="text-xs font-medium text-inksoft">{addToCalendar}</p>
+            <div className="mt-2 flex flex-wrap items-center gap-2">
+              {SHARE_LOGOS.map((s) => (
+                <span
+                  key={s.key}
+                  className="inline-flex items-center gap-1.5 rounded-lg border border-line bg-white px-2.5 py-1.5 text-xs font-medium text-ink shadow-card"
+                >
+                  <Image src={s.logo} alt={s.name} width={18} height={18} className="rounded" />
+                  <span className="hidden sm:inline">{s.name.split(" ")[0]}</span>
+                </span>
+              ))}
+            </div>
+          </div>
+        </div>
+        <pre className="mt-4 overflow-x-auto rounded-lg bg-ink px-4 py-3 text-[11px] leading-relaxed text-white/90">
+          <code>{snippet}</code>
+        </pre>
+        <p className="mt-3 text-center text-xs text-inksoft">{hint}</p>
+      </div>
+    </div>
+  );
+}
+
 export function LandingContent({ demoCalendar }: LandingContentProps) {
   const { T, lang } = useLanguage();
   const [googleLoading, setGoogleLoading] = useState(false);
@@ -270,6 +453,47 @@ export function LandingContent({ demoCalendar }: LandingContentProps) {
     month: "short",
     year: "numeric",
   });
+
+  const mock = T.landing.hero.mockup;
+  const calendarMockEvents =
+    demoCalendar?.events.slice(0, 3).map((e) => e.title) ?? [mock.eventTitle];
+
+  const useCaseTabs: UseCaseTab[] = [
+    {
+      key: "rsvp",
+      Icon: ListChecks,
+      label: T.landing.useCases.tabs.rsvp,
+      ...T.landing.features.rsvp,
+      visual: <HeroRsvpCardMock m={mock} />,
+    },
+    {
+      key: "calendars",
+      Icon: CalendarRange,
+      label: T.landing.useCases.tabs.calendars,
+      ...T.landing.features.calendars,
+      visual: <UseCaseCalendarsMock events={calendarMockEvents} subscribe={mock.addToCalendar} />,
+    },
+    {
+      key: "sharing",
+      Icon: Code2,
+      label: T.landing.useCases.tabs.sharing,
+      ...T.landing.features.sharing,
+      visual: <HeroEventCardMock m={mock} />,
+    },
+    {
+      key: "branding",
+      Icon: Palette,
+      label: T.landing.useCases.tabs.branding,
+      ...T.landing.branding,
+      visual: (
+        <UseCaseBrandingMock
+          customBrand={T.landing.mockups.branding.customBrand}
+          confirm={T.landing.mockups.branding.confirm}
+          eventDate={T.landing.mockups.branding.eventDate}
+        />
+      ),
+    },
+  ];
 
   return (
     <>
@@ -297,9 +521,15 @@ export function LandingContent({ demoCalendar }: LandingContentProps) {
         <HeroCalendarBackdrop />
         <div className="relative mx-auto grid max-w-6xl items-center gap-16 lg:grid-cols-2 lg:gap-12">
           <div className="text-center lg:text-left">
-            <div className="inline-flex items-center gap-2 rounded-full border border-line bg-white/80 px-4 py-1.5 text-xs font-medium text-inksoft shadow-card backdrop-blur-sm animate-fade-in-up">
-              <span className="h-2 w-2 shrink-0 rounded-full bg-mint" />
-              {T.landing.hero.badge}
+            <div className="flex flex-wrap items-center justify-center gap-2 animate-fade-in-up lg:justify-start">
+              <span className="inline-flex items-center gap-1.5 rounded-full border border-line bg-white/80 px-3.5 py-1.5 text-xs font-medium text-inksoft shadow-card backdrop-blur-sm">
+                <InfinityIcon className="h-3.5 w-3.5 shrink-0 text-evvy" strokeWidth={2.2} />
+                {T.landing.hero.badgeUnlimited}
+              </span>
+              <span className="inline-flex items-center gap-1.5 rounded-full border border-line bg-white/80 px-3.5 py-1.5 text-xs font-medium text-inksoft shadow-card backdrop-blur-sm">
+                <Sparkles className="h-3.5 w-3.5 shrink-0 text-mint-ink" strokeWidth={2.2} />
+                {T.landing.hero.badgeFree}
+              </span>
             </div>
 
             <h1
@@ -372,6 +602,10 @@ export function LandingContent({ demoCalendar }: LandingContentProps) {
               </span>
             ))}
           </div>
+          <p className="inline-flex items-center gap-1.5 rounded-full border border-mint/30 bg-mint/10 px-3.5 py-1.5 text-xs font-medium text-mint-ink">
+            <CheckCircle2 className="h-3.5 w-3.5 shrink-0" />
+            {T.landing.hero.compatibleNote}
+          </p>
         </div>
       </section>
 
@@ -390,6 +624,15 @@ export function LandingContent({ demoCalendar }: LandingContentProps) {
         </div>
       </section>
 
+      {/* ─── Use cases (tabs) ─── */}
+      <div className="border-t border-line bg-paper">
+        <UseCaseTabs
+          heading={T.landing.useCases.heading}
+          subheading={T.landing.useCases.subheading}
+          tabs={useCaseTabs}
+        />
+      </div>
+
       {/* ─── Live demo ─── */}
       {demoCalendar && demoCalendar.events.length > 0 && (
         <section className="border-t border-line bg-paper px-4 py-20 sm:px-6 sm:py-28">
@@ -399,7 +642,8 @@ export function LandingContent({ demoCalendar }: LandingContentProps) {
               <p className="mt-3 leading-relaxed text-inksoft">{T.landing.demo.description}</p>
             </div>
 
-            <div className="mx-auto mt-10 max-w-2xl overflow-hidden rounded-xl2 border border-line bg-white shadow-card">
+            <div className="mt-10 grid items-start gap-8 lg:grid-cols-2">
+            <div className="overflow-hidden rounded-xl2 border border-line bg-white shadow-card">
               <Link
                 href={`/c/${demoCalendar.slug}`}
                 target="_blank"
@@ -457,6 +701,18 @@ export function LandingContent({ demoCalendar }: LandingContentProps) {
                   ))}
                 </ul>
               </div>
+            </div>
+
+              <EmbedPreview
+                slug={demoCalendar.events[0].slug ?? demoCalendar.events[0].id}
+                label={T.landing.demo.embedLabel}
+                hint={T.landing.demo.embedHint}
+                eventTitle={demoCalendar.events[0].title}
+                eventDate={demoDateFmt.format(new Date(demoCalendar.events[0].startAt))}
+                addToCalendar={T.landing.demo.addToCalendar}
+                copyLabel={T.landing.demo.copyEmbed}
+                copiedLabel={T.landing.demo.copied}
+              />
             </div>
           </div>
         </section>
@@ -568,7 +824,6 @@ export function LandingContent({ demoCalendar }: LandingContentProps) {
             />
 
             <h2 className="relative font-display text-3xl font-bold tracking-tight sm:text-4xl">{T.landing.finalCta.title}</h2>
-            <p className="relative mx-auto mt-3 max-w-lg text-sm text-white/80">{T.landing.finalCta.subtitle}</p>
 
             <div className="relative mt-8 flex flex-wrap items-center justify-center gap-3">
               <Button
