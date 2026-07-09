@@ -386,12 +386,10 @@ export function CalendarDetail({ calendar, events, calendars, appUrl, plan, emai
                             <p className="truncate text-xs text-inksoft">{dateLabel}</p>
                           </div>
                         </Link>
-                        {plan === "premium" && (
-                          <button onClick={() => handleDeleteEvent(ev.id)} disabled={isDeletingEvent && deletingEventId === ev.id}
-                            aria-label={T.calendars.delete} className="shrink-0 rounded-lg p-1.5 text-inksoft/50 transition hover:text-coral disabled:opacity-40">
-                            <Trash2 className="h-3.5 w-3.5" />
-                          </button>
-                        )}
+                        <button onClick={() => handleDeleteEvent(ev.id)} disabled={isDeletingEvent && deletingEventId === ev.id}
+                          aria-label={T.calendars.delete} className="shrink-0 rounded-lg p-1.5 text-inksoft/50 transition hover:text-coral disabled:opacity-40">
+                          <Trash2 className="h-3.5 w-3.5" />
+                        </button>
                       </div>
                     );
                   })}

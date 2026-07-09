@@ -115,18 +115,16 @@ export function EventListView({ events, emptyMessage, plan }: EventListViewProps
               >
                 {copiedId === ev.id ? <Check className="h-3.5 w-3.5" /> : <Copy className="h-3.5 w-3.5" />}
               </Button>
-              {plan === "premium" && (
-                <Button
-                  variant="ghost"
-                  size="icon-sm"
-                  onClick={() => handleDelete(ev)}
-                  disabled={isDeleting}
-                  aria-label={T.eventDetail.delete}
-                  className="text-muted-foreground hover:bg-destructive/10 hover:text-destructive"
-                >
-                  <Trash2 className="h-3.5 w-3.5" />
-                </Button>
-              )}
+              <Button
+                variant="ghost"
+                size="icon-sm"
+                onClick={() => handleDelete(ev)}
+                disabled={isDeleting}
+                aria-label={T.eventDetail.delete}
+                className="text-muted-foreground hover:bg-destructive/10 hover:text-destructive"
+              >
+                <Trash2 className="h-3.5 w-3.5" />
+              </Button>
             </div>
           </div>
         );

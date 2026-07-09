@@ -228,10 +228,8 @@ export async function deleteEvent(id: string): Promise<{ error: "forbidden" } | 
   const session = await auth.api.getSession({ headers: await headers() });
   if (!session) throw new Error("Unauthorized");
 
-  const event = await db.event.findUnique({ where: { id }, include: { user: { select: { plan: true } } } });
+  const event = await db.event.findUnique({ where: { id } });
   if (!event || event.userId !== session.user.id) throw new Error("Forbidden");
-
-  if (event.user.plan !== "premium") return { error: "forbidden" };
 
   await db.event.delete({ where: { id } });
   revalidatePath("/dashboard");
@@ -242,10 +240,8 @@ export async function removeEvent(id: string): Promise<{ error: "forbidden" } | 
   const session = await auth.api.getSession({ headers: await headers() });
   if (!session) throw new Error("Unauthorized");
 
-  const event = await db.event.findUnique({ where: { id }, include: { user: { select: { plan: true } } } });
+  const event = await db.event.findUnique({ where: { id } });
   if (!event || event.userId !== session.user.id) throw new Error("Forbidden");
-
-  if (event.user.plan !== "premium") return { error: "forbidden" };
 
   await db.event.delete({ where: { id } });
   revalidatePath("/dashboard");

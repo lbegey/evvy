@@ -243,12 +243,10 @@ export function EventDetail({
                     <button onClick={() => setEditOpen(true)} className="inline-flex h-9 items-center gap-1.5 rounded-lg bg-evvy px-3.5 text-sm font-semibold text-white shadow-card transition hover:bg-evvy-deep">
                       <Pencil className="h-[15px] w-[15px]" />{T.eventDetail.edit}
                     </button>
-                    {plan === "premium" && (
-                      <button onClick={handleDelete} disabled={isDeleting} title={T.eventDetail.delete}
-                        className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-line bg-white text-coral transition hover:bg-coral/5 disabled:opacity-50">
-                        <Trash2 className="h-4 w-4" />
-                      </button>
-                    )}
+                    <button onClick={handleDelete} disabled={isDeleting} title={T.eventDetail.delete}
+                      className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-line bg-white text-coral transition hover:bg-coral/5 disabled:opacity-50">
+                      <Trash2 className="h-4 w-4" />
+                    </button>
                   </div>
                 </div>
 
