@@ -2,10 +2,12 @@
 
 import { Fragment, useMemo, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { Users, Download, Search, Trash2, ChevronLeft, ChevronRight, HelpCircle, Loader2 } from "lucide-react";
+import Link from "next/link";
+import { Users, Download, Search, Trash2, ChevronLeft, ChevronRight, HelpCircle, Loader2, Lock } from "lucide-react";
 import { toggleRsvp, deleteRsvp, updateRsvpSettings } from "@/app/actions/events";
 import { EventQuestionsSection, type RsvpQuestion } from "@/components/EventQuestionsSection";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { FREE_PLAN_RSVP_LIMIT } from "@/lib/rsvp-limits";
 import { cn } from "@/lib/utils";
 import { EvvySwitch } from "./EvvySwitch";
 
@@ -39,6 +41,8 @@ interface Props {
   rsvpDeadline: string | null;
   timezone: string;
   rsvps: RsvpRecord[];
+  /** Responses recorded but withheld by the Free plan cap (0 when unlimited). */
+  hiddenRsvps: number;
   questions: RsvpQuestion[];
 }
 
@@ -78,7 +82,7 @@ function initials(name: string): string {
   return name.split(" ").map((n) => n[0]).join("").slice(0, 2).toUpperCase() || "?";
 }
 
-export function EventRsvpCard({ eventId, plan, rsvpEnabled, rsvpLimit, rsvpDeadline, timezone, rsvps, questions }: Props) {
+export function EventRsvpCard({ eventId, plan, rsvpEnabled, rsvpLimit, rsvpDeadline, timezone, rsvps, hiddenRsvps, questions }: Props) {
   const router = useRouter();
   const { T, lang } = useLanguage();
   const locale = lang === "fr" ? "fr-FR" : "en-US";
@@ -305,6 +309,31 @@ export function EventRsvpCard({ eventId, plan, rsvpEnabled, rsvpLimit, rsvpDeadl
                 </div>
               )}
             </>
+          )}
+
+          {/* Free plan: responses past the cap are recorded but withheld here */}
+          {hiddenRsvps > 0 && (
+            <div className="mx-5 mb-5 rounded-xl2 border border-evvy/25 bg-evvy-soft/50 p-4">
+              <div className="flex flex-wrap items-center gap-3">
+                <span className="grid h-9 w-9 shrink-0 place-items-center rounded-lg bg-white text-evvy shadow-card">
+                  <Lock className="h-[18px] w-[18px]" />
+                </span>
+                <div className="min-w-0 flex-1">
+                  <p className="font-display text-sm font-bold text-ink">
+                    {T.rsvpSection.hidden.title(hiddenRsvps)}
+                  </p>
+                  <p className="mt-0.5 text-xs leading-relaxed text-inksoft">
+                    {T.rsvpSection.hidden.description(FREE_PLAN_RSVP_LIMIT)}
+                  </p>
+                </div>
+                <Link
+                  href="/dashboard/billing"
+                  className="inline-flex h-9 shrink-0 items-center gap-1.5 rounded-lg bg-evvy px-4 text-sm font-medium text-white shadow-pop transition hover:bg-evvy-deep"
+                >
+                  {T.rsvpSection.hidden.cta}
+                </Link>
+              </div>
+            </div>
           )}
 
           {/* Questions — part of the RSVP form, only while RSVP is enabled */}

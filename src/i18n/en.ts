@@ -68,7 +68,7 @@ export const en = {
       mockup: {
         tag: "Tech conference · Public page",
         eventTitle: "VivaTech Paris 2026",
-        eventDate: "Wed, Jun 3, 2026 · 09:00 – 18:00",
+        eventDate: "Wed, Jun 3, 2026 · 9:00 AM – 6:00 PM",
         eventLocation: "Paris, France",
         addToCalendar: "Add to calendar",
         rsvpQuestion: "Will you attend?",
@@ -89,10 +89,10 @@ export const en = {
         description:
           "Turn on RSVPs with one click and watch confirmations roll in on your dashboard — no spreadsheets, no back-and-forth emails.",
         bullets: [
-          "Customizable response forms",
+          "Yes / No / Maybe responses on any event",
+          "First 40 responses per event free, unlimited on Premium",
           "One-click CSV export",
-          "Custom questions to collect exactly the info you need",
-          "Webhook to sync RSVPs with Zapier, Make or n8n",
+          "Custom questions and webhooks (Premium)",
         ],
         cta: "See it in action →",
       },
@@ -156,7 +156,7 @@ export const en = {
     useCases: {
       badge: "⚡ Use cases",
       heading: "One tool, four superpowers",
-      subheading: "Switch between the features that fill your events — every one works on the free plan.",
+      subheading: "Switch between the features that fill your events — start on the free plan, upgrade when you need more.",
       viewEvent: "View this live event",
       viewCalendar: "Open the example calendar",
       tabs: {
@@ -186,7 +186,7 @@ export const en = {
         tagline: "Everything you need to fill your events",
         bullets: [
           { text: "Unlimited events", included: true },
-          { text: "Unlimited RSVPs with custom questions", included: true },
+          { text: "RSVP on every event — first 40 responses per event", included: true },
           { text: "Unlimited calendars with public pages", included: true },
           { text: "Add-to-calendar buttons for every provider", included: true },
           { text: "HTML embed for emails & websites", included: true },
@@ -200,7 +200,7 @@ export const en = {
         tagline: "Everything unlocked, nothing held back",
         bullets: [
           { text: "Unlimited events", included: true },
-          { text: "Unlimited RSVPs", included: true },
+          { text: "Unlimited RSVPs with custom questions", included: true },
           { text: "Evvy branding fully removed", included: true },
           { text: "Custom logo, colors and background", included: true },
           { text: "Full analytics: page views, clicks, QR scans, CSV export", included: true },
@@ -219,7 +219,7 @@ export const en = {
         },
         {
           q: "Is RSVP available on the free plan?",
-          a: "Yes. RSVPs are free on every plan: enable them in one click, collect Yes / No / Maybe responses, and export them to CSV whenever you like.",
+          a: "Yes. Enable it in one click, collect Yes / No / Maybe responses and export them to CSV. The free plan shows you the first 40 responses per event — later responses are still recorded, and Premium unlocks all of them plus custom questions.",
         },
         {
           q: "How do I embed an event in my emails or website?",
@@ -235,7 +235,7 @@ export const en = {
         },
         {
           q: "How many events can I create on the free plan?",
-          a: "Everything is unlimited on the free plan — unlimited events, RSVPs and calendars. Premium adds full analytics and lets you replace the \"Organized with Evvy\" branding with your own logo, colors and background.",
+          a: "As many as you want — events and calendars are unlimited on the free plan. The only cap is RSVP: you see the first 40 responses per event. Premium lifts that cap and adds full analytics, custom questions and your own logo, colors and background in place of the \"Organized with Evvy\" branding.",
         },
       ],
     },
@@ -616,6 +616,13 @@ export const en = {
       next: "Next",
       pageInfo: (page: number, total: number) => `Page ${page} of ${total}`,
     },
+    hidden: {
+      title: (count: number) =>
+        count > 1 ? `${count} responses hidden` : "1 response hidden",
+      description: (limit: number) =>
+        `The free plan shows the first ${limit} responses per event. The rest are still recorded — upgrade to Premium to view and export them all.`,
+      cta: "Upgrade to Premium",
+    },
   },
 
   rsvpForm: {
@@ -740,8 +747,7 @@ export const en = {
       subtitle: "Same features, row by row — see exactly what changes when you upgrade.",
       rows: [
         { free: "Unlimited events", premium: "Unlimited events", freeIncluded: true },
-        { free: "Unlimited RSVPs", premium: "Unlimited RSVPs", freeIncluded: true },
-        { free: "Events can't be deleted", premium: "Create and delete freely", freeIncluded: false },
+        { free: "First 40 RSVP responses per event", premium: "Unlimited RSVPs with custom questions", freeIncluded: false },
         { free: "\"Organized with Evvy\" branding shown", premium: "Evvy branding fully removed", freeIncluded: false },
         { free: "No custom branding", premium: "Custom logo, colors and background", freeIncluded: false },
         { free: "No analytics", premium: "Full analytics: page views, clicks, QR scans, CSV export", freeIncluded: false },

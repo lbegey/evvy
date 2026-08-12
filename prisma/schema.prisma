@@ -18,6 +18,8 @@ model User {
   dashboardView          String    @default("calendar")
   plan                   String    @default("free")
   role                   String    @default("user")
+  // Accounts created before the Free plan's 40-RSVP visibility cap keep unlimited access for life.
+  legacyUnlimitedRsvps   Boolean   @default(false)
   brandLogoUrl           String?
   brandLogoSize          Int?
   brandLogoTransparentBg Boolean   @default(true)

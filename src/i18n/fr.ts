@@ -73,7 +73,7 @@ export const fr: Translations = {
         eventDate: "Mer. 3 juin 2026 · 09:00 – 18:00",
         eventLocation: "Paris, France",
         addToCalendar: "Ajouter au calendrier",
-        rsvpQuestion: "Tu seras présent ?",
+        rsvpQuestion: "Serez-vous présent ?",
         yes: "Oui",
         maybe: "Peut-être",
         no: "Non",
@@ -91,10 +91,10 @@ export const fr: Translations = {
         description:
           "Activez les RSVPs en un clic et regardez les confirmations arriver sur votre tableau de bord — fini les tableurs et les allers-retours par email.",
         bullets: [
-          "Formulaires de réponse personnalisables",
+          "Réponses Oui / Non / Peut-être sur tous vos événements",
+          "40 premières réponses par événement en gratuit, illimité en Premium",
           "Export CSV en un clic",
-          "Questions personnalisées pour collecter exactement les infos dont vous avez besoin",
-          "Webhook pour synchroniser les RSVPs avec Zapier, Make ou n8n",
+          "Questions personnalisées et webhooks (Premium)",
         ],
         cta: "Voir la démo →",
       },
@@ -112,7 +112,7 @@ export const fr: Translations = {
         cta: "Créer mon calendrier →",
       },
       sharing: {
-        badge: "🔗 Partage & Intégrations",
+        badge: "🔗 Partage & intégrations",
         title: "Partagez vos événements partout : page publique, HTML et mailing.",
         titleHighlight: "partout",
         description:
@@ -127,7 +127,7 @@ export const fr: Translations = {
       },
     },
     branding: {
-      badge: "🎨 White-Label & Branding",
+      badge: "🎨 White-label & branding",
       title: "Des pages événements à l'image de votre marque.",
       titleHighlight: "votre marque",
       description:
@@ -158,7 +158,7 @@ export const fr: Translations = {
     useCases: {
       badge: "⚡ Cas d'usage",
       heading: "Un seul outil, quatre superpouvoirs",
-      subheading: "Passez d'une fonctionnalité à l'autre pour remplir vos événements — toutes incluses dans le plan gratuit.",
+      subheading: "Passez d'une fonctionnalité à l'autre pour remplir vos événements — commencez en gratuit, passez en Premium quand vous en avez besoin.",
       viewEvent: "Voir cet événement en ligne",
       viewCalendar: "Ouvrir le calendrier d'exemple",
       tabs: {
@@ -188,7 +188,7 @@ export const fr: Translations = {
         tagline: "Tout ce qu'il faut pour remplir vos événements",
         bullets: [
           { text: "Événements illimités", included: true },
-          { text: "RSVP illimités avec questions personnalisées", included: true },
+          { text: "RSVP sur tous vos événements — 40 premières réponses par événement", included: true },
           { text: "Calendriers illimités avec pages publiques", included: true },
           { text: "Boutons d'ajout au calendrier pour chaque fournisseur", included: true },
           { text: "Embed HTML pour emails & sites web", included: true },
@@ -202,7 +202,7 @@ export const fr: Translations = {
         tagline: "Tout est débloqué, sans limites",
         bullets: [
           { text: "Événements illimités", included: true },
-          { text: "RSVP illimités", included: true },
+          { text: "RSVP illimités avec questions personnalisées", included: true },
           { text: "Mention Evvy entièrement supprimée", included: true },
           { text: "Logo, couleurs et fond personnalisés", included: true },
           { text: "Statistiques complètes : vues, clics, scans QR, export CSV", included: true },
@@ -221,7 +221,7 @@ export const fr: Translations = {
         },
         {
           q: "Le RSVP est-il disponible sur le plan gratuit ?",
-          a: "Oui. Les RSVPs sont gratuits sur tous les plans : activez-les en un clic, collectez les réponses Oui / Non / Peut-être, et exportez-les en CSV quand vous le souhaitez.",
+          a: "Oui. Activez-le en un clic, collectez les réponses Oui / Non / Peut-être et exportez-les en CSV. Le plan gratuit vous affiche les 40 premières réponses par événement — les suivantes sont bien enregistrées, et Premium les débloque toutes ainsi que les questions personnalisées.",
         },
         {
           q: "Comment intégrer un événement dans mes emails ou mon site ?",
@@ -237,7 +237,7 @@ export const fr: Translations = {
         },
         {
           q: "Combien d'événements puis-je créer sur le plan gratuit ?",
-          a: "Tout est illimité sur le plan gratuit — événements, RSVPs et calendriers illimités. Premium ajoute les statistiques complètes et permet de remplacer la mention « Organisé avec Evvy » par votre propre logo, vos couleurs et votre fond.",
+          a: "Autant que vous voulez — les événements et les calendriers sont illimités sur le plan gratuit. La seule limite concerne le RSVP : vous voyez les 40 premières réponses par événement. Premium lève cette limite et ajoute les statistiques complètes, les questions personnalisées et votre propre logo, vos couleurs et votre fond à la place de la mention « Organisé avec Evvy ».",
         },
       ],
     },
@@ -618,6 +618,13 @@ export const fr: Translations = {
       next: "Suivant",
       pageInfo: (page: number, total: number) => `Page ${page} sur ${total}`,
     },
+    hidden: {
+      title: (count: number) =>
+        count > 1 ? `${count} réponses masquées` : "1 réponse masquée",
+      description: (limit: number) =>
+        `Le plan gratuit affiche les ${limit} premières réponses par événement. Les suivantes sont bien enregistrées : passez en Premium pour toutes les consulter et les exporter.`,
+      cta: "Passer en Premium",
+    },
   },
 
   rsvpForm: {
@@ -742,8 +749,7 @@ export const fr: Translations = {
       subtitle: "Mêmes fonctionnalités, ligne par ligne — voyez exactement ce qui change en passant au forfait payant.",
       rows: [
         { free: "Événements illimités", premium: "Événements illimités", freeIncluded: true },
-        { free: "Réponses RSVP illimitées", premium: "RSVP illimités", freeIncluded: true },
-        { free: "Les événements ne peuvent pas être supprimés", premium: "Création et suppression libres", freeIncluded: false },
+        { free: "40 premières réponses RSVP par événement", premium: "RSVP illimités avec questions personnalisées", freeIncluded: false },
         { free: "Mention « Organisé avec Evvy » affichée", premium: "Mention Evvy entièrement supprimée", freeIncluded: false },
         { free: "Pas de branding personnalisé", premium: "Logo, couleurs et fond personnalisés", freeIncluded: false },
         { free: "Pas de statistiques", premium: "Statistiques complètes : vues, clics, scans QR, export CSV", freeIncluded: false },

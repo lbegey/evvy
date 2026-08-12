@@ -9,7 +9,7 @@ export const getCurrentUser = cache(async () => {
 
   const user = await db.user.findUnique({
     where: { id: session.user.id },
-    select: { id: true, role: true, plan: true, emailVerified: true },
+    select: { id: true, role: true, plan: true, emailVerified: true, legacyUnlimitedRsvps: true },
   });
 
   return { session, user };

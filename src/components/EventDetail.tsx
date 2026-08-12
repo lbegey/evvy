@@ -87,11 +87,13 @@ interface EventDetailProps {
   brandingPresets: BrandingPreset[];
   stats: Stats;
   rsvps: RsvpRecord[];
+  /** Responses withheld from this organizer by the Free plan cap (0 when unlimited). */
+  hiddenRsvps: number;
   questions: RsvpQuestion[];
 }
 
 export function EventDetail({
-  event, appUrl, plan, emailVerified, isSuperAdmin, calendars, brandingPresets, stats, rsvps, questions,
+  event, appUrl, plan, emailVerified, isSuperAdmin, calendars, brandingPresets, stats, rsvps, hiddenRsvps, questions,
 }: EventDetailProps) {
   const router = useRouter();
   const { T, lang } = useLanguage();
@@ -287,6 +289,7 @@ export function EventDetail({
                   rsvpDeadline={event.rsvpDeadline}
                   timezone={event.timezone}
                   rsvps={rsvps}
+                  hiddenRsvps={hiddenRsvps}
                   questions={questions}
                 />
                 <div className="space-y-6">

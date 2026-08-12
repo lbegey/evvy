@@ -3,6 +3,7 @@ import { db } from "@/lib/db";
 import { getAppUrl } from "@/lib/url";
 import { getCurrentUser } from "@/lib/session";
 import { listBrandingPresets } from "@/app/actions/brandingPresets";
+import { rsvpVisibilityLimit } from "@/lib/rsvp-limits";
 import { EventDetail } from "@/components/EventDetail";
 
 const RSVP_QUERY_LIMIT = 500;
@@ -17,7 +18,11 @@ export default async function EventPage({
   const current = await getCurrentUser();
   const session = current!.session;
   const user = current!.user;
-  const [event, clickRows, rsvps, calendars, questions, brandingPresets] = await Promise.all([
+  // Free organizers only see their first N responses; the rest stay behind Premium.
+  // Guests are unaffected — every RSVP is still recorded and counted here.
+  const visibilityLimit = rsvpVisibilityLimit(user);
+
+  const [event, clickRows, rsvpRows, rsvpTotal, calendars, questions, brandingPresets] = await Promise.all([
     db.event.findUnique({ where: { id } }),
     db.eventClick.groupBy({
       by: ["service"],
@@ -26,10 +31,13 @@ export default async function EventPage({
     }),
     db.rsvp.findMany({
       where: { eventId: id },
-      orderBy: { createdAt: "desc" },
-      take: RSVP_QUERY_LIMIT,
+      // Capped organizers get the *oldest* N (a stable window that never drops
+      // an already-visible response); everyone else the most recent ones.
+      orderBy: { createdAt: visibilityLimit == null ? "desc" : "asc" },
+      take: visibilityLimit ?? RSVP_QUERY_LIMIT,
       include: { answers: { select: { questionId: true, value: true } } },
     }),
+    db.rsvp.count({ where: { eventId: id } }),
     db.calendar.findMany({
       where: { userId: session.user.id },
       select: { id: true, name: true, color: true },
@@ -43,6 +51,10 @@ export default async function EventPage({
   ]);
 
   if (!event || event.userId !== session.user.id) notFound();
+
+  // Always newest-first in the UI, whichever end of the list we queried.
+  const rsvps = visibilityLimit == null ? rsvpRows : [...rsvpRows].reverse();
+  const hiddenRsvps = visibilityLimit == null ? 0 : Math.max(0, rsvpTotal - visibilityLimit);
 
   const count = (service: string) =>
     clickRows.find((r) => r.service === service)?._count ?? 0;
@@ -116,6 +128,7 @@ export default async function EventPage({
         required: q.required,
         order: q.order,
       }))}
+      hiddenRsvps={hiddenRsvps}
       rsvps={rsvps.map((r) => ({
         id: r.id,
         name: r.name,
