@@ -22,7 +22,8 @@ export function EventEmbedCard({ appUrl, slugOrId }: Props) {
   const isCard = mode === "card";
   const path = isCard ? `/e/${slugOrId}/embed?mode=card` : `/e/${slugOrId}/embed`;
   const embedUrl = `${appUrl}${path}`;
-  const height = isCard ? 360 : 80;
+  // Measured worst case (narrow container, wrapped title): 367 card / 103 simple.
+  const height = isCard ? 380 : 110;
   const iframeCode = `<iframe src="${embedUrl}" width="100%" height="${height}" style="border:0;" loading="lazy"></iframe>`;
 
   const modes: { value: Mode; label: string; hint: string }[] = [

@@ -15,7 +15,8 @@ export function CalendarEmbedCard({ appUrl, slugOrId }: Props) {
   const host = appUrl.replace(/^https?:\/\//, "");
   const path = `/c/${slugOrId}/embed`;
   const embedUrl = `${appUrl}${path}`;
-  const height = 420;
+  // Measured worst case (4 upcoming events, narrow container): ~501px.
+  const height = 520;
   const iframeCode = `<iframe src="${embedUrl}" width="100%" height="${height}" style="border:0;" loading="lazy"></iframe>`;
 
   return (
