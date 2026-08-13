@@ -392,6 +392,24 @@ function ViewLink({ href, label }: { href: string; label: string }) {
   );
 }
 
+/**
+ * One row of the pricing feature list. Both plan cards render the same rows, so
+ * an unavailable line stays in place with a cross instead of disappearing —
+ * that's what makes the two columns comparable at a glance.
+ */
+function PricingRow({ text, included, checkClassName }: { text: string; included: boolean; checkClassName: string }) {
+  return (
+    <li className={cn("flex items-start gap-2.5 text-sm", included ? "text-ink" : "text-inksoft/60")}>
+      {included ? (
+        <CheckCircle2 className={cn("mt-0.5 h-4 w-4 shrink-0", checkClassName)} />
+      ) : (
+        <X className="mt-0.5 h-4 w-4 shrink-0 text-coral/70" />
+      )}
+      {text}
+    </li>
+  );
+}
+
 /** Renders the real branded "card" embed of a live event via iframe. */
 function DemoEmbedCardFrame({ slug, maxW = "max-w-md" }: { slug: string; maxW?: string }) {
   return (
@@ -804,15 +822,8 @@ export function LandingContent({ demoCalendar, demoEvent }: LandingContentProps)
                 <span className="text-sm text-inksoft">{T.landing.pricing.free.period}</span>
               </p>
               <ul className="mt-6 flex-1 space-y-2.5">
-                {T.landing.pricing.free.bullets.map((b) => (
-                  <li key={b.text} className="flex items-start gap-2.5 text-sm text-ink">
-                    {b.included ? (
-                      <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-inksoft" />
-                    ) : (
-                      <X className="mt-0.5 h-4 w-4 shrink-0 text-coral" />
-                    )}
-                    {b.text}
-                  </li>
+                {T.landing.pricing.features.map((f) => (
+                  <PricingRow key={f.text} text={f.text} included={f.free} checkClassName="text-inksoft" />
                 ))}
               </ul>
               <Button
@@ -836,11 +847,8 @@ export function LandingContent({ demoCalendar, demoEvent }: LandingContentProps)
                 <span className="text-sm text-inksoft">{T.landing.pricing.premium.period}</span>
               </p>
               <ul className="mt-6 flex-1 space-y-2.5">
-                {T.landing.pricing.premium.bullets.map((b) => (
-                  <li key={b.text} className="flex items-start gap-2.5 text-sm text-ink">
-                    <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-evvy" />
-                    {b.text}
-                  </li>
+                {T.landing.pricing.features.map((f) => (
+                  <PricingRow key={f.text} text={f.text} included={f.premium} checkClassName="text-evvy" />
                 ))}
               </ul>
               <Button
