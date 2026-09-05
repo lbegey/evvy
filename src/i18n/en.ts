@@ -56,12 +56,13 @@ export const en = {
     hero: {
       badgeUnlimited: "Unlimited adds & clicks",
       badgeFree: "Free forever",
-      titleStart: "Manage, share, and",
-      titleHighlight: "brand your events",
+      titleStart: "Create, share, and",
+      titleHighlight: "fill your events",
       subtitle:
         "Create a shareable calendar link in under a minute. Guests add it to their favorite calendar app, RSVP in real time, and you track everything from one dashboard.",
       ctaGoogle: "Continue with Google",
-      ctaEmail: "Sign up by email",
+      ctaEmail: "Create my free account",
+      ctaDemo: "See the live demo",
       microText: "Free to start · No credit card required",
       compatibleWith: "Works with",
       compatibleNote: "Free forever — your guests only see a tiny \"Organized with Evvy\" badge.",
@@ -78,6 +79,24 @@ export const en = {
         going: "12 going",
         startsIn: "Starts in 3 days",
       },
+    },
+    howItWorks: {
+      heading: "Live in three steps",
+      subheading: "From blank page to shareable event page — in under a minute.",
+      steps: [
+        {
+          title: "Create your event",
+          description: "A title, a date, a location — that's all it takes to get a polished public page.",
+        },
+        {
+          title: "Share the link",
+          description: "Custom URL, HTML embed or QR code: guests add the date to their calendar in one click.",
+        },
+        {
+          title: "Watch responses roll in",
+          description: "RSVPs, page views and calendar adds land on your dashboard in real time.",
+        },
+      ],
     },
     features: {
       heading: "Built to fill seats, not collect features",
@@ -240,7 +259,7 @@ export const en = {
     finalCta: {
       title: "Ready to simplify how you manage events?",
       ctaPrimary: "Start for free",
-      ctaSecondary: "Try it, it's free",
+      ctaSecondary: "See the live demo",
     },
     mockups: {
       rsvp: {

@@ -475,6 +475,7 @@ function DemoAddToCalendarCard({ event, addLabel }: { event: DemoEvent; addLabel
 export function LandingContent({ demoCalendar, demoEvent }: LandingContentProps) {
   const { T, lang } = useLanguage();
   const [googleLoading, setGoogleLoading] = useState(false);
+  const hasDemo = !!demoCalendar && demoCalendar.events.length > 0;
 
   const handleGoogle = async () => {
     setGoogleLoading(true);
@@ -640,6 +641,19 @@ export function LandingContent({ demoCalendar, demoEvent }: LandingContentProps)
               <CheckCircle2 className="h-3.5 w-3.5 shrink-0" />
               {T.landing.hero.microText}
             </p>
+
+            {/* Low-commitment path for visitors not ready to sign up yet */}
+            {hasDemo && (
+              <p className="mt-3 animate-fade-in-up" style={{ animationDelay: "0.4s" }}>
+                <a
+                  href="#demo"
+                  className="inline-flex items-center gap-1 text-sm font-medium text-evvy transition-colors hover:text-evvy-deep"
+                >
+                  {T.landing.hero.ctaDemo}
+                  <ChevronDown className="h-4 w-4" />
+                </a>
+              </p>
+            )}
           </div>
 
           {/* Right-side mockup — desktop only */}
@@ -665,6 +679,29 @@ export function LandingContent({ demoCalendar, demoEvent }: LandingContentProps)
             <CheckCircle2 className="h-3.5 w-3.5 shrink-0" />
             {T.landing.hero.compatibleNote}
           </p>
+        </div>
+      </section>
+
+      {/* ─── How it works (3 steps) ─── */}
+      <section className="px-4 py-20 sm:px-6 sm:py-24">
+        <div className="mx-auto max-w-5xl">
+          <div className="mx-auto max-w-2xl text-center">
+            <h2 className="font-display text-3xl font-bold tracking-tight text-ink sm:text-4xl">
+              {T.landing.howItWorks.heading}
+            </h2>
+            <p className="mt-3 leading-relaxed text-inksoft">{T.landing.howItWorks.subheading}</p>
+          </div>
+          <ol className="mt-12 grid gap-10 sm:grid-cols-3 sm:gap-8">
+            {T.landing.howItWorks.steps.map((step, i) => (
+              <li key={step.title} className="flex flex-col items-center text-center">
+                <span className="grid h-12 w-12 place-items-center rounded-full bg-gradient-to-br from-evvy to-coral font-display text-lg font-bold text-white shadow-pop">
+                  {i + 1}
+                </span>
+                <h3 className="mt-4 font-display text-lg font-bold tracking-tight text-ink">{step.title}</h3>
+                <p className="mt-2 max-w-xs text-sm leading-relaxed text-inksoft">{step.description}</p>
+              </li>
+            ))}
+          </ol>
         </div>
       </section>
 
@@ -725,7 +762,7 @@ export function LandingContent({ demoCalendar, demoEvent }: LandingContentProps)
 
       {/* ─── Live demo ─── */}
       {demoCalendar && demoCalendar.events.length > 0 && (
-        <section className="border-t border-line bg-paper px-4 py-20 sm:px-6 sm:py-28">
+        <section id="demo" className="scroll-mt-20 border-t border-line bg-paper px-4 py-20 sm:px-6 sm:py-28">
           <div className="mx-auto max-w-5xl">
             <div className="mx-auto max-w-xl text-center">
               <h2 className="font-display text-3xl font-bold tracking-tight text-ink sm:text-4xl">{T.landing.demo.title}</h2>
@@ -800,6 +837,22 @@ export function LandingContent({ demoCalendar, demoEvent }: LandingContentProps)
                 />
                 <p className="mt-3 text-xs text-inksoft">{T.landing.demo.embedHint}</p>
               </div>
+            </div>
+
+            <div className="mt-12 flex flex-col items-center gap-3">
+              <Button
+                size="lg"
+                nativeButton={false}
+                render={<Link href="/register" />}
+                className="gap-2 rounded-[10px] bg-evvy px-8 text-white shadow-pop transition-all hover:-translate-y-0.5 hover:bg-evvy-deep"
+              >
+                {T.landing.demo.cta.replace(" →", "")}
+                <ArrowUpRight className="h-4 w-4" />
+              </Button>
+              <p className="inline-flex items-center gap-1.5 text-xs font-medium text-mint-ink">
+                <CheckCircle2 className="h-3.5 w-3.5 shrink-0" />
+                {T.landing.hero.microText}
+              </p>
             </div>
           </div>
         </section>
@@ -926,15 +979,17 @@ export function LandingContent({ demoCalendar, demoEvent }: LandingContentProps)
               >
                 {T.landing.finalCta.ctaPrimary}
               </Button>
-              <Button
-                size="lg"
-                variant="outline"
-                nativeButton={false}
-                render={<Link href="/register" />}
-                className="whitespace-nowrap border-white/40 bg-transparent text-white hover:bg-white/10"
-              >
-                {T.landing.finalCta.ctaSecondary}
-              </Button>
+              {hasDemo && (
+                <Button
+                  size="lg"
+                  variant="outline"
+                  nativeButton={false}
+                  render={<a href="#demo" />}
+                  className="whitespace-nowrap border-white/40 bg-transparent text-white hover:bg-white/10"
+                >
+                  {T.landing.finalCta.ctaSecondary}
+                </Button>
+              )}
             </div>
           </div>
         </div>

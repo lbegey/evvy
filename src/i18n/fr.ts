@@ -58,12 +58,13 @@ export const fr: Translations = {
     hero: {
       badgeUnlimited: "Ajouts & clics illimités",
       badgeFree: "Gratuit à vie",
-      titleStart: "Gérez, partagez et",
-      titleHighlight: "brandez vos événements",
+      titleStart: "Créez, partagez et",
+      titleHighlight: "remplissez vos événements",
       subtitle:
         "Créez un lien de calendrier partageable en moins d'une minute. Vos invités l'ajoutent à leur app préférée, répondent en temps réel, et vous suivez tout depuis un seul tableau de bord.",
       ctaGoogle: "Continuer avec Google",
-      ctaEmail: "Inscription par email",
+      ctaEmail: "Créer mon compte gratuit",
+      ctaDemo: "Voir la démo en direct",
       microText: "Gratuit pour commencer · Aucune carte bancaire requise",
       compatibleWith: "Compatible avec",
       compatibleNote: "Gratuit à vie — vos invités voient seulement un petit badge « Organisé avec Evvy ».",
@@ -80,6 +81,24 @@ export const fr: Translations = {
         going: "12 confirmés",
         startsIn: "Dans 3 jours",
       },
+    },
+    howItWorks: {
+      heading: "En ligne en trois étapes",
+      subheading: "D'une page blanche à une page d'événement partageable — en moins d'une minute.",
+      steps: [
+        {
+          title: "Créez votre événement",
+          description: "Un titre, une date, un lieu — il n'en faut pas plus pour obtenir une page publique soignée.",
+        },
+        {
+          title: "Partagez le lien",
+          description: "URL personnalisée, embed HTML ou QR code : vos invités ajoutent la date à leur calendrier en un clic.",
+        },
+        {
+          title: "Regardez les réponses arriver",
+          description: "RSVPs, vues et ajouts au calendrier tombent sur votre tableau de bord en temps réel.",
+        },
+      ],
     },
     features: {
       heading: "Conçu pour remplir vos événements, pas pour empiler des options",
@@ -242,7 +261,7 @@ export const fr: Translations = {
     finalCta: {
       title: "Prêt à simplifier la gestion de vos événements ?",
       ctaPrimary: "Commencer gratuitement",
-      ctaSecondary: "Essayer, c'est gratuit",
+      ctaSecondary: "Voir la démo en direct",
     },
     mockups: {
       rsvp: {

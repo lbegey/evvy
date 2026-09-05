@@ -25,9 +25,42 @@ const SITE_JSON_LD = [
   },
 ];
 
+// Localized homepage metadata — the root layout's English defaults would
+// otherwise show up in French search results and hurt SERP click-through.
+const HOME_META = {
+  en: {
+    title: "Evvy — Create & share events guests add in one click",
+    description:
+      "Create a shareable event page in under a minute: RSVPs, add-to-calendar buttons for Google, Apple and Outlook, HTML embeds and custom branding. Free forever.",
+  },
+  fr: {
+    title: "Evvy — Des événements que vos invités ajoutent en un clic",
+    description:
+      "Créez une page d'événement partageable en moins d'une minute : RSVP, boutons « Ajouter au calendrier » (Google, Apple, Outlook…), embed HTML et branding personnalisé. Gratuit à vie.",
+  },
+} as const;
+
 export async function generateMetadata({ params }: { params: Promise<{ lang: string }> }): Promise<Metadata> {
   const { lang } = await params;
-  return { alternates: localeAlternates(lang as Locale, "") };
+  const meta = HOME_META[lang === "fr" ? "fr" : "en"];
+  return {
+    title: { absolute: meta.title },
+    description: meta.description,
+    openGraph: {
+      type: "website",
+      siteName: "Evvy",
+      title: meta.title,
+      description: meta.description,
+      url: `${APP_URL}/${lang}`,
+      locale: lang === "fr" ? "fr_FR" : "en_US",
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: meta.title,
+      description: meta.description,
+    },
+    alternates: localeAlternates(lang as Locale, ""),
+  };
 }
 
 export default async function Home() {
